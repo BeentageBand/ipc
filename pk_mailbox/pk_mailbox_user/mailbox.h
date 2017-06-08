@@ -13,7 +13,7 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-
+#include "mail.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -21,13 +21,33 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
+#undef CLASS_NAME
+#undef CLASS_INHERITS
+#undef CLASS_MEMBERS
+#undef CLASS_METHODS
+
+#define CLASS_NAME Mailbox
+#define CLASS_INHERITS Object
+
+#define CLASS_MEMBERS(_member) \
+_member(IPC_Task_T * _private, owner) \
+_member(Ring_Buffer_T * _private, mailbox) \
+_member(size_t _private, data_size) \
+
+#define CLASS_METHODS(_method, _void_method) \
+      bool_t _method(subscribe, union Publisher *, IPC_Mail_Id_T const) \
+      bool_t _method(unsubscribe, union Publisher *,  IPC_Mail_Id_T const) \
+      void _method(push_mail, Mail_T * const) \
+      IPC_Mail const * _void_method(pop_mail) \
+      void _void_method(dump) \
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-
+CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
