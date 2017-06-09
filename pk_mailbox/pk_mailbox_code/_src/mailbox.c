@@ -81,7 +81,7 @@ void Mailbox_Ctor(Mailbox_T * const this, IPC_Task_Id_T const owner, uint32_t co
    this->owner = owner;
    this->mailbox = Vector_Mail_new();
    Isnt_Nullptr(this->mailbox,);
-   this->mailbox->reserve(this->mailbox);
+   this->mailbox->vtbl->reserve(this->mailbox, mail_elems);
    this->data_size = data_size;
 }
 /*=====================================================================================* 

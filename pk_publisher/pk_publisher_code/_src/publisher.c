@@ -12,8 +12,9 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-#include "publisher_ext.h"
 #include "mailbox.h"
+#include "mailbox_ringbuffer.h"
+#include "publisher_ext.h"
 #include "publisher.h"
 /*=====================================================================================* 
  * Standard Includes
@@ -40,6 +41,7 @@ static void Publisher_Ctor(Publisher_T * const this, IPC_Task_Id_T const owner,
  * Local Object Definitions
  *=====================================================================================*/
 CLASS_DEFINITION
+static Publisher_T * const Publisher_Singleton = NULL;
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/
@@ -74,26 +76,26 @@ void Publisher_Dtor(Object_T * const obj)
  *=====================================================================================*/
 void Publisher_Ctor(Publisher_T * const this, Task_T * const owner, uint32_t const mail_elems, size_t const data_size)
 {
-   this->mailboxes = NULL; /*FIXME publisher ringbuffer*/
+   this->mailboxes = Vector_Mail_new();
 }
 
 bool_t Publisher_subscribe(Mailbox_T * const mailbox)
 {
-   Singleton_Publisher(&Publisher_Obj);
-   Isnt_Nullptr(Publisher_Obj.vtbl.subscribe, false);
-   return Publisher_Obj.vtbl.subscribe(&Publisher_Obj, mailbox);
+   Singleton_Publisher(Publisher_Singleton);
+   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
+   return Publisher_Singleton->vtbl->subscribe(Publisher_Singleton, mailbox);
 }
 bool_t Publisher_unsubscribe(Mailbox_T * const mailbox)
 {
-   Singleton_Publisher(&Publisher_Obj);
-   Isnt_Nullptr(Publisher_Obj.vtbl.subscribe, false);
-   return Publisher_Obj.vtbl.unsubscribe(&Publisher_Obj, mailbox);
+   Singleton_Publisher(Publisher_Singleton);
+   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
+   return Publisher_Singleton->vtbl->unsubscribe(Publisher_Singleton, mailbox);
 }
 void Publisher_publish_mail(Mail_T * const mail)
 {
-   Singleton_Publisher(&Publisher_Obj);
-   Isnt_Nullptr(Publisher_Obj.vtbl.subscribe, );
-   Publisher_Obj.vtbl.publish_mail(&Publisher_Obj, mail);
+   Singleton_Publisher(Publisher_Singleton);
+   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, );
+   Publisher_Singleton->vtbl->publish_mail(Publisher_Singleton, mail);
 }
 /*=====================================================================================* 
  * publisher.cpp
