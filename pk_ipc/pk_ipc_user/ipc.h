@@ -14,7 +14,7 @@
  * Project Includes
  *=====================================================================================*/
 #include "ipc_types.h"
-#include "mail.h"
+#include "mailbox.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -30,9 +30,14 @@
 #define CLASS_NAME IPC
 #define CLASS_INHERITS Object
 #define CLASS_MEMBERS(_member) \
+_member(IPC_Process_Id_T, pid) \
 
 #define CLASS_METHODS(_method, _void_method) \
-
+IPC_Task_Id_T _void_method(search_task) \
+IPC_Process_Id_T _void_method(search_pid) \
+void _method(set_mailbox, uint32_t const, uint32_t const) \
+Mailbox_T * const _method(search_mailbox, uint32_t const, uint32_t const) \
+void _method(notify_ready, uint32_t const) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +45,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-
+CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/

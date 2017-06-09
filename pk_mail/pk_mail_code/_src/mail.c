@@ -130,11 +130,40 @@ size_t Mail_get_data_size(Mail_T * const this)
    return this->data_size;
 }
 
-
 void Mail_dump(Mail_T * const this)
 {
    Isnt_Nullptr(this, );
    this->is_dumpable = true;
+}
+
+void Mail_set_mail_id(Mail_T * const this, IPC_Mail_Id_T const mail_id)
+{
+   this->mail_id = mail_id;
+}
+
+void Mail_set_sender_task(Mail_T * const this, IPC_Task_Id_T const sender_task)
+{
+   this->sender_task = sender_task;
+}
+
+void Mail_set_receiver_task(Mail_T * const this, IPC_Task_Id_T const receiver_task)
+{
+   this->receiver_task = receiver_task;
+}
+
+IPC_Mail_Id_T Mail_get_mail_id(Mail_T * const this,)
+{
+   return this->mail_id;
+}
+
+IPC_Task_Id_T Mail_get_sender_task(Mail_T * const this)
+{
+   return this->sender_task;
+}
+
+IPC_Task_Id_T Mail_get_receiver_task(Mail_T * const this,)
+{
+   return this->receiver_task;
 }
 /*=====================================================================================* 
  * mail.c

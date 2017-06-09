@@ -14,6 +14,7 @@
  * Project Includes
  *=====================================================================================*/
 #include "ipc_types.h"
+#include "object.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -30,9 +31,9 @@
 #define CLASS_INHERITS Object
 
 #define CLASS_MEMBERS(_member) \
-_member(TB_Mail_Id_T _private, mail_id) \
-_member(TB_Task_Id_T _private, sender_task) \
-_member(TB_Task_Id_T _private, receiver_task) \
+_member(IPC_Mail_Id_T _private, mail_id) \
+_member(IPC_Task_Id_T _private, sender_task) \
+_member(IPC_Task_Id_T _private, receiver_task) \
 _member(void * _private, data) \
 _member(size_t _private, data_size) \
 _member(bool_t _private, is_dumpable) \
