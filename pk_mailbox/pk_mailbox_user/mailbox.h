@@ -14,8 +14,7 @@
  * Project Includes
  *=====================================================================================*/
 #include "ipc_types.h"
-#include "task.h"
-#include "mail.h"
+#include "mail_ringbuffer.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -33,7 +32,7 @@
 
 #define CLASS_MEMBERS(_member) \
 _member(IPC_Task_Id_T _private, owner) \
-_member(Ring_Buffer_T * _private, mailbox) \
+_member(Vector_Mail_T * _private, mailbox) \
 _member(size_t _private, data_size) \
 
 #define CLASS_METHODS(_method, _void_method) \

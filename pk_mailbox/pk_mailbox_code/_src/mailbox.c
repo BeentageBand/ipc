@@ -79,7 +79,9 @@ void Mailbox_Dtor(Object_T * const obj)
 void Mailbox_Ctor(Mailbox_T * const this, IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size)
 {
    this->owner = owner;
-   this->mailbox = NULL; /*FIXME ring buffer ctor*/
+   this->mailbox = Vector_Mail_new();
+   Isnt_Nullptr(this->mailbox,);
+   this->mailbox->reserve(this->mailbox);
    this->data_size = data_size;
 }
 /*=====================================================================================* 

@@ -25,13 +25,12 @@
  * Local Define Macros
  *=====================================================================================*/
 #define OBJECT_TEMPLATE
-#define _template_t1 IPC_Mail_Id
-#define _template_t2 Mailbox
+#define _template_t1 Mailbox
 
 #include "template_vector.c"
 
 #undef _template_t1
-#undef _template_t2
+#undef OBJECT_TEMPLATE
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/

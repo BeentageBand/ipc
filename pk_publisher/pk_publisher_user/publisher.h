@@ -13,7 +13,6 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-#include "mail.h"
 #include "mailbox_ringbuffer.h"
 /*=====================================================================================* 
  * Standard Includes
@@ -31,7 +30,7 @@
 #define CLASS_INHERITS Object
 
 #define CLASS_MEMBERS(_member) \
-_member(Ring_Buffer_Mailbox_T * _private, mailboxes) \
+_member(Vector_Mailbox_T * _private, mailboxes) \
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_Task_Id_T const owner, \
