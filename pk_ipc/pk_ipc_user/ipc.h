@@ -15,6 +15,7 @@
  *=====================================================================================*/
 #include "ipc_types.h"
 #include "mailbox.h"
+#include "publisher.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -33,11 +34,14 @@
 _member(IPC_Process_Id_T, pid) \
 
 #define CLASS_METHODS(_method, _void_method) \
+void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 IPC_Task_Id_T _void_method(search_task) \
 IPC_Process_Id_T _void_method(search_pid) \
 void _method(set_mailbox, uint32_t const, uint32_t const) \
 Mailbox_T * const _method(search_mailbox, uint32_t const, uint32_t const) \
 void _method(notify_ready, uint32_t const) \
+size_t _void_method(get_date_length) \
+char const * _void_method(get_date) \
 
 #ifdef __cplusplus
 extern "C" {

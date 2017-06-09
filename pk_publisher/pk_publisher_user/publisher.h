@@ -13,7 +13,7 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-#include "mailbox.h"
+#include "mail.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -26,15 +26,17 @@
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
 
-#define CLASS_NAME Mailbox
+#define CLASS_NAME Publisher
 #define CLASS_INHERITS Object
 
 #define CLASS_MEMBERS(_member) \
 _member(Ring_Buffer_T * _private, mailboxes) \
 
 #define CLASS_METHODS(_method, _void_method) \
-bool_t _method(subscribe, Mailbox_T * const mailbox) \
-bool_t _method(unsubscribe, Mailbox_T * const mailbox) \
+void _method(ctor, IPC_Task_Id_T const owner, \
+      uint32_t const mail_elems, size_t const data_size) \
+bool_t _method(subscribe, union Mailbox * const mailbox) \
+bool_t _method(unsubscribe, union Mailbox * const mailbox) \
 void _method(publish_mail, Mail_T * const mail) \
 
 #ifdef __cplusplus
@@ -43,7 +45,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-
+CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -51,8 +53,8 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-extern bool_t Publisher_subscribe(Mailbox_T * const mailbox);
-extern bool_t Publisher_unsubscribe(Mailbox_T * const mailbox);
+extern bool_t Publisher_subscribe(union Mailbox * const mailbox);
+extern bool_t Publisher_unsubscribe(union Mailbox * const mailbox);
 extern void Publisher_publish_mail(Mail_T * const mail);
 /*=====================================================================================* 
  * Exported Function Like Macros

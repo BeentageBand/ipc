@@ -13,6 +13,7 @@
  * Project Includes
  *=====================================================================================*/
 #include "ipc_ext.h"
+#include "ipc_set.h"
 #include "ipc.h"
 /*=====================================================================================* 
  * Standard Includes
@@ -62,6 +63,8 @@ void IPC_init(void)
    IPC_Vtbl.set_mailbox = NULL;
    IPC_Vtbl.search_mailbox= NULL;
    IPC_Vtbl.notify_ready = NULL;
+   IPC_Vtbl.get_date_length = NULL;
+   IPC_Vtbl.get_date = NULL;
 
 }
 void IPC_shut(void) {}
@@ -72,7 +75,7 @@ void IPC_Dtor(Object_T * const obj)
 /*=====================================================================================* 
  * Exported Function Definitions
  *=====================================================================================*/
-void IPC_Ctor(IPC_T * const this, TB_Process_Id_T const pid, uint32_t const max_tasks)
+void IPC_Ctor(IPC_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks)
 {
    this->pid = pid;
 }
@@ -80,95 +83,101 @@ void IPC_Ctor(IPC_T * const this, TB_Process_Id_T const pid, uint32_t const max_
  IPC_Task_Id_T IPC_self_task_id(void)
  {
     Singleton_IPC(&IPC_Obj);
-    Isnt_Nullptr(tb, 0);
-    return IPC_search_task(tb);
+    Isnt_Nullptr(IPC_Obj.vtbl->search_task, 0);
+    return IPC_Obj.vtbl->search_task(&IPC_Obj);
  }
 
 
  IPC_Process_Id_T IPC_self_pid(void)
  {
     Singleton_IPC(&IPC_Obj);
-    Isnt_Nullptr(tb, 0);
-    return IPC_search_pid(tb);
+    Isnt_Nullptr(IPC_Obj.vtbl->search_pid, 0);
+    return IPC_Obj.vtbl->search_pid(&IPC_Obj);
  }
 
  void IPC_task_ready(void)
  {
     Singleton_IPC(&IPC_Obj);
-    IPC_notify_ready(tb, IPC_self_task_id());
+    Isnt_Nullptr(IPC_Obj.vtbl->notify_ready, );
+    IPC_Obj.vtbl->notify_ready(&IPC_Obj, IPC_self_task_id());
  }
 
  void IPC_create_mailbox(uint32_t const max_mails, size_t const mail_size)
  {
     Singleton_IPC(&IPC_Obj);
-    IPC_set_mailbox(tb, max_mails, mail_size);
+    Isnt_Nullptr(IPC_Obj.vtbl->set_mailbox, );
+    IPC_Obj.vtbl->set_mailbox(&IPC_Obj, max_mails, mail_size);
  }
 
 /**
  * TB Mail Comm
  */
- bool_t IPC_subscribe_mail_list(Mail_Id_T const * mail_list, uint32_t const mail_elems)
+ bool_t IPC_subscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems)
  {
-    return Publisher_subscribe(publisher,IPC_self_task_id(),  mail_list, mail_elems);
+    return Publisher_subscribe(IPC_self_task_id(),  mail_list, mail_elems);
  }
 
- bool_t IPC_unsubscribe_mail_list(Mail_Id_T const * mail_list, uint32_t const mail_elems)
+ bool_t IPC_unsubscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems)
  {
-    return Publisher_unsubscribe(publisher,IPC_self_task_id(),  mail_list, mail_elems);
+    return Publisher_unsubscribe(IPC_self_task_id(),  mail_list, mail_elems);
  }
 
  void IPC_send(IPC_Task_Id_T const receiver_task, IPC_Process_Id_T const receiver_pid,
-      Mail_Id_T mail_id, void const * data, size_t const data_size)
+      IPC_Mail_Id_T mail_id, void const * data, size_t const data_size)
  {
     Singleton_IPC(&IPC_Obj);
     Mailbox mailbox = IPC_Obj.vtbl->search_mailbox(&IPC_Obj, receiver_task, receiver_pid);
-    Mail mail = Mail_New(mail_id, IPC_search_task(tb), receiver_task, receiver_pid, data, data_size);
+    Isnt_Nullptr(IPC_Obj.vtbl->search_task,);
+    Mail_T * mail = Mail_new(mail_id, IPC_Obj.vtbl->search_task(&IPC_Obj), receiver_task, receiver_pid, data, data_size);
     Mailbox_push_mail(mailbox, mail);
  }
 
- void IPC_publish(Mail_Id_T const mail_id, void const * data, size_t const data_size)
+ void IPC_publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size)
  {
 
-    Mail mail = Mail_New(mail_id, IPC_self_task_id(), 0, 0, data, data_size);
-    Publisher_publish(publisher, mail);
+    Mail mail = Mail_new(mail_id, IPC_self_task_id(), 0, 0, data, data_size);
+    Publisher_publish(mail);
  }
 
- void IPC_broadcast(Mail_Id_T const mail_id, void const * data, size_t const data_size)
+ void IPC_broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size)
  {
     Singleton_IPC(&IPC_Obj);
+    Isnt_Nullptr(IPC_Obj.vtbl->search_mailbox, );
+    Isnt_Nullptr(IPC_Obj.vtbl->search_task, );
     IPC_Task_Id_T task = 0;
     IPC_Process_Id_T process = 0;
-    Mailbox mailbox = NULL;
-    Mail mail = NULL;
+    Mailbox_T * mailbox = NULL;
+    Mail_T * mail = NULL;
 
-    for(process = 0 ; process < MAX_PROCESSES; ++process)
+    for(process = 0 ; process < IPC_MAX_PROCESSES; ++process)
     {
-       for(task = 0 ; task < MAX_TASKS; ++task)
+       for(task = 0 ; task < IPC_MAX_TASKS; ++task)
        {
           mailbox = IPC_Obj.vtbl->search_mailbox(&IPC_Obj, task, process);
           if(NULL != mailbox)
           {
-             mail = Mail_New(mail_id, IPC_search_task(tb), task, process, data, data_size);
-             Mailbox_push_mail(mailbox, mail);
-             Mail_delete(mail);
+             mail = Mail_New(mail_id, IPC_Obj.vtbl->search_task(&IPC_Obj), task, process, data, data_size);
+             mailbox->vtbl->push_mail(mailbox, mail);
+             _delete(mail);
           }
        }
     }
  }
 
-Mail_T * const IPC_retreive_from_mail_list(Mail_Id_T const * mail_list, uint32_t const mail_elems,
+Mail_T * const IPC_retreive_from_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
       uint32_t const timeout_ms)
  {
     uint32_t i;
     Singleton_IPC(&IPC_Obj);
-    Mail mail = NULL;
-    Mailbox mailbox = tb(tb, IPC_self_task_id(), IPC_self_pid());
+    Isnt_Nullptr(IPC_Obj.vtbl->search_mailbox, NULL);
+    Mail_T * mail = NULL;
+    Mailbox_T * mailbox = IPC_Obj.vtbl->search_mailbox(&IPC_Obj, IPC_self_task_id(), IPC_self_pid());
 
     Isnt_Nullptr(mail_list, NULL);
 
     for(i = 0; i < mail_elems; ++i)
     {
-       mail = Mailbox_get_mail_by_mail_id(mailbox, mail_list[i]);
+       mail = mailbox->vtbl->get_mail_by_mail_id(mailbox, mail_list[i]);
        if(NULL != mail)
        {
           mail->vtbl->dump(mail);
@@ -181,8 +190,8 @@ Mail_T * const IPC_retreive_from_mail_list(Mail_Id_T const * mail_list, uint32_t
 Mail_T * const IPC_retreive_mail(uint32_t const timeout_ms)
  {
     Singleton_IPC(&IPC_Obj);
-    Mail mail = NULL;
-    Mailbox mailbox = NULL;
+    Mail_T * mail = NULL;
+    Mailbox_T * mailbox = NULL;
     mailbox = IPC_Obj.vtbl->search_mailbox(&IPC_Obj, IPC_self_task_id(), IPC_self_pid());
 
     mail = Mailbox_get_first_mail(mailbox);
@@ -195,11 +204,13 @@ Mail_T * const IPC_retreive_mail(uint32_t const timeout_ms)
  {
     Singleton_IPC(&IPC_Obj);
 
-    Isnt_Nullptr(tb, );
+    Isnt_Nullptr(IPC_Obj.vtbl->get_date_length, );
+    Isnt_Nullptr(IPC_Obj.vtbl->get_date, );
     Isnt_Nullptr(date_str, );
-    if(strlen(date_str) >= IPC_get_date_length(tb) )
+
+    if(strlen(date_str) >= IPC_Obj.vtbl->get_date_length(&IPC_Obj) )
     {
-       memcpy(date_str, IPC_get_date(tb), IPC_get_date_length(tb));
+       memcpy(date_str, IPC_Obj.vtbl->get_date(&IPC_Obj), IPC_Obj.vtbl->get_date_length(&IPC_Obj));
     }
  }
 /*=====================================================================================* 

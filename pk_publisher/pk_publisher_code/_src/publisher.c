@@ -13,6 +13,7 @@
  * Project Includes
  *=====================================================================================*/
 #include "publisher_ext.h"
+#include "mailbox.h"
 #include "publisher.h"
 /*=====================================================================================* 
  * Standard Includes
@@ -33,7 +34,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Publisher_Ctor(Publisher_T * const this, Task_T * const owner,
+static void Publisher_Ctor(Publisher_T * const this, IPC_Task_Id_T const owner,
       uint32_t const mail_elems, size_t const data_size);
 /*=====================================================================================* 
  * Local Object Definitions
