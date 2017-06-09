@@ -35,8 +35,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Publisher_Ctor(Publisher_T * const this, IPC_Task_Id_T const owner,
-      uint32_t const mail_elems, size_t const data_size);
+static void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, size_t const data_size);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
@@ -70,26 +69,28 @@ void Publisher_shut(void) {}
 
 void Publisher_Dtor(Object_T * const obj)
 {
+   Publisher_T * this = _dynamic_cast(Publisher, obj);
+   _delete(this->mailboxes);
 }
 /*=====================================================================================* 
  * Exported Function Definitions
  *=====================================================================================*/
-void Publisher_Ctor(Publisher_T * const this, Task_T * const owner, uint32_t const mail_elems, size_t const data_size)
+void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, size_t const data_size)
 {
-   this->mailboxes = Vector_Mail_new();
+   this->mailboxes = Vector_Mailbox_new();
 }
 
-bool_t Publisher_subscribe(Mailbox_T * const mailbox)
+bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
    Singleton_Publisher(Publisher_Singleton);
    Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
-   return Publisher_Singleton->vtbl->subscribe(Publisher_Singleton, mailbox);
+   return Publisher_Singleton->vtbl->subscribe(Publisher_Singleton, mailbox, mail_id);
 }
-bool_t Publisher_unsubscribe(Mailbox_T * const mailbox)
+bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
    Singleton_Publisher(Publisher_Singleton);
    Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
-   return Publisher_Singleton->vtbl->unsubscribe(Publisher_Singleton, mailbox);
+   return Publisher_Singleton->vtbl->unsubscribe(Publisher_Singleton, mailbox, mail_id);
 }
 void Publisher_publish_mail(Mail_T * const mail)
 {

@@ -13,7 +13,7 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-#include "object.h"
+#include "mail.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -33,11 +33,10 @@
 _member(union Vector_Mailbox * _private, mailboxes) \
 
 #define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Task_Id_T const owner, \
-      uint32_t const mail_elems, size_t const data_size) \
-bool_t _method(subscribe, union Mailbox * const mailbox) \
-bool_t _method(unsubscribe, union Mailbox * const mailbox) \
-void _method(publish_mail, Mail_T * const mail) \
+void _method(ctor, uint32_t const, size_t const) \
+bool_t _method(subscribe, union Mailbox * const, IPC_Mail_Id_T const) \
+bool_t _method(unsubscribe, union Mailbox * const, IPC_Mail_Id_T const) \
+void _method(publish_mail, Mail_T * const) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,6 +44,8 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
+union Mailbox;
+
 CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
@@ -53,8 +54,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-extern bool_t Publisher_subscribe(union Mailbox * const mailbox);
-extern bool_t Publisher_unsubscribe(union Mailbox * const mailbox);
+extern bool_t Publisher_subscribe(union Mailbox * const mailbox, IPC_Mail_Id_T const mail_id);
+extern bool_t Publisher_unsubscribe(union Mailbox * const mailbox, IPC_Mail_Id_T const mail_id);
 extern void Publisher_publish_mail(Mail_T * const mail);
 /*=====================================================================================* 
  * Exported Function Like Macros

@@ -40,9 +40,9 @@ static void Mail_dump(Mail_T * const this);
 static void Mail_set_mail_id(Mail_T * const this, IPC_Mail_Id_T const mail_id);
 static void Mail_set_sender_task(Mail_T * const this, IPC_Task_Id_T const sender_task);
 static void Mail_set_receiver_task(Mail_T * const this, IPC_Task_Id_T const receiver_task);
-static IPC_Mail_Id_T Mail_get_mail_id(Mail_T * const this,);
+static IPC_Mail_Id_T Mail_get_mail_id(Mail_T * const this);
 static IPC_Task_Id_T Mail_get_sender_task(Mail_T * const this);
-static IPC_Task_Id_T Mail_get_receiver_task(Mail_T * const this,);
+static IPC_Task_Id_T Mail_get_receiver_task(Mail_T * const this);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
@@ -151,7 +151,7 @@ void Mail_set_receiver_task(Mail_T * const this, IPC_Task_Id_T const receiver_ta
    this->receiver_task = receiver_task;
 }
 
-IPC_Mail_Id_T Mail_get_mail_id(Mail_T * const this,)
+IPC_Mail_Id_T Mail_get_mail_id(Mail_T * const this)
 {
    return this->mail_id;
 }
@@ -161,7 +161,7 @@ IPC_Task_Id_T Mail_get_sender_task(Mail_T * const this)
    return this->sender_task;
 }
 
-IPC_Task_Id_T Mail_get_receiver_task(Mail_T * const this,)
+IPC_Task_Id_T Mail_get_receiver_task(Mail_T * const this)
 {
    return this->receiver_task;
 }

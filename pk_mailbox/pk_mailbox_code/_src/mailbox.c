@@ -65,12 +65,15 @@ void Mailbox_init(void)
    Mailbox_Vtbl.pop_mail= NULL;
    Mailbox_Vtbl.dump = NULL;
    Mailbox_Vtbl.get_mail_by_mail_id = NULL;
+   Mailbox_Vtbl.get_first_mail = NULL;
 
 }
 void Mailbox_shut(void) {}
 
 void Mailbox_Dtor(Object_T * const obj)
 {
+   Mailbox_T * this = _dynamic_cast(Mailbox, obj);
+   _delete(this->mailbox);
 }
 
 /*=====================================================================================* 
