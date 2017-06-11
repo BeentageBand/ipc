@@ -35,7 +35,7 @@ _member(IPC_Task_Id_T _private, tid) \
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_Task_Id_T const) \
-void _void_method(run) \
+void _method(run) \
 
 #ifdef __cplusplus
 extern "C" {

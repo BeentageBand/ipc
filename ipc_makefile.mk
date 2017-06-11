@@ -34,6 +34,7 @@ $(_build_)_$(_curr_)_lib_objs=
  ##
 $(_build_)_$(_curr_)_lib_libs=\
 $($(_build_)_LIB_DIR)/$(_lprefix_)ipc$(_lib_ext_) \
+$($(_build_)_LIB_DIR)/$(_lprefix_)ipc_decorator$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)mail$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)mailbox$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)publisher$(_lib_ext_) \

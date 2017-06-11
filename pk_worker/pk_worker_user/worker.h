@@ -13,7 +13,7 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-
+#include "task.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -21,13 +21,29 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
+#undef CLASS_NAME
+#undef CLASS_INHERITS
+#undef CLASS_MEMBERS
+#undef CLASS_METHODS
+
+#define CLASS_NAME Worker
+#define CLASS_INHERITS Task
+#define CLASS_MEMBERS(_member) \
+_member(uint32_t, mailbox_size) \
+
+#define CLASS_METHODS(_method, _void_method) \
+void _method(ctor, IPC_Task_Id_T const, uint32_t const) \
+void _void_method(on_start) \
+void _void_method(on_loop) \
+void _void_method(on_stop) \
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-
+CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
