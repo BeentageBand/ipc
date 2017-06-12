@@ -33,10 +33,7 @@
 
 #define CLASS_NAME IPC
 #define CLASS_INHERITS Object
-#define CLASS_MEMBERS(_member) \
-_member(IPC_Process_Id_T _private, pid) \
-_member(Vector_Task_T * _private, task_stack) \
-_member(Vector_Mailbox_T * _private, mailbox_stack) \
+#define CLASS_MEMBERS(_member)
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
@@ -59,7 +56,10 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
-
+extern IPC_Process_Id_T IPC_PID;
+extern Vector_Task_T IPC_Task_Stack;
+extern Vector_Mailbox_T IPC_Mailbox_Stack;
+extern uint32_t IPC_Max_Tasks;
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/

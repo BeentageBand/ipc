@@ -8,7 +8,7 @@
  *
  */
 /*=====================================================================================*/
-#if !defined(TASK_H_) || defined(CLASS_IMPLEMENTATION)
+#ifndef TASK_H_
 #define TASK_H_
 /*=====================================================================================*
  * Project Includes
@@ -35,7 +35,7 @@ _member(IPC_Task_Id_T _private, tid) \
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_Task_Id_T const) \
-void _method(run) \
+void _void_method(run) \
 
 #ifdef __cplusplus
 extern "C" {

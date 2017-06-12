@@ -23,7 +23,7 @@
  *=====================================================================================*/
 #define OBJECT_TEMPLATE
 #define _template_t1 Mail
-#include "template_vector.h"
+#include "cvector.h"
 #undef _template_t1
 #undef OBJECT_TEMPLATE
 

@@ -90,7 +90,9 @@ void Worker_ctor(Worker_T * const this, IPC_Task_Id_T const tid, uint32_t const 
 void Worker_run(Task_T * const super)
 {
    Worker_T * const this = _dynamic_cast(Worker, super);
-   IPC_create_mailbox(this->mailbox_size);
+
+   IPC_create_mailbox(this->mailbox_size, 80);
+
    this->vtbl->on_start(this);
 
    IPC_notify_ready();

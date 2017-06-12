@@ -25,7 +25,7 @@
  * Local Define Macros
  *=====================================================================================*/
 #define _template_t1 Mail
-#include "template_vector.c"
+#include "cvector.c"
 #undef _template_t1
 #undef OBJECT_TEMPLATE
 /*=====================================================================================* 

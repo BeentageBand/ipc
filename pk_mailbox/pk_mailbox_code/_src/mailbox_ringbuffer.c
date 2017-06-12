@@ -1,6 +1,6 @@
 /*=====================================================================================*/
 /**
- * mailbox_ringbuffer.cpp
+ * mailbox_ringbuffer.c
  * author : puch
  * date : Oct 22 2015
  *
@@ -27,7 +27,7 @@
 #define OBJECT_TEMPLATE
 #define _template_t1 Mailbox
 
-#include "template_vector.c"
+#include "cvector.c"
 
 #undef _template_t1
 #undef OBJECT_TEMPLATE
@@ -60,7 +60,7 @@
  *=====================================================================================*/
 
 /*=====================================================================================* 
- * mailbox_ringbuffer.cpp
+ * mailbox_ringbuffer.c
  *=====================================================================================*
  * Log History
  *

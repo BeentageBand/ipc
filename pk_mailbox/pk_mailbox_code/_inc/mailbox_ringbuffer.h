@@ -24,14 +24,10 @@
 #define OBJECT_TEMPLATE
 #define _template_t1 Mailbox
 
-#include "template_vector.h"
+#include "cvector.h"
 
 #undef _template_t1
 #undef OBJECT_TEMPLATE
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
@@ -47,9 +43,6 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/
-#ifdef __cplusplus
-}
-#endif
 
 /*=====================================================================================* 
  * mailbox_ringbuffer.h

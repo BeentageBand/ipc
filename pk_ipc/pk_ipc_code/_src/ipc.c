@@ -42,11 +42,15 @@ static bool_t IPC_Is_This_Task(Task_T * const task, uint32_t const tid);
  * Local Object Definitions
  *=====================================================================================*/
 CLASS_DEFINITION
-static IPC_T * const IPC_Singleton = NULL;
+static IPC_T * IPC_Singleton = NULL;
+
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/
-
+IPC_Process_Id_T IPC_PID;
+Vector_Task_T IPC_Task_Stack;
+Vector_Mailbox_T IPC_Mailbox_Stack;
+uint32_t IPC_Max_Tasks;
 /*=====================================================================================* 
  * Local Inline-Function Like Macros
  *=====================================================================================*/
@@ -57,9 +61,11 @@ static IPC_T * const IPC_Singleton = NULL;
 void IPC_init(void)
 {
    printf("%s \n", __FUNCTION__);
-   IPC_Obj.pid = 0;
-   IPC_Obj.task_stack = NULL;
-   IPC_Obj.mailbox_stack = NULL;
+
+   IPC_PID = 0;
+   IPC_Task_Stack = Vector_Task();
+   IPC_Mailbox_Stack = Vector_Mailbox();
+   IPC_Max_Tasks = 0;
 
    IPC_Vtbl.Object.rtti = &IPC_Rtti;
    IPC_Vtbl.Object.destroy = IPC_Dtor;
@@ -72,8 +78,8 @@ void IPC_init(void)
    IPC_Vtbl.notify_ready = NULL;
    IPC_Vtbl.get_date_length = NULL;
    IPC_Vtbl.get_date = NULL;
-
 }
+
 void IPC_shut(void) {}
 
 void IPC_Dtor(Object_T * const obj)
@@ -98,20 +104,21 @@ bool_t IPC_Is_This_Mailbox(Mailbox_T * const mbx, uint32_t const tid)
  *=====================================================================================*/
 void IPC_Ctor(IPC_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks)
 {
-   this->pid = pid;
+   IPC_PID = pid;
+   IPC_Max_Tasks = max_tasks;
 }
 
 Task_T * const IPC_search_task(IPC_T * const this, IPC_Task_Id_T const task_id)
 {
-   Task_T * const it = Vector_Task_find_if(this->task_stack->vtbl->front(this->task_stack),
-         this->task_stack->vtbl->back(this->task_stack), task_id, IPC_Is_This_Task);
+   Task_T * const it = Vector_Task_find_if(IPC_Task_Stack.vtbl->front(&IPC_Task_Stack),
+         IPC_Task_Stack.vtbl->back(&IPC_Task_Stack), task_id, IPC_Is_This_Task);
    return it;
 }
 
 Mailbox_T * const IPC_search_mailbox(IPC_T * const this, IPC_Task_Id_T const task_id, IPC_Process_Id_T const pid)
 {
-   Mailbox_T * const it = Vector_Mailbox_find_if(this->task_stack->vtbl->front(this->task_stack),
-         this->task_stack->vtbl->back(this->task_stack), task_id, IPC_Is_This_Mailbox);
+   Mailbox_T * const it = Vector_Mailbox_find_if(IPC_Mailbox_Stack.vtbl->front(&IPC_Mailbox_Stack),
+         IPC_Mailbox_Stack.vtbl->back(&IPC_Mailbox_Stack), task_id, IPC_Is_This_Mailbox);
    return it;
 }
 
