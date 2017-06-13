@@ -1,5 +1,5 @@
 #=======================================================================================#
-# ipc_makefile.mk
+# system_clk_makefile.mk
 #=======================================================================================#
 #  Created on: Oct 3, 2015
 #      Author: puch
@@ -16,7 +16,7 @@ define $(_build_)_$(_curr_)_MAKE
 #     or
 #     $(_build_)_$(_curr_)_src_dir=_src
 #=======================================================================================#
-$(_build_)_$(_curr_)_src_dir=
+$(_build_)_$(_curr_)_src_dir=pk_system_clk_code/_src
 
 #=======================================================================================#
 # LIB REQUISITES
@@ -26,26 +26,20 @@ $(_build_)_$(_curr_)_src_dir=
  # Object Requisites
  # e.g: $(_build_)_$(_curr_)_lib_objs=$($(_build_)_OBJ_DIR)/my_lib_obj$(_obj_ext_) \
  ##
-$(_build_)_$(_curr_)_lib_objs=
+$(_build_)_$(_curr_)_lib_objs=\
+   $($(_build_)_OBJ_DIR)/system_clk$(_obj_ext_) \
 
 ##
  # Library Requisites
  # e.g: $(_build_)_$(_curr_)_lib_libs=$($(_build_)_LIB_DIR)/$(_lprefix_)my_lib_lib$(_lib_ext_) \
  ##
-$(_build_)_$(_curr_)_lib_libs=\
-$($(_build_)_LIB_DIR)/$(_lprefix_)ipc$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)ipc_decorator$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)mail$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)mailbox$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)publisher$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)task$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)worker$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)system_clk$(_lib_ext_) \
+$(_build_)_$(_curr_)_lib_libs=
+
 ##
  # Target Library
  # e.g: $(_build_)_$(_curr_)_lib_name=my_lib_name
  ##
-$(_build_)_$(_curr_)_lib_name=ipc_lb
+$(_build_)_$(_curr_)_lib_name=system_clk
 
 #=======================================================================================#
 # BIN REQUISITES
@@ -93,7 +87,7 @@ endef
 #=======================================================================================#
 include $($(_build_)_PROJECT_DIR)/$($(_build_)_MAK_DIR)/epilog.mk
 #=======================================================================================#
-# ipc_makefile.mk
+# system_clk_makefile.mk
 #=======================================================================================#
 # Changes Log
 #
