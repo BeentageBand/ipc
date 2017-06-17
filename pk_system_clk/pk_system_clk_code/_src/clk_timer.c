@@ -1,6 +1,6 @@
 /*=====================================================================================*/
 /**
- * system_clk.c
+ * system_clk.cpp
  * author : puch
  * date : Oct 22 2015
  *
@@ -32,7 +32,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void System_Clk_Ctor(System_Clk_T * const this, System_Clk_Ms_T const ms);
+static void System_Clk_Ctor(System_Clk_T * const this, System_Clk_Process_Id_T const pid, uint32_t const max_tasks);
 static System_Clk_Ms_T  System_Clk_timestamp(System_Clk_T * const this);
 /*=====================================================================================* 
  * Local Object Definitions
@@ -53,12 +53,13 @@ CLASS_DEFINITION
 void System_Clk_init(void)
 {
    printf("%s \n", __FUNCTION__);
-
+   System_Clk_Obj.
    System_Clk_Vtbl.Object.rtti = &System_Clk_Rtti;
    System_Clk_Vtbl.Object.destroy = System_Clk_Dtor;
    System_Clk_Vtbl.ctor = System_Clk_Ctor;
-   System_Clk_Vtbl.timestamp = NULL;
-   System_Clk_Vtbl.put_date_string = NULL;
+   System_Clk_Vtbl.on_timeout= NULL;
+   System_Clk_Vtbl.start = NULL;
+   System_Clk_Vtbl.stop = NULL;
 }
 
 void System_Clk_shut(void) {}
@@ -73,12 +74,14 @@ void System_Clk_Dtor(Object_T * const obj)
 /*=====================================================================================* 
  * Exported Function Definitions
  *=====================================================================================*/
-void System_Clk_Ctor(System_Clk_T * const this, System_Clk_Ms_T const ms)
+void System_Clk_Ctor(System_Clk_T * const this, System_Clk_Process_Id_T const pid, uint32_t const max_tasks)
 {
+   System_Clk_PID = pid;
+   System_Clk_Max_Tasks = max_tasks;
 }
 
 /*=====================================================================================* 
- * system_clk.c
+ * system_clk.cpp
  *=====================================================================================*
  * Log History
  *

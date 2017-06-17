@@ -96,12 +96,12 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 
  IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super)
  {
-
+    return 0; /* TODO */
  }
 
  IPC_Process_Id_T IPC_Light_get_pid(IPC_T * const super)
  {
-
+    return 0; /* TODO */
  }
 
  void IPC_Light_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mail_elements)
@@ -117,12 +117,12 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 
  size_t IPC_Light_get_date_length(IPC_T * const super)
  {
-
+    return 0; /* TODO */
  }
 
  char const * IPC_Light_get_date(IPC_T * const super)
  {
-
+    return NULL; /* TODO */
  }
 /*=====================================================================================* 
  * ipc_light.c

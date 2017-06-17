@@ -110,15 +110,15 @@ void IPC_Ctor(IPC_T * const this, IPC_Process_Id_T const pid, uint32_t const max
 
 Task_T * const IPC_search_task(IPC_T * const this, IPC_Task_Id_T const task_id)
 {
-   Task_T * const it = Vector_Task_find_if(IPC_Task_Stack.vtbl->front(&IPC_Task_Stack),
-         IPC_Task_Stack.vtbl->back(&IPC_Task_Stack), task_id, IPC_Is_This_Task);
+   Task_T * const it = NULL; /*Vector_Task_find_if(IPC_Task_Stack.vtbl->front(&IPC_Task_Stack),
+         IPC_Task_Stack.vtbl->back(&IPC_Task_Stack), task_id, IPC_Is_This_Task); */
    return it;
 }
 
 Mailbox_T * const IPC_search_mailbox(IPC_T * const this, IPC_Task_Id_T const task_id, IPC_Process_Id_T const pid)
 {
-   Mailbox_T * const it = Vector_Mailbox_find_if(IPC_Mailbox_Stack.vtbl->front(&IPC_Mailbox_Stack),
-         IPC_Mailbox_Stack.vtbl->back(&IPC_Mailbox_Stack), task_id, IPC_Is_This_Mailbox);
+   Mailbox_T * const it = NULL; /* FIXME Vector_Mailbox_find_if(IPC_Mailbox_Stack.vtbl->front(&IPC_Mailbox_Stack),
+         IPC_Mailbox_Stack.vtbl->back(&IPC_Mailbox_Stack), task_id, IPC_Is_This_Mailbox); */
    return it;
 }
 

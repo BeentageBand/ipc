@@ -1,6 +1,6 @@
 /*=====================================================================================*/
 /**
- * system_clk_uext.h
+ * clk_timer_uext.h
  * author : puch
  * date : Oct 22 2015
  *
@@ -8,8 +8,8 @@
  *
  */
 /*=====================================================================================*/
-#ifndef SYSTEM_CLK_UEXT_H_
-#define SYSTEM_CLK_UEXT_H_
+#ifndef CLK_TIMER_UEXT_H_
+#define CLK_TIMER_UEXT_H_
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
@@ -21,6 +21,25 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
+#undef CLASS_NAME
+#undef CLASS_INHERITS
+#undef CLASS_MEMBERS
+#undef CLASS_METHODS
+
+#define CLASS_NAME Clk_Timer
+#define CLASS_INHERITS Object
+#define CLASS_MEMBERS(_member) \
+_member(IPC_Task_Id_T, target_tid) \
+_member(IPC_Mail_Id_T, mail_tout_trig) \
+_member(bool_t, is_periodic) \
+_member(uint32_t, timeout_ms) \
+
+#define CLASS_METHODS(_method, _void_methods) \
+void _method(ctor, IPC_Task_Id_T const, IPC_Mail_Id_T const) \
+void _method(start, uitn32_t const, bool_t const) \
+void _method(stop) \
+void _method(on_timeout, void * const) \
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,9 +62,9 @@ extern "C" {
 }
 #endif
 /*=====================================================================================* 
- * system_clk_uext.h
+ * clk_timer_uext.h
  *=====================================================================================*
  * Log History
  *
  *=====================================================================================*/
-#endif /*SYSTEM_CLK_UEXT_H_*/
+#endif /*CLK_TIMER_UEXT_H_*/

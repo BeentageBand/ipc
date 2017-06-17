@@ -26,7 +26,7 @@
 
 #include "cvector.h"
 
-#undef _template_t1 Task
+#undef _template_t1
 #undef OBJECT_TEMPLATE
 /*=====================================================================================* 
  * Exported Type Declarations
