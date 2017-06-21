@@ -40,7 +40,7 @@ static void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, 
  * Local Object Definitions
  *=====================================================================================*/
 CLASS_DEFINITION
-static Publisher_T * const Publisher_Singleton = NULL;
+static Publisher_T * Publisher_Singleton = NULL;
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/
@@ -82,19 +82,19 @@ void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, size_t 
 
 bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
-   Singleton_Publisher(Publisher_Singleton);
+   Publisher_get_instance(&Publisher_Singleton);
    Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
    return Publisher_Singleton->vtbl->subscribe(Publisher_Singleton, mailbox, mail_id);
 }
 bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
-   Singleton_Publisher(Publisher_Singleton);
+   Publisher_get_instance(&Publisher_Singleton);
    Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
    return Publisher_Singleton->vtbl->unsubscribe(Publisher_Singleton, mailbox, mail_id);
 }
 void Publisher_publish_mail(Mail_T * const mail)
 {
-   Singleton_Publisher(Publisher_Singleton);
+   Publisher_get_instance(&Publisher_Singleton);
    Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, );
    Publisher_Singleton->vtbl->publish_mail(Publisher_Singleton, mail);
 }

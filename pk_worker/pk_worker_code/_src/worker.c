@@ -93,9 +93,9 @@ void Worker_run(Task_T * const super)
 
    IPC_create_mailbox(this->mailbox_size, 80);
 
-   this->vtbl->on_start(this);
+   IPC_task_ready();
 
-   IPC_notify_ready();
+   this->vtbl->on_start(this);
 
    while(Worker_is_alive(this))
    {
