@@ -40,7 +40,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks,
+static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, uint32_t const max_tasks,
       IPC_T * const ipc);
 /*=====================================================================================*
  * Local Object Definitions
@@ -83,9 +83,9 @@ void IPC_Decorator_Dtor(Object_T * const obj)
 /*=====================================================================================*
  * Exported Function Definitions
  *=====================================================================================*/
-void IPC_Decorator_Ctor(IPC_Decorator_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks, IPC_T * const ipc)
+void IPC_Decorator_Ctor(IPC_Decorator_T * const this, uint32_t const max_tasks, IPC_T * const ipc)
 {
-   this->IPC.vtbl->ctor(&this->IPC, pid, max_tasks);
+   this->IPC.vtbl->ctor(&this->IPC, max_tasks);
    this->ipc = ipc;
 }
 /*=====================================================================================* 

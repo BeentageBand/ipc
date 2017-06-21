@@ -13,7 +13,7 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
-#include "ipc.h"
+#include "ipc_ext.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -32,7 +32,7 @@
 _member(IPC_T * _private, ipc)
 
 #define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Process_Id_T const, uint32_t const, IPC_T * const) \
+void _method(ctor, uint32_t const, IPC_T * const) \
 
 #ifdef __cplusplus
 extern "C" {

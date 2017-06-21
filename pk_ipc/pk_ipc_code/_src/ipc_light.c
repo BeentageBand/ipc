@@ -43,8 +43,7 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
  * Local Function Prototypes
  *=====================================================================================*/
  static void IPC_Light_Ctor(IPC_Light_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks);
- static IPC_Process_Id_T IPC_Light_get_tid(IPC_T * const super);
- static IPC_Process_Id_T IPC_Light_get_pid(IPC_T * const super);
+ static IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super);
  static void IPC_Light_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
  static void IPC_Light_notify_ready(IPC_T * const super, IPC_Task_Id_T const);
  static size_t IPC_Light_get_date_length(IPC_T * const super);
@@ -72,8 +71,7 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
     memcpy(&IPC_Light_Vtbl.IPC, IPC_Light_Obj.IPC.vtbl, sizeof(IPC_Light_Vtbl.IPC));
     IPC_Light_Vtbl.IPC.Object.rtti = &IPC_Light_Rtti;
     IPC_Light_Vtbl.IPC.Object.destroy = IPC_Light_Dtor;
-    IPC_Light_Vtbl.IPC.get_pid = IPC_Light_get_tid;
-    IPC_Light_Vtbl.IPC.get_pid = IPC_Light_get_pid;
+    IPC_Light_Vtbl.IPC.get_tid = IPC_Light_get_tid;
     IPC_Light_Vtbl.IPC.set_mailbox = IPC_Light_set_mailbox;
     IPC_Light_Vtbl.IPC.notify_ready = IPC_Light_notify_ready;
     IPC_Light_Vtbl.IPC.get_date_length = IPC_Light_get_date_length;
@@ -95,11 +93,6 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
  }
 
  IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super)
- {
-    return 0; /* TODO */
- }
-
- IPC_Process_Id_T IPC_Light_get_pid(IPC_T * const super)
  {
     return 0; /* TODO */
  }

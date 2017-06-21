@@ -75,7 +75,7 @@ extern Mail_T * const IPC_retreive_mail(uint32_t const timeout_ms);
 
 extern uint32_t IPC_timestamp(void);
 
-extern uint32_t IPC_time_elapse(uint32_t const timestamp);
+extern bool_t IPC_time_elapsed(uint32_t const timestamp);
 
 extern void IPC_put_date_string(char * date_str);
 /*=====================================================================================* 
