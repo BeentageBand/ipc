@@ -27,7 +27,7 @@
 #undef CLASS_VIRTUAL_METHODS
 #define CLASS_VIRTUAL_METHODS(_ovr) \
    _ovr(IPC,set_mailbox) \
-   _ovr(IPC,notify_ready) \
+   _ovr(IPC,task_ready) \
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
@@ -36,7 +36,7 @@
  * Local Function Prototypes
  *=====================================================================================*/
  static void IPC_Light_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
- static void IPC_Light_notify_ready(IPC_T * const super);
+ static void IPC_Light_task_ready(IPC_T * const super);
  /*=====================================================================================*
   * Local Object Definitions
   *=====================================================================================*/
@@ -71,7 +71,7 @@
 
  }
 
- void IPC_Light_notify_ready(IPC_T * const super)
+ void IPC_Light_task_ready(IPC_T * const super)
  {
 
  }

@@ -24,8 +24,8 @@
 #define CLASS_VIRTUAL_METHODS(_ovr_method) \
    _ovr_method(IPC,get_tid) \
    _ovr_method(IPC,run_task) \
-   _ovr_method(IPC,notify_ready) \
-   _ovr_method(IPC,wait) \
+   _ovr_method(IPC,task_ready) \
+   _ovr_method(IPC,wait_task) \
    _ovr_method(IPC,sleep) \
    _ovr_method(IPC,set_mailbox) \
    _ovr_method(IPC,timestamp) \
@@ -55,8 +55,8 @@ static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, IPC_T * const ipc);
 static IPC_Task_Id_T IPC_Decorator_get_tid(IPC_T * const super);
 static int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task);
 static void IPC_Decorator_set_mailbox(IPC_T * const super, uint32_t const mail_elems, uint32_t const mail_size);
-static void IPC_Decorator_notify_ready(IPC_T * const super);
-static int IPC_Decorator_wait(IPC_T * const super, Task_T * const task);
+static void IPC_Decorator_task_ready(IPC_T * const super);
+static int IPC_Decorator_wait_task(IPC_T * const super, Task_T * const task);
 static void IPC_Decorator_sleep(IPC_T * const super, uint32_t const ms);
 static uint32_t IPC_Decorator_timestamp(IPC_T * const super);
 static size_t IPC_Decorator_get_date_length(IPC_T * const super);
@@ -104,7 +104,7 @@ IPC_Task_Id_T IPC_Decorator_get_tid(IPC_T * const super)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, 0);
    Isnt_Nullptr(this->ipc, 0);
-   return this->ipc->vtbl->get_tid(super);
+   return this->ipc->vtbl->get_tid(this->ipc);
 }
 
 int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task)
@@ -112,7 +112,7 @@ int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
       Isnt_Nullptr(this, -1);
       Isnt_Nullptr(this->ipc, 0);
-      return this->ipc->vtbl->run_task(super, task);
+      return this->ipc->vtbl->run_task(this->ipc, task);
 }
 
 void IPC_Decorator_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mail_elems)
@@ -120,23 +120,23 @@ void IPC_Decorator_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uin
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, );
    Isnt_Nullptr(this->ipc, );
-   this->ipc->vtbl->set_mailbox(super, tid, mail_elems);
+   this->ipc->vtbl->set_mailbox(this->ipc, tid, mail_elems);
 }
 
-void IPC_Decorator_notify_ready(IPC_T * const super)
+void IPC_Decorator_task_ready(IPC_T * const super)
 {
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, );
    Isnt_Nullptr(this->ipc, );
-   this->ipc->vtbl->notify_ready(super);
+   this->ipc->vtbl->task_ready(this->ipc);
 }
 
-int IPC_Decorator_wait(IPC_T * const super, Task_T * const task)
+int IPC_Decorator_wait_task(IPC_T * const super, Task_T * const task)
 {
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, -1);
    Isnt_Nullptr(this->ipc, -1);
-   return this->ipc->vtbl->wait(super, task);
+   return this->ipc->vtbl->wait_task(this->ipc, task);
 }
 
 void IPC_Decorator_sleep(IPC_T * const super, uint32_t const ms)
@@ -144,7 +144,7 @@ void IPC_Decorator_sleep(IPC_T * const super, uint32_t const ms)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, );
    Isnt_Nullptr(this->ipc, );
-   return this->ipc->vtbl->sleep(super, ms);
+   return this->ipc->vtbl->sleep(this->ipc, ms);
 }
 
 uint32_t IPC_Decorator_timestamp(IPC_T * const super)
@@ -152,7 +152,7 @@ uint32_t IPC_Decorator_timestamp(IPC_T * const super)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, 0);
    Isnt_Nullptr(this->ipc, 0);
-   return this->ipc->vtbl->timestamp(super);
+   return this->ipc->vtbl->timestamp(this->ipc);
 }
 
 size_t IPC_Decorator_get_date_length(IPC_T * const super)
@@ -160,7 +160,7 @@ size_t IPC_Decorator_get_date_length(IPC_T * const super)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, 0);
    Isnt_Nullptr(this->ipc, 0);
-   return this->ipc->vtbl->get_date_length(super);
+   return this->ipc->vtbl->get_date_length(this->ipc);
 }
 
 char const * IPC_Decorator_get_date(IPC_T * const super)
@@ -168,7 +168,7 @@ char const * IPC_Decorator_get_date(IPC_T * const super)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, NULL);
    Isnt_Nullptr(this->ipc, NULL);
-   return this->ipc->vtbl->get_date(super);
+   return this->ipc->vtbl->get_date(this->ipc);
 }
 
 /*=====================================================================================* 

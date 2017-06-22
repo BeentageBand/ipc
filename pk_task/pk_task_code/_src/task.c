@@ -62,6 +62,9 @@ void Task_shut(void) {}
 
 void Task_Dtor(Object_T * const obj)
 {
+   Task_T * const this = _dynamic_cast(Task, obj);
+   Isnt_Nullptr(this,);
+   Task_Unregister_To_Process(this);
 }
 /*=====================================================================================* 
  * Exported Function Definitions
@@ -69,6 +72,7 @@ void Task_Dtor(Object_T * const obj)
 void Task_Ctor(Task_T * const this, IPC_Task_Id_T const tid)
 {
    this->tid = tid;
+   Task_Register_To_Process(this);
 }
 /*=====================================================================================* 
  * task.c

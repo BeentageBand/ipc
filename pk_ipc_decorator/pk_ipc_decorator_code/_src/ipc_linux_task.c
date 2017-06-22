@@ -27,7 +27,7 @@
 #define CLASS_VIRTUAL_METHODS(_ovr_method) \
    _ovr_method(IPC, get_tid) \
    _ovr_method(IPC, run_task) \
-   _ovr_method(IPC, wait) \
+   _ovr_method(IPC, wait_task) \
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
@@ -43,7 +43,7 @@ struct Linux_Task_Id_Tb
 static void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc);
 static IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super);
 static int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task);
-static int IPC_Linux_Task_wait(IPC_T * const super, Task_T * const task);
+static int IPC_Linux_Task_wait_task(IPC_T * const super, Task_T * const task);
 static int IPC_Linux_Task_is_this_task(void const * a, void const * b);
 
 /*=====================================================================================*
@@ -142,7 +142,7 @@ int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
    return retval;
 }
 
-int IPC_Linux_Task_wait(IPC_T * const super, Task_T * const task)
+int IPC_Linux_Task_wait_task(IPC_T * const super, Task_T * const task)
 {
    void * join = NULL;
    pthread_t t = -1;
