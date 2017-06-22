@@ -40,7 +40,6 @@ $($(_build_)_LIB_DIR)/$(_lprefix_)mailbox$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)publisher$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)task$(_lib_ext_) \
 $($(_build_)_LIB_DIR)/$(_lprefix_)worker$(_lib_ext_) \
-$($(_build_)_LIB_DIR)/$(_lprefix_)system_clk$(_lib_ext_) \
 ##
  # Target Library
  # e.g: $(_build_)_$(_curr_)_lib_name=my_lib_name

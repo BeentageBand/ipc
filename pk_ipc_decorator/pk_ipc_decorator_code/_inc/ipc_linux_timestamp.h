@@ -29,7 +29,7 @@
 #define CLASS_NAME IPC_Linux_Timestamp
 #define CLASS_INHERITS IPC_Decorator
 #define CLASS_MEMBERS(_member) \
-_member(char const * _private, date)
+_member(char * _private, date)
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_T * const) \

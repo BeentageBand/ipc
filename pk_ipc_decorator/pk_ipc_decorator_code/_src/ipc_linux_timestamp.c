@@ -67,7 +67,7 @@ void IPC_Linux_Timestamp_init(void)
    printf("%s \n", __FUNCTION__);
    CHILD_CLASS_INITIALIZATION
    IPC_Linux_Timestamp_Vtbl.ctor = IPC_Linux_Timestamp_Ctor;
-   IPC_Linux_Timestamp_Obj.date = (char const *)malloc(sizeof(Date_Fmt));
+   IPC_Linux_Timestamp_Obj.date = (char *)malloc(sizeof(Date_Fmt));
 }
 void IPC_Linux_Timestamp_shut(void) {}
 

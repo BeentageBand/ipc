@@ -26,11 +26,8 @@
  *=====================================================================================*/
 #undef CLASS_VIRTUAL_METHODS
 #define CLASS_VIRTUAL_METHODS(_ovr) \
-   _ovr(IPC,get_tid) \
    _ovr(IPC,set_mailbox) \
    _ovr(IPC,notify_ready) \
-   _ovr(IPC,get_date_length) \
-   _ovr(IPC,get_date) \
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
@@ -38,16 +35,12 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
- static IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super);
  static void IPC_Light_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
  static void IPC_Light_notify_ready(IPC_T * const super);
- static size_t IPC_Light_get_date_length(IPC_T * const super);
- static char const * IPC_Light_get_date(IPC_T * const super);
  /*=====================================================================================*
   * Local Object Definitions
   *=====================================================================================*/
  CLASS_DEFINITION
-
  /*=====================================================================================*
   * Exported Object Definitions
   *=====================================================================================*/
@@ -73,11 +66,6 @@
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
- IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super)
- {
-    return 0; /* TODO */
- }
-
  void IPC_Light_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mail_elements)
  {
 
@@ -86,16 +74,6 @@
  void IPC_Light_notify_ready(IPC_T * const super)
  {
 
- }
-
- size_t IPC_Light_get_date_length(IPC_T * const super)
- {
-    return 0; /* TODO */
- }
-
- char const * IPC_Light_get_date(IPC_T * const super)
- {
-    return NULL; /* TODO */
  }
 /*=====================================================================================* 
  * ipc_light.c

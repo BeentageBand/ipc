@@ -156,7 +156,7 @@ int IPC_Linux_Task_wait(IPC_T * const super, Task_T * const task)
       }
    }
 
-   pthread_join(&t, &join);
+   pthread_join(t, &join);
    Isnt_Nullptr(join,-1);
 
    return *((int *)join);

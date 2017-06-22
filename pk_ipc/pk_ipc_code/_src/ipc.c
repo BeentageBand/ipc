@@ -42,7 +42,7 @@ static IPC_Task_Id_T IPC_get_tid(IPC_T * const this);
 static int IPC_run_task(IPC_T * const this, Task_T * const task);
 static void IPC_set_mailbox(IPC_T * const this, IPC_Task_Id_T const tid, uint32_t const mail_elems);
 static void IPC_notify_ready(IPC_T * const this);
-static int IPC_wait(IPC_T * const this, IPC_Task_Id_T const tid);
+static int IPC_wait(IPC_T * const this, Task_T * const task);
 static void IPC_sleep(IPC_T * const this, uint32_t const ms);
 static uint32_t IPC_timestamp(IPC_T * const this);
 static size_t IPC_get_date_length(IPC_T * const this);
@@ -155,7 +155,7 @@ void IPC_set_mailbox(IPC_T * const this, uint32_t const mail_elems, uint32_t con
 void IPC_notify_ready(IPC_T * const this)
 {}
 
-int IPC_wait(IPC_T * const this, IPC_Task_Id_T const tid)
+int IPC_wait(IPC_T * const this, Task_T * const task)
 {
    return -1;
 }

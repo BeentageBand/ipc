@@ -38,7 +38,7 @@
 IPC_Task_Id_T _void_method(get_tid) \
 int _method(run_task, Task_T * const) \
 void _void_method(notify_ready) \
-int _method(wait, IPC_Task_Id_T const) \
+int _method(wait, Task_T * const) \
 void _method(sleep, uint32_t const) \
 void _method(set_mailbox, uint32_t const, uint32_t const) \
 uint32_t _void_method(timestamp) \
