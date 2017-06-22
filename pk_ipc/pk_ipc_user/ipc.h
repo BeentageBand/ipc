@@ -44,15 +44,18 @@ extern IPC_Task_Id_T IPC_self_task_id(void);
 
 extern void IPC_task_ready(void);
 
-extern int IPC_wait(void);
+extern int IPC_run(IPC_Task_Id_T const tid);
 
+extern int IPC_wait(IPC_Task_Id_T const tid);
+
+extern void IPC_sleep(uint32_t const ms);
+/**
+ * IPC Mail Comm
+ */
 extern void IPC_create_mailbox(uint32_t const max_mails, size_t const mail_size);
 
 extern void IPC_destroy_mailbox(void);
 
-/**
- * IPC Mail Comm
- */
 extern bool_t IPC_subscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
 
 extern bool_t IPC_unsubscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);

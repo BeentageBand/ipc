@@ -20,21 +20,17 @@
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
 
-#define CLASS_NAME IPC_Light
-#define CLASS_INHERITS IPC
-#define CLASS_MEMBERS(_member) \
-
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
-
+#undef CLASS_VIRTUAL_METHODS
+#define CLASS_VIRTUAL_METHODS(_ovr) \
+   _ovr(IPC,get_tid) \
+   _ovr(IPC,set_mailbox) \
+   _ovr(IPC,notify_ready) \
+   _ovr(IPC,get_date_length) \
+   _ovr(IPC,get_date) \
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
@@ -42,7 +38,7 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
- static void IPC_Light_Ctor(IPC_Light_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks);
+ static void IPC_Light_Ctor(IPC_Light_T * const this, uint32_t const max_tasks);
  static IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super);
  static void IPC_Light_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
  static void IPC_Light_notify_ready(IPC_T * const super, IPC_Task_Id_T const);
@@ -52,6 +48,7 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
   * Local Object Definitions
   *=====================================================================================*/
  CLASS_DEFINITION
+
  /*=====================================================================================*
   * Exported Object Definitions
   *=====================================================================================*/
@@ -66,16 +63,7 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
  void IPC_Light_init(void)
  {
     printf("%s \n", __FUNCTION__);
-    IPC_Light_Obj.IPC = IPC();
-
-    memcpy(&IPC_Light_Vtbl.IPC, IPC_Light_Obj.IPC.vtbl, sizeof(IPC_Light_Vtbl.IPC));
-    IPC_Light_Vtbl.IPC.Object.rtti = &IPC_Light_Rtti;
-    IPC_Light_Vtbl.IPC.Object.destroy = IPC_Light_Dtor;
-    IPC_Light_Vtbl.IPC.get_tid = IPC_Light_get_tid;
-    IPC_Light_Vtbl.IPC.set_mailbox = IPC_Light_set_mailbox;
-    IPC_Light_Vtbl.IPC.notify_ready = IPC_Light_notify_ready;
-    IPC_Light_Vtbl.IPC.get_date_length = IPC_Light_get_date_length;
-    IPC_Light_Vtbl.IPC.get_date = IPC_Light_get_date;
+    CHILD_CLASS_INITIALIZATION
     IPC_Light_Vtbl.ctor = IPC_Light_Ctor;
 
  }
@@ -87,9 +75,9 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
- void IPC_Light_Ctor(IPC_Light_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks)
+ void IPC_Light_Ctor(IPC_Light_T * const this, uint32_t const max_tasks)
  {
-    this->IPC.vtbl->ctor(&this->IPC, pid, max_tasks);
+
  }
 
  IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super)
@@ -104,7 +92,6 @@ void _method(ctor, IPC_Process_Id_T const, uint32_t const) \
 
  void IPC_Light_notify_ready(IPC_T * const super, IPC_Task_Id_T const task_id)
  {
-    Task_T * const task = super->vtbl->search_task(super, task_id);
 
  }
 

@@ -16,11 +16,13 @@
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
-
+#include <unistd.h>
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
-
+#define CLASS_VIRTUAL_METHODS(_ovr) \
+   _ovr(IPC,get_date_length) \
+   _ovr(IPC,get_date) \
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
@@ -42,12 +44,9 @@
  *=====================================================================================*/
 static void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks,
       IPC_T * const ipc);
-static IPC_Task_Id_T IPC_Linux_Timestamp_get_tid(IPC_T * const super);
-static IPC_Process_Id_T IPC_Linux_Timestamp_get_pid(IPC_T * const super);
-static void IPC_Linux_Timestamp_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mailbox_size);
-static void IPC_Linux_Timestamp_notify_ready(IPC_T * const super, IPC_Task_Id_T const tid);
 static size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super);
 static char const * IPC_Linux_Timestamp_get_date(IPC_T * const super);
+static char const * Date_Fmt = "%4d-%2d-%2d %2d:%2d";
 /*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
@@ -66,20 +65,9 @@ CLASS_DEFINITION
 void IPC_Linux_Timestamp_init(void)
 {
    printf("%s \n", __FUNCTION__);
-   IPC_Linux_Timestamp_Obj.IPC_Decorator = IPC_Decorator();
-
-   memcpy(&IPC_Linux_Timestamp_Vtbl.IPC_Decorator, IPC_Linux_Timestamp_Obj.IPC_Decorator.vtbl,
-         sizeof(IPC_Linux_Timestamp_Vtbl.IPC_Decorator));
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.Object.rtti = &IPC_Linux_Timestamp_Rtti;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.Object.destroy = IPC_Linux_Timestamp_Dtor;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.get_tid = NULL;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.get_pid = NULL;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.set_mailbox = NULL;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.notify_ready = NULL;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.get_date_length = NULL;
-   IPC_Linux_Timestamp_Vtbl.IPC_Decorator.IPC.get_date = NULL;
+   CHILD_CLASS_INITIALIZATION
    IPC_Linux_Timestamp_Vtbl.ctor = IPC_Linux_Timestamp_Ctor;
-
+   IPC_Linux_Timestamp_Obj.date = (char const *)malloc(sizeof(Date_Fmt));
 }
 void IPC_Linux_Timestamp_shut(void) {}
 
@@ -91,37 +79,26 @@ void IPC_Linux_Timestamp_Dtor(Object_T * const obj)
  *=====================================================================================*/
 void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks, IPC_T * const ipc)
 {
-   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, pid, max_tasks, ipc);
+   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, max_tasks, ipc);
 }
 
-IPC_Task_Id_T IPC_Linux_Timestamp_get_tid(IPC_T * const super)
-{
-   return IPC_TOTAL_TASK_IDS_ITEMS;
-}
-
-IPC_Process_Id_T IPC_Linux_Timestamp_get_pid(IPC_T * const super)
-{
-   return IPC_TOTAL_PROCESS_IDS_ITEMS;
-}
-
-void IPC_Linux_Timestamp_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mailbox_size)
-{
-
-}
-
-void IPC_Linux_Timestamp_notify_ready(IPC_T * const super, IPC_Task_Id_T const task_id)
-{
-
-}
 
 size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super)
 {
-   return 0;
+   return sizeof(Date_Fmt);
 }
 
 char const * IPC_Linux_Timestamp_get_date(IPC_T * const super)
 {
-   return NULL;
+   IPC_Linux_Timestamp_T * const this = _dynamic_cast(IPC_Linux_Timestamp, super);
+   Isnt_Nullptr(this, NULL);
+   time_t linux_time = time(NULL);
+   struct tm * tm = localtime(&linux_time);
+   Isnt_Nullptr(tm, 0);
+
+   sprintf(this->date, Date_Fmt, tm->tm_year, tm->tm_mon, tm->tm_mday,
+         tm->tm_hour, tm->tm_min);
+   return this->date;
 }
 /*=====================================================================================* 
  * ipc_linux_timestamp.c

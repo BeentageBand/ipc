@@ -21,7 +21,9 @@
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
-
+#undef CLASS_VIRTUAL_METHODS
+#define CLASS_VIRTUAL_METHODS(_ovr) \
+   _ovr(Task,run)
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
@@ -54,18 +56,10 @@ CLASS_DEFINITION
 void Worker_init(void)
 {
    printf("%s \n", __FUNCTION__);
-   Worker_Obj.Task = Task();
-
-   memcpy(&Worker_Vtbl.Task, Worker_Obj.Task.vtbl, sizeof(Worker_Vtbl.Task));
-   Worker_Vtbl.Task.Object.rtti = &Worker_Rtti;
-   Worker_Vtbl.Task.Object.destroy = Worker_Dtor;
-   Worker_Vtbl.Task.run = Worker_run;
+   CHILD_CLASS_INITIALIZATION
    Worker_Vtbl.ctor = Worker_ctor;
-
-   Worker_Obj.vtbl = &Worker_Vtbl;
-
-   Object_update_info(&Worker_Obj.Task.Object, Task().rtti->rtti);
 }
+
 void Worker_shut(void) {}
 
 void Worker_Dtor(Object_T * const obj)

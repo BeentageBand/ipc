@@ -36,16 +36,16 @@
 #define CLASS_MEMBERS(_member) \
 _member(Vector_Task_T, task_stack) \
 _member(Vector_Mailbox_T, mbx_stack) \
-_member(uint32_t, max_tasks)\
 
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, uint32_t const) \
 IPC_Task_Id_T _void_method(get_tid) \
-IPC_Process_Id_T _void_method(get_pid) \
+int _method(run_task, Task_T * const) \
 void _method(set_mailbox, uint32_t const, uint32_t const) \
-void _method(notify_ready, IPC_Task_Id_T const) \
-int _void_method(wait) \
+void _void_method(notify_ready) \
+int _method(wait, IPC_Task_Id_T const) \
+void _method(sleep, uint32_t const) \
 uint32_t _void_method(timestamp) \
 size_t _void_method(get_date_length) \
 char const * _void_method(get_date) \

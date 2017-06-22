@@ -31,7 +31,7 @@
 #define CLASS_MEMBERS(_member)
 
 #define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Process_Id_T const, uint32_t const, IPC_T * const) \
+void _method(ctor, uint32_t const, IPC_T * const) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,7 +47,7 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern void * IPC_Linux_Task_runnable(void * arg);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

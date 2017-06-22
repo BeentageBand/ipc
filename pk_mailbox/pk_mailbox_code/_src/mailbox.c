@@ -56,8 +56,6 @@ void Mailbox_init(void)
    Mailbox_Obj.mailbox = NULL;
    Mailbox_Obj.data_size = 0;
 
-   Mailbox_Vtbl.Object.rtti = &Mailbox_Rtti;
-   Mailbox_Vtbl.Object.destroy = Mailbox_Dtor;
    Mailbox_Vtbl.ctor = Mailbox_Ctor;
    Mailbox_Vtbl.subscribe = NULL;
    Mailbox_Vtbl.unsubscribe = NULL;

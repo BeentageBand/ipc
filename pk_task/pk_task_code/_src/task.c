@@ -54,8 +54,6 @@ void Task_init(void)
    printf("%s \n", __FUNCTION__);
    Task_Obj.tid = 0;
 
-   Task_Vtbl.Object.rtti = &Task_Rtti;
-   Task_Vtbl.Object.destroy = Task_Dtor;
    Task_Vtbl.ctor = Task_Ctor;
    Task_Vtbl.run = NULL;
 

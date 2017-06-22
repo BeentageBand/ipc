@@ -53,9 +53,6 @@ CLASS_DEFINITION
 void System_Clk_init(void)
 {
    printf("%s \n", __FUNCTION__);
-   System_Clk_Obj.
-   System_Clk_Vtbl.Object.rtti = &System_Clk_Rtti;
-   System_Clk_Vtbl.Object.destroy = System_Clk_Dtor;
    System_Clk_Vtbl.ctor = System_Clk_Ctor;
    System_Clk_Vtbl.on_timeout= NULL;
    System_Clk_Vtbl.start = NULL;

@@ -65,8 +65,7 @@ void Mail_init(void)
    Mail_Obj.mail_id = 0;
    Mail_Obj.mail_id = 0;
    Mail_Obj.is_dumpable = false;
-   Mail_Vtbl.Object.rtti = &Mail_Rtti;
-   Mail_Vtbl.Object.destroy = Mail_Dtor;
+
    Mail_Vtbl.ctor = Mail_Ctor;
    Mail_Vtbl.set_data = Mail_set_data;
    Mail_Vtbl.get_data = Mail_get_data;

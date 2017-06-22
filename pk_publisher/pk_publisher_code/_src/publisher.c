@@ -57,8 +57,6 @@ void Publisher_init(void)
    printf("%s \n", __FUNCTION__);
    Publisher_Obj.mailboxes = NULL;
 
-   Publisher_Vtbl.Object.rtti = &Publisher_Rtti;
-   Publisher_Vtbl.Object.destroy = Publisher_Dtor;
    Publisher_Vtbl.ctor = Publisher_Ctor;
    Publisher_Vtbl.subscribe = NULL;
    Publisher_Vtbl.unsubscribe = NULL;

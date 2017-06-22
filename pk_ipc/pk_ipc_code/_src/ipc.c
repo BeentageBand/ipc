@@ -35,10 +35,20 @@
  * Local Function Prototypes
  *=====================================================================================*/
 static void IPC_Ctor(IPC_T * const this, uint32_t const max_tasks);
+static IPC_Task_Id_T IPC_m_get_tid(IPC_T * const this);
+static int IPC_m_run_task(IPC_T * const this, Task_T * const task);
+static void IPC_m_set_mailbox(IPC_T * const this, IPC_Task_Id_T const tid, uint32_t const mail_elems);
+static void IPC_m_notify_ready(IPC_T * const this);
+static int IPC_m_wait(IPC_T * const this, IPC_Task_Id_T const tid);
+static void IPC_m_sleep(IPC_T * const this, uint32_t const ms);
+static uint32_t IPC_m_timestamp(IPC_T * const this);
+static size_t IPC_m_get_date_length(IPC_T * const this);
+static char const * IPC_m_get_date(IPC_T * const this);
 static Task_T * const IPC_search_task(Vector_Task_T * const this, IPC_Task_Id_T const task_id);
 static Mailbox_T * const IPC_search_mailbox(Vector_Mailbox_T * const this, IPC_Task_Id_T const task_id);
 static bool_t IPC_Is_This_Task(Task_T * const task, uint32_t const tid);
 static bool_t IPC_Is_This_Mailbox(Mailbox_T * const mbx, uint32_t const tid);
+
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
@@ -61,17 +71,19 @@ void IPC_init(void)
 
    IPC_Obj.task_stack= Vector_Task();
    IPC_Obj.mbx_stack = Vector_Mailbox();
-   IPC_Obj.max_tasks = 0;
 
    IPC_Vtbl.Object.rtti = &IPC_Rtti;
    IPC_Vtbl.Object.destroy = IPC_Dtor;
    IPC_Vtbl.ctor = IPC_Ctor;
-   IPC_Vtbl.get_tid = NULL;
-   IPC_Vtbl.get_pid = NULL;
-   IPC_Vtbl.set_mailbox = NULL;
-   IPC_Vtbl.notify_ready = NULL;
-   IPC_Vtbl.get_date_length = NULL;
-   IPC_Vtbl.get_date = NULL;
+   IPC_Vtbl.get_tid = IPC_m_get_tid;
+   IPC_Vtbl.run_task = IPC_m_run_task;
+   IPC_Vtbl.wait = IPC_m_wait;
+   IPC_Vtbl.sleep = IPC_m_sleep;
+   IPC_Vtbl.set_mailbox = IPC_m_set_mailbox;
+   IPC_Vtbl.notify_ready = IPC_m_notify_ready;
+   IPC_Vtbl.timestamp = IPC_m_timestamp;
+   IPC_Vtbl.get_date_length = IPC_m_get_date_length;
+   IPC_Vtbl.get_date = IPC_m_get_date;
 }
 
 void IPC_shut(void) {}
@@ -117,17 +129,54 @@ Mailbox_T * const IPC_search_mailbox(Vector_Mailbox_T * const this, IPC_Task_Id_
  *=====================================================================================*/
 void IPC_Ctor(IPC_T * const this, uint32_t const max_tasks)
 {
-   this->max_tasks = max_tasks;
+   this->task_stack.vtbl->reserve(&this->task_stack, max_tasks);
+}
+/** Object Methods **/
+IPC_Task_Id_T IPC_m_get_tid(IPC_T * const this)
+{
+   return IPC_TOTAL_TASK_IDS_ITEMS;
 }
 
+int IPC_m_run_task(IPC_T * const this, Task_T * const task)
+{
+   return -1;
+};
 
+void IPC_m_set_mailbox(IPC_T * const this, uint32_t const mail_elems, uint32_t const mail_size)
+{}
 
+void IPC_m_notify_ready(IPC_T * const this)
+{}
+
+int IPC_m_wait(IPC_T * const this, IPC_Task_Id_T const tid)
+{
+   return -1;
+}
+
+void IPC_m_sleep(IPC_T * const this, uint32_t const ms)
+{}
+
+uint32_t IPC_m_timestamp(IPC_T * const this)
+{
+   return 0;
+}
+
+size_t IPC_m_get_date_length(IPC_T * const this)
+{
+   return 0;
+}
+
+char const * IPC_m_get_date(IPC_T * const this)
+{
+   return NULL;
+}
+
+/** IPC APIs **/
 IPC_Task_Id_T IPC_self_task_id(void)
 {
    IPC_T * this = NULL;
    IPC_get_instance(&this);
    Isnt_Nullptr(this, 0);
-
    return this->vtbl->get_tid(this);
 }
 
@@ -136,16 +185,36 @@ void IPC_task_ready(void)
    IPC_T * this = NULL;
    IPC_get_instance(&this);
    Isnt_Nullptr(this, );
-   this->vtbl->notify_ready(this, IPC_self_task_id());
+   this->vtbl->notify_ready(this);
 }
 
-int IPC_wait(void)
+int IPC_run(IPC_Task_Id_T const tid)
 {
    IPC_T * this = NULL;
    IPC_get_instance(&this);
    Isnt_Nullptr(this->vtbl->wait, -1);
+   Task_T * const task = IPC_search_task(&this->task_stack,tid);
+   Isnt_Nullptr(task, -1);
+   return this->vtbl->run_task(this, task);
+}
 
-   return this->vtbl->wait(this);
+int IPC_wait(IPC_Task_Id_T const tid)
+{
+   IPC_T * this = NULL;
+   IPC_get_instance(&this);
+   Isnt_Nullptr(this->vtbl->wait, -1);
+   Task_T * const task = IPC_search_task(&this->task_stack,tid);
+   Isnt_Nullptr(task, -1);
+
+   return this->vtbl->wait(this, task);
+}
+
+void IPC_sleep(uint32_t const ms)
+{
+   IPC_T * this = NULL;
+   IPC_get_instance(&this);
+   Isnt_Nullptr(this, );
+   this->vtbl->sleep(this, ms);
 }
 
 void IPC_create_mailbox(uint32_t const max_mails, size_t const mail_size)
@@ -163,7 +232,7 @@ void IPC_destroy_mailbox(void)
    IPC_get_instance(&this);
    Isnt_Nullptr(this, );
 
-   Mailbox_T * const mailbox = IPC_search_mailbox(&this->mbx_stack, IPC_self_task_id());
+   Mailbox_T * const mailbox = IPC_search_mailbox(&this->mbx_stack, this->vtbl->get_tid(this));
    Isnt_Nullptr(mailbox, );
    /*Vector_Task_remove_if(this->task_stack.vtbl->front(&this->task_stack),
             this->task_stack.vtbl->back(&this->task_stack), task_id, IPC_Is_This_Task); */
@@ -217,7 +286,6 @@ void IPC_send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
    Isnt_Nullptr(this, );
 
    Mailbox_T * const mailbox = IPC_search_mailbox(&this->mbx_stack, receiver_task);
-   Isnt_Nullptr(this->vtbl->get_pid,);
    Mail_T mail = Mail();
 
    mail.vtbl->ctor(&mail, mail_id, IPC_self_task_id(), receiver_task, data, data_size);
@@ -272,7 +340,8 @@ Mail_T * const IPC_retreive_from_mail_list(IPC_Mail_Id_T const * mail_list, uint
    Mailbox_T * const mailbox = IPC_search_mailbox(&this->mbx_stack, this->vtbl->get_tid(this));
    Isnt_Nullptr(mailbox, NULL);
 
-   IPC_Timestamp_T tout_timestamp = IPC_timestamp() + timeout_ms;
+   IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
+
    do
    {
       for(i = 0; i < mail_elems; ++i)
@@ -292,13 +361,12 @@ Mail_T * const IPC_retreive_mail(uint32_t const timeout_ms)
    Mail_T * mail = NULL;
    Mailbox_T * mailbox = NULL;
    IPC_T * this = NULL;
-   IPC_Timestamp_T tout_timestamp = IPC_timestamp() + timeout_ms;
 
    IPC_get_instance(&this);
    Isnt_Nullptr(this, NULL);
+   IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
 
    mailbox = IPC_search_mailbox(&this->mbx_stack, this->vtbl->get_tid(this));
-
 
    do
    {
