@@ -40,47 +40,47 @@ extern "C" {
  * IPC Task Handling
  * This apis should be used in task running
  */
-extern IPC_Task_Id_T IPC_self_task_id(void);
+extern IPC_Task_Id_T IPC_Self_Task_Id(void);
 
-extern void IPC_task_ready(void);
+extern void IPC_Task_Ready(void);
 
-extern int IPC_run(IPC_Task_Id_T const tid);
+extern int IPC_Run(IPC_Task_Id_T const tid);
 
-extern int IPC_wait(IPC_Task_Id_T const tid);
+extern int IPC_Wait(IPC_Task_Id_T const tid);
 
-extern void IPC_sleep(uint32_t const ms);
+extern void IPC_Sleep(uint32_t const ms);
 /**
  * IPC Mail Comm
  */
-extern void IPC_create_mailbox(uint32_t const max_mails, size_t const mail_size);
+extern void IPC_Create_Mailbox(uint32_t const max_mails, size_t const mail_size);
 
-extern void IPC_destroy_mailbox(void);
+extern void IPC_Destroy_Mailbox(void);
 
-extern bool_t IPC_subscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
+extern bool_t IPC_Subscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
 
-extern bool_t IPC_unsubscribe_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
+extern bool_t IPC_Unsubscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
 
-extern void IPC_send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
+extern void IPC_Send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
       void const * data, size_t const data_size);
 
-extern void IPC_publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
+extern void IPC_Publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
 
-extern void IPC_broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
+extern void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
 
-extern Mail_T * const IPC_retreive_from_mail_list(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
+extern Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
       uint32_t const timeout_ms);
 
-extern Mail_T * const IPC_retreive_mail(uint32_t const timeout_ms);
+extern Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms);
 
 /**
  * IPC Miscellaneous
  */
 
-extern uint32_t IPC_timestamp(void);
+extern uint32_t IPC_Timestamp(void);
 
-extern bool_t IPC_time_elapsed(uint32_t const timestamp);
+extern bool_t IPC_Time_Elapsed(uint32_t const timestamp);
 
-extern void IPC_put_date_string(char * date_str);
+extern void IPC_Put_Date_String(char * date_str);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

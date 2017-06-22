@@ -35,8 +35,8 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-extern bool_t Task_register_to_process(union Task * const obj);
-extern bool_t Task_unregister_to_process(union Task * const obj);
+extern bool_t Task_Register_To_Process(union Task * const obj);
+extern bool_t Task_Unregister_To_Process(union Task * const obj);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

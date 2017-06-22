@@ -21,13 +21,16 @@
  * Local X-Macros
  *=====================================================================================*/
 #undef CLASS_VIRTUAL_METHODS
-#define CLASS_VIRTUAL_METHODS(_v_method) \
-   _ovr_method(IPC, get_tid) \
-   _ovr_method(IPC, run_task) \
-   _ovr_method(IPC, wait) \
-   _ovr_method(IPC, set_mailbox) \
-   _ovr_method(IPC, get_date_length) \
-   _ovr_method(IPC, get_date) \
+#define CLASS_VIRTUAL_METHODS(_ovr_method) \
+   _ovr_method(IPC,get_tid) \
+   _ovr_method(IPC,run_task) \
+   _ovr_method(IPC,notify_ready) \
+   _ovr_method(IPC,wait) \
+   _ovr_method(IPC,sleep) \
+   _ovr_method(IPC,set_mailbox) \
+   _ovr_method(IPC,timestamp) \
+   _ovr_method(IPC,get_date_length) \
+   _ovr_method(IPC,get_date) \
 
 /*=====================================================================================* 
  * Local Define Macros
@@ -52,9 +55,10 @@ static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, uint32_t const max_
       IPC_T * const ipc);
 static IPC_Task_Id_T IPC_Decorator_get_tid(IPC_T * const super);
 static int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task);
-static int IPC_Decorator_wait(IPC_T * const super);
-static void IPC_Decorator_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
-static void IPC_Decorator_notify_ready(IPC_T * const super, IPC_Task_Id_T const);
+static void IPC_Decorator_set_mailbox(IPC_T * const super, uint32_t const mail_elems, uint32_t const mail_size);
+static void IPC_Decorator_notify_ready(IPC_T * const super);
+static int IPC_Decorator_wait(IPC_T * const super, Task_T * const task);
+static void IPC_Decorator_sleep(IPC_T * const super, uint32_t const ms);
 static uint32_t IPC_Decorator_timestamp(IPC_T * const super);
 static size_t IPC_Decorator_get_date_length(IPC_T * const super);
 static char const * IPC_Decorator_get_date(IPC_T * const super);
@@ -121,12 +125,12 @@ void IPC_Decorator_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uin
    this->ipc->vtbl->set_mailbox(super, tid, mail_elems);
 }
 
-void IPC_Decorator_notify_ready(IPC_T * const super, IPC_Task_Id_T const tid)
+void IPC_Decorator_notify_ready(IPC_T * const super)
 {
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, );
    Isnt_Nullptr(this->ipc, );
-   this->ipc->vtbl->notify_ready(super, tid);
+   this->ipc->vtbl->notify_ready(super);
 }
 
 int IPC_Decorator_wait(IPC_T * const super, Task_T * const task)
@@ -135,6 +139,14 @@ int IPC_Decorator_wait(IPC_T * const super, Task_T * const task)
    Isnt_Nullptr(this, -1);
    Isnt_Nullptr(this->ipc, -1);
    return this->ipc->vtbl->wait(super, task);
+}
+
+void IPC_Decorator_sleep(IPC_T * const super, uint32_t const ms)
+{
+   IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
+   Isnt_Nullptr(this, );
+   Isnt_Nullptr(this->ipc, );
+   return this->ipc->vtbl->sleep(super, ms);
 }
 
 uint32_t IPC_Decorator_timestamp(IPC_T * const super)
@@ -150,7 +162,7 @@ size_t IPC_Decorator_get_date_length(IPC_T * const super)
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
    Isnt_Nullptr(this, 0);
    Isnt_Nullptr(this->ipc, 0);
-   return this->ipc->vtbl->set_mailbox(super);
+   return this->ipc->vtbl->get_date_length(super);
 }
 
 char const * IPC_Decorator_get_date(IPC_T * const super)

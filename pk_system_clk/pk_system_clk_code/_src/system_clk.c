@@ -33,7 +33,7 @@
  * Local Function Prototypes
  *=====================================================================================*/
 static void System_Clk_Ctor(System_Clk_T * const this, System_Clk_Ms_T const ms);
-static System_Clk_Ms_T  System_Clk_timestamp(System_Clk_T * const this);
+static System_Clk_Ms_T System_Clk_timestamp(System_Clk_T * const this);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/

@@ -69,7 +69,7 @@ void Worker_Dtor(Object_T * const obj)
 bool_t Worker_is_alive(Worker_T * const this)
 {
    IPC_Mail_Id_T mailist[] = {WORKER_SHUTDOWN};
-   Mail_T * const is_alive = IPC_retreive_from_mail_list(mailist, sizeof(mailist), 50);
+   Mail_T * const is_alive = IPC_Retreive_From_Mail_List(mailist, sizeof(mailist), 50);
    return NULL == is_alive;
 }
 /*=====================================================================================* 
@@ -85,9 +85,9 @@ void Worker_run(Task_T * const super)
 {
    Worker_T * const this = _dynamic_cast(Worker, super);
 
-   IPC_create_mailbox(this->mailbox_size, 80);
+   IPC_Create_Mailbox(this->mailbox_size, 80);
 
-   IPC_task_ready();
+   IPC_Task_Ready();
 
    this->vtbl->on_start(this);
 
@@ -98,7 +98,7 @@ void Worker_run(Task_T * const super)
 
    this->vtbl->on_stop(this);
 
-   IPC_destroy_mailbox();
+   IPC_Destroy_Mailbox();
 }
 /*=====================================================================================* 
  * worker.c
