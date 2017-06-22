@@ -410,6 +410,7 @@ Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms)
    IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
 
    mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
+   Isnt_Nullptr(mailbox, NULL);
 
    do
    {
