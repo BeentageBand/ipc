@@ -38,10 +38,9 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
- static void IPC_Light_Ctor(IPC_Light_T * const this, uint32_t const max_tasks);
  static IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super);
  static void IPC_Light_set_mailbox(IPC_T * const super, uint32_t const, uint32_t const);
- static void IPC_Light_notify_ready(IPC_T * const super, IPC_Task_Id_T const);
+ static void IPC_Light_notify_ready(IPC_T * const super);
  static size_t IPC_Light_get_date_length(IPC_T * const super);
  static char const * IPC_Light_get_date(IPC_T * const super);
  /*=====================================================================================*
@@ -64,7 +63,6 @@
  {
     printf("%s \n", __FUNCTION__);
     CHILD_CLASS_INITIALIZATION
-    IPC_Light_Vtbl.ctor = IPC_Light_Ctor;
 
  }
  void IPC_Light_shut(void) {}
@@ -75,11 +73,6 @@
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
- void IPC_Light_Ctor(IPC_Light_T * const this, uint32_t const max_tasks)
- {
-
- }
-
  IPC_Task_Id_T IPC_Light_get_tid(IPC_T * const super)
  {
     return 0; /* TODO */
@@ -90,7 +83,7 @@
 
  }
 
- void IPC_Light_notify_ready(IPC_T * const super, IPC_Task_Id_T const task_id)
+ void IPC_Light_notify_ready(IPC_T * const super)
  {
 
  }

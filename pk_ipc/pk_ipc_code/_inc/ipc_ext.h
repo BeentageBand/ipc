@@ -16,9 +16,7 @@
 #include "ipc_types.h"
 #include "mailbox.h"
 #include "publisher.h"
-#include "mailbox_ringbuffer.h"
 #include "task.h"
-#include "task_stack.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -34,12 +32,9 @@
 #define CLASS_NAME IPC
 #define CLASS_INHERITS Object
 #define CLASS_MEMBERS(_member) \
-_member(Vector_Task_T, task_stack) \
-_member(Vector_Mailbox_T, mbx_stack) \
 
 
 #define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, uint32_t const) \
 IPC_Task_Id_T _void_method(get_tid) \
 int _method(run_task, Task_T * const) \
 void _void_method(notify_ready) \

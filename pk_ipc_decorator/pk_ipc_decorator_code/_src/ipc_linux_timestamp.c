@@ -43,8 +43,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks,
-      IPC_T * const ipc);
+static void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T * const ipc);
 static size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super);
 static char const * IPC_Linux_Timestamp_get_date(IPC_T * const super);
 static char const * Date_Fmt = "%4d-%2d-%2d %2d:%2d";
@@ -78,9 +77,9 @@ void IPC_Linux_Timestamp_Dtor(Object_T * const obj)
 /*=====================================================================================*
  * Exported Function Definitions
  *=====================================================================================*/
-void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_Process_Id_T const pid, uint32_t const max_tasks, IPC_T * const ipc)
+void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T * const ipc)
 {
-   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, max_tasks, ipc);
+   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, ipc);
 }
 
 

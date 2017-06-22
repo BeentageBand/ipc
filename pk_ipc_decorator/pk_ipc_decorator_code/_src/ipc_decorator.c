@@ -51,8 +51,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, uint32_t const max_tasks,
-      IPC_T * const ipc);
+static void IPC_Decorator_Ctor(IPC_Decorator_T * const this, IPC_T * const ipc);
 static IPC_Task_Id_T IPC_Decorator_get_tid(IPC_T * const super);
 static int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task);
 static void IPC_Decorator_set_mailbox(IPC_T * const super, uint32_t const mail_elems, uint32_t const mail_size);
@@ -95,9 +94,8 @@ void IPC_Decorator_Dtor(Object_T * const obj)
 /*=====================================================================================*
  * Exported Function Definitions
  *=====================================================================================*/
-void IPC_Decorator_Ctor(IPC_Decorator_T * const this, uint32_t const max_tasks, IPC_T * const ipc)
+void IPC_Decorator_Ctor(IPC_Decorator_T * const this, IPC_T * const ipc)
 {
-   this->IPC.vtbl->ctor(&this->IPC, max_tasks);
    this->ipc = ipc;
 }
 

@@ -31,7 +31,6 @@ extern "C" {
  *=====================================================================================*/
 typedef uint32_t IPC_Mail_Id_T;
 typedef uint32_t IPC_Task_Id_T;
-typedef uint32_t IPC_Process_Id_T;
 typedef uint32_t IPC_Timestamp_T;
 /*=====================================================================================* 
  * Exported Object Declarations

@@ -40,8 +40,7 @@ struct Linux_Task_Id_Tb
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, uint32_t const max_tasks,
-      IPC_T * const ipc);
+static void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc);
 static IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super);
 static int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task);
 static int IPC_Linux_Task_wait(IPC_T * const super, Task_T * const task);
@@ -107,9 +106,9 @@ void * IPC_Linux_Task_runnable(void * arg)
 /*=====================================================================================*
  * Exported Function Definitions
  *=====================================================================================*/
-void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, uint32_t const max_tasks, IPC_T * const ipc)
+void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc)
 {
-   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, max_tasks, ipc);
+   this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, ipc);
 }
 
 IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super)
