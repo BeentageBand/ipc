@@ -31,7 +31,6 @@
 #define CLASS_MEMBERS(_member) \
 
 #define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, uint32_t const) \
 
 #ifdef __cplusplus
 extern "C" {
