@@ -38,8 +38,8 @@ _member(size_t _private, data_size) \
 
 #define CLASS_METHODS(_method, _void_method) \
       void _method(ctor, IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size) \
-      bool_t _method(subscribe, union Publisher *, IPC_Mail_Id_T const) \
-      bool_t _method(unsubscribe, union Publisher *,  IPC_Mail_Id_T const) \
+      bool_t _method(subscribe, IPC_Mail_Id_T const) \
+      bool_t _method(unsubscribe, IPC_Mail_Id_T const) \
       void _method(push_mail, Mail_T * const) \
       Mail_T const * _void_method(pop_mail) \
       void _void_method(dump) \
@@ -52,8 +52,6 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-union Publisher;
-
 CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations

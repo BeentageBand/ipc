@@ -12,10 +12,9 @@
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
+#include "publisher.h"
 #include "mailbox.h"
 #include "mailbox_ringbuffer.h"
-#include "publisher_ext.h"
-#include "publisher.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -31,16 +30,26 @@
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
- 
+ typedef struct
+ {
+    IPC_Mail_Id_T mid;
+    Vector_Mailbox_T subscription;
+ }Subscription_T;
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, size_t const data_size);
+static void Publisher_init(void);
+static int Subscription_Compare(void const * a, void const * b);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
-CLASS_DEFINITION
-static Publisher_T * Publisher_Singleton = NULL;
+#undef IPC_MAIL
+#define IPC_MAIL(mail, description) {mail, Vector_Mailbox()},
+
+static Subscription_T Subscription_List[] =
+{
+      IPC_SUBSCRIBABLE_MAIL_LIST
+};
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/
@@ -54,47 +63,61 @@ static Publisher_T * Publisher_Singleton = NULL;
  *=====================================================================================*/
 void Publisher_init(void)
 {
-   printf("%s \n", __FUNCTION__);
-   Publisher_Obj.mailboxes = NULL;
+   static bool_t once = false;
 
-   Publisher_Vtbl.ctor = Publisher_Ctor;
-   Publisher_Vtbl.subscribe = NULL;
-   Publisher_Vtbl.unsubscribe = NULL;
-   Publisher_Vtbl.publish_mail = NULL;
+   if(!once)
+   {
+      qsort(Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
+            Subscription_Compare);
+   }
 }
 
-void Publisher_shut(void) {}
-
-void Publisher_Dtor(Object_T * const obj)
+int Subscription_Compare(void const * a, void const * b)
 {
-   Publisher_T * this = _dynamic_cast(Publisher, obj);
-   _delete(this->mailboxes);
+   IPC_Task_Id_T const * sa = (IPC_Task_Id_T const *)a;
+   IPC_Task_Id_T const * sb = (IPC_Task_Id_T const *)b;
+   return (*sa - *sb);
 }
 /*=====================================================================================* 
  * Exported Function Definitions
  *=====================================================================================*/
-void Publisher_Ctor(Publisher_T * const this, uint32_t const mail_elems, size_t const data_size)
-{
-   this->mailboxes = Vector_Mailbox_new();
-}
-
 bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
-   Publisher_get_instance(&Publisher_Singleton);
-   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
-   return Publisher_Singleton->vtbl->subscribe(Publisher_Singleton, mailbox, mail_id);
+   Publisher_init();
+   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail_id,
+         Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
+                     Subscription_Compare);
+   Isnt_Nullptr(found_sub, false);
+   // TODO find if exits, change vector to set
+   found_sub->subscription.vtbl->push_back(&found_sub->subscription, mailbox);
+   return true;
 }
 bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
-   Publisher_get_instance(&Publisher_Singleton);
-   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, false);
-   return Publisher_Singleton->vtbl->unsubscribe(Publisher_Singleton, mailbox, mail_id);
+   Publisher_init();
+   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail_id,
+         Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
+                     Subscription_Compare);
+   Isnt_Nullptr(found_sub, false);
+   // TODO find if exits, change vector to set
+   // TODO erase found_sub->subscription.vtbl->erase(&found_sub->subscription, mailbox);
+   return true;
 }
 void Publisher_publish_mail(Mail_T * const mail)
 {
-   Publisher_get_instance(&Publisher_Singleton);
-   Isnt_Nullptr(Publisher_Singleton->vtbl->subscribe, );
-   Publisher_Singleton->vtbl->publish_mail(Publisher_Singleton, mail);
+   Publisher_init();
+   Isnt_Nullptr(mail, );
+   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail->mail_id,
+            Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
+                        Subscription_Compare);
+   Isnt_Nullptr(found_sub, );
+
+   for(uint8_t i = 0; i < found_sub->subscription.vtbl->size(&found_sub->subscription);
+         ++i)
+   {
+      Mailbox_T * const mbx = &found_sub->subscription.vtbl->at(&found_sub->subscription, i);
+      mbx->vtbl->push_mail(mbx, mail);
+   }
 }
 /*=====================================================================================* 
  * publisher.cpp

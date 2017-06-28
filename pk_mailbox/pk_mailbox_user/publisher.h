@@ -21,23 +21,6 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-
-#define CLASS_NAME Publisher
-#define CLASS_INHERITS Object
-
-#define CLASS_MEMBERS(_member) \
-_member(union Vector_Mailbox * _private, mailboxes) \
-
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, uint32_t const, size_t const) \
-bool_t _method(subscribe, union Mailbox * const, IPC_Mail_Id_T const) \
-bool_t _method(unsubscribe, union Mailbox * const, IPC_Mail_Id_T const) \
-void _method(publish_mail, Mail_T * const) \
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,8 +28,6 @@ extern "C" {
  * Exported Type Declarations
  *=====================================================================================*/
 union Mailbox;
-
-CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
