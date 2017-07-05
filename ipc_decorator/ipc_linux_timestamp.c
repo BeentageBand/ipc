@@ -24,6 +24,7 @@
 #define CLASS_VIRTUAL_METHODS(_ovr) \
    _ovr(IPC,get_date_length) \
    _ovr(IPC,get_date) \
+   _ovr(IPC,timestamp) \
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
@@ -44,6 +45,7 @@
  * Local Function Prototypes
  *=====================================================================================*/
 static void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T * const ipc);
+static uint32_t IPC_Linux_Timestamp_timestamp(IPC_T * const super);
 static size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super);
 static char const * IPC_Linux_Timestamp_get_date(IPC_T * const super);
 static char const * Date_Fmt = "%4d-%2d-%2d %2d:%2d";
@@ -64,7 +66,6 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void IPC_Linux_Timestamp_init(void)
 {
-   printf("%s \n", __FUNCTION__);
    CHILD_CLASS_INITIALIZATION
    IPC_Linux_Timestamp_Vtbl.ctor = IPC_Linux_Timestamp_Ctor;
    IPC_Linux_Timestamp_Obj.date = (char *)malloc(sizeof(Date_Fmt));
@@ -82,6 +83,12 @@ void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T * const 
    this->IPC_Decorator.vtbl->ctor(&this->IPC_Decorator, ipc);
 }
 
+uint32_t IPC_Linux_Timestamp_timestamp(IPC_T * const super)
+{
+   struct timespec tm_spec;
+   clock_gettime(CLOCK_REALTIME,&tm_spec);
+   return (uint32_t)(tm_spec.tv_nsec/(1000000UL));
+}
 
 size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super)
 {

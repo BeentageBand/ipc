@@ -54,10 +54,9 @@
   *=====================================================================================*/
  void IPC_Light_init(void)
  {
-    printf("%s \n", __FUNCTION__);
     CHILD_CLASS_INITIALIZATION
-
  }
+
  void IPC_Light_shut(void) {}
 
  void IPC_Light_Dtor(Object_T * const obj)

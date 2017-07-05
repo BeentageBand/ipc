@@ -94,8 +94,6 @@ static Mailbox_Stack_T Mbx_Stack[] =
  *=====================================================================================*/
 void IPC_init(void)
 {
-   printf("%s \n", __FUNCTION__);
-
    qsort(Task_Stack,Num_Elems(Task_Stack), sizeof(*Task_Stack), IPC_Is_This_Task);
    qsort(Mbx_Stack,Num_Elems(Mbx_Stack), sizeof(*Mbx_Stack), IPC_Is_This_Mailbox);
 
@@ -381,10 +379,11 @@ Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint
    Isnt_Nullptr(this, NULL);
 
    Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
+   printf("mailbox %s\n", (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
    IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
-
+   printf("IPC_Retreive_From_Mail_List ms = %d\n", tout_timestamp);
    do
    {
       for(i = 0; i < mail_elems; ++i)
@@ -395,27 +394,27 @@ Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint
             break;
          }
       }
-   }while(mail != NULL && IPC_Time_Elapsed(tout_timestamp));
+   }while(mail != NULL && !IPC_Time_Elapsed(tout_timestamp));
    return mail;
 }
 
 Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms)
 {
    Mail_T * mail = NULL;
-   Mailbox_T * mailbox = NULL;
    IPC_T * this = NULL;
 
    IPC_get_instance(&this);
    Isnt_Nullptr(this, NULL);
    IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
 
-   mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
+   Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
+   printf("mailbox %s\n", (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
    do
    {
       mail = mailbox->vtbl->get_first_mail(mailbox);
-   }while(mail != NULL && IPC_Time_Elapsed(tout_timestamp));
+   }while(mail != NULL && !IPC_Time_Elapsed(tout_timestamp));
 
    return mail;
 }
@@ -432,7 +431,7 @@ uint32_t IPC_Timestamp(void)
 
 bool_t IPC_Time_Elapsed(uint32_t const timestamp)
 {
-   return timestamp > IPC_Timestamp();
+   return timestamp < IPC_Timestamp();
 }
 
 void IPC_Put_Date_String(char * date_str)

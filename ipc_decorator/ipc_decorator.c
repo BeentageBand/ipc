@@ -78,8 +78,6 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void IPC_Decorator_init(void)
 {
-   printf("%s \n", __FUNCTION__);
-
    CHILD_CLASS_INITIALIZATION
 
    IPC_Decorator_Obj.ipc = NULL;

@@ -55,7 +55,6 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void Worker_init(void)
 {
-   printf("%s \n", __FUNCTION__);
    CHILD_CLASS_INITIALIZATION
    Worker_Vtbl.ctor = Worker_ctor;
 }
@@ -95,6 +94,8 @@ void Worker_run(Task_T * const super)
    {
       this->vtbl->on_loop(this);
    }
+
+   printf("shutdown %d\n", super->tid);
 
    this->vtbl->on_stop(this);
 

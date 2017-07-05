@@ -73,7 +73,6 @@ static pthread_attr_t PThread_Attr;
  *=====================================================================================*/
 void IPC_Linux_Task_init(void)
 {
-   printf("%s \n", __FUNCTION__);
    CHILD_CLASS_INITIALIZATION
    IPC_Linux_Task_Vtbl.ctor = IPC_Linux_Task_Ctor;
 
@@ -99,6 +98,7 @@ void * IPC_Linux_Task_runnable(void * arg)
 {
    Task_T * this_task = (Task_T *)arg;
    Isnt_Nullptr(this_task, NULL);
+   printf("IPC_Linux_Task_runnable\n\n");
 
    this_task->vtbl->run(this_task);
    return NULL;
@@ -114,10 +114,9 @@ void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc)
 IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super)
 {
    pthread_t ptid = pthread_self();
-
    struct Linux_Task_Id_Tb * linux_task = bsearch(&ptid, Linux_Task_Lookup, Num_Elems(Linux_Task_Lookup),
          sizeof(*Linux_Task_Lookup), IPC_Linux_Task_is_this_task);
-
+   printf("IPC Self linux_task = %s\n", (linux_task)? "found": "NULL");
    Isnt_Nullptr(linux_task, IPC_TOTAL_TASK_IDS_ITEMS);
 
    return linux_task->tid;
@@ -126,10 +125,10 @@ int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
 {
    Isnt_Nullptr(task, -1);
 
-   if(task->tid < IPC_TOTAL_TASK_IDS_ITEMS) return -1;
+   if(task->tid >= IPC_TOTAL_TASK_IDS_ITEMS) return -1;
 
    pthread_t t;
-   int retval = pthread_create(&t,&PThread_Attr,IPC_Linux_Task_runnable, task);
+   int retval = pthread_create(&t, &PThread_Attr, IPC_Linux_Task_runnable, task);
 
    for(uint32_t i = 0; i < Num_Elems(Linux_Task_Lookup); ++i)
    {
