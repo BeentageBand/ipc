@@ -67,10 +67,10 @@ extern void IPC_Publish(IPC_Mail_Id_T const mail_id, void const * data, size_t c
 
 extern void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
 
-extern Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
+extern Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
       uint32_t const timeout_ms);
 
-extern Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms);
+extern Mail_T const * IPC_Retreive_Mail(uint32_t const timeout_ms);
 
 /**
  * IPC Miscellaneous

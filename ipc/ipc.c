@@ -368,12 +368,12 @@ void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const 
    mail.vtbl->Object.destroy((Object_T *)&mail);
 }
 
-Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
+Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
       uint32_t const timeout_ms)
 {
    uint32_t i;
    IPC_T * this = NULL;
-   Mail_T * mail = NULL;
+   Mail_T const * mail = NULL;
    Isnt_Nullptr(mail_list, NULL);
    IPC_get_instance(&this);
    Isnt_Nullptr(this, NULL);
@@ -398,9 +398,9 @@ Mail_T * const IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint
    return mail;
 }
 
-Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms)
+Mail_T const * IPC_Retreive_Mail(uint32_t const timeout_ms)
 {
-   Mail_T * mail = NULL;
+   Mail_T const * mail = NULL;
    IPC_T * this = NULL;
 
    IPC_get_instance(&this);
@@ -413,7 +413,7 @@ Mail_T * const IPC_Retreive_Mail(uint32_t const timeout_ms)
 
    do
    {
-      mail = mailbox->vtbl->get_first_mail(mailbox);
+      mail = mailbox->vtbl->pop_mail(mailbox);
    }while(mail != NULL && !IPC_Time_Elapsed(tout_timestamp));
 
    return mail;
