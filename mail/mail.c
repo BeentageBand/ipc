@@ -61,9 +61,9 @@ CLASS_DEFINITION
 void Mail_init(void)
 {
    printf("%s \n", __FUNCTION__);
-   Mail_Obj.mail_id = 0;
-   Mail_Obj.mail_id = 0;
-   Mail_Obj.mail_id = 0;
+   Mail_Obj.mail_id = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
+   Mail_Obj.sender_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
+   Mail_Obj.receiver_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
    Mail_Obj.is_dumpable = false;
 
    Mail_Vtbl.ctor = Mail_Ctor;
@@ -83,6 +83,13 @@ void Mail_shut(void) {}
 
 void Mail_Dtor(Object_T * const obj)
 {
+   Mail_T * const this = _dynamic_cast(Mail, obj);
+   if(0 != this->data_size)
+   {
+      free(this->data);
+      this->data = NULL;
+   }
+   this->data_size = 0;
 }
 
 /*=====================================================================================* 
@@ -92,8 +99,8 @@ void Mail_Ctor(Mail_T * const this, IPC_Mail_Id_T const mail_id, IPC_Task_Id_T c
       IPC_Task_Id_T const receiver_task, void const * data, size_t const data_size)
 {
    this->mail_id = mail_id;
-   this->mail_id = sender_task;
-   this->mail_id = receiver_task;
+   this->sender_task = sender_task;
+   this->receiver_task = receiver_task;
 
    this->vtbl->set_data(this, data, data_size);
 }

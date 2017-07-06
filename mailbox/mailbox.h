@@ -44,7 +44,6 @@ _member(size_t _private, data_size) \
       Mail_T const * _void_method(pop_mail) \
       void _void_method(dump) \
       Mail_T * const _method(get_mail_by_mail_id, IPC_Mail_Id_T const) \
-      Mail_T * const _void_method(get_first_mail) \
 
 #ifdef __cplusplus
 extern "C" {

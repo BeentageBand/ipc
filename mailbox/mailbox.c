@@ -39,6 +39,7 @@ static bool_t Mailbox_unsubscribe(Mailbox_T * const this,   IPC_Mail_Id_T const 
 static void Mailbox_push_mail(Mailbox_T * const this, Mail_T * const mail);
 static Mail_T const * Mailbox_pop_mail(Mailbox_T * const this);
 static void Mailbox_dump(Mailbox_T * const this);
+static Mail_T * const  Mailbox_get_first_mail(Mailbox_T * const this);
 static Mail_T * const Mailbox_get_mail_by_mail_id(Mailbox_T * const this, IPC_Mail_Id_T const mid);
 /*=====================================================================================* 
  * Local Object Definitions
@@ -103,8 +104,16 @@ void Mailbox_push_mail(Mailbox_T * const this, Mail_T * const mail)
 
 Mail_T const * Mailbox_pop_mail(Mailbox_T * const this)
 {
-   Mail_T * mail = this->mailbox.vtbl->front(&this->mailbox);
+   Mail_T * mail = NULL;
 
+   for ( uint32_t i = 0; i < this->mailbox.vtbl->size(&this->mailbox); ++i)
+   {
+      mail = this->mailbox.vtbl->at(&this->mailbox, i);
+      if(NULL = mail && (!mail->is_dumpable))
+      {
+         break;
+      }
+   }
    mail->vtbl->dump(mail);
    return mail;
 }
