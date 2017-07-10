@@ -108,9 +108,9 @@ IPC_Task_Id_T IPC_Decorator_get_tid(IPC_T * const super)
 int IPC_Decorator_run_task(IPC_T * const super, Task_T * const task)
 {
    IPC_Decorator_T * const this = _dynamic_cast(IPC_Decorator, super);
-      Isnt_Nullptr(this, -1);
-      Isnt_Nullptr(this->ipc, 0);
-      return this->ipc->vtbl->run_task(this->ipc, task);
+   Isnt_Nullptr(this, -1);
+   Isnt_Nullptr(this->ipc, 0);
+   return this->ipc->vtbl->run_task(this->ipc, task);
 }
 
 void IPC_Decorator_set_mailbox(IPC_T * const super, IPC_Task_Id_T const tid, uint32_t const mail_elems)

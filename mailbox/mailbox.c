@@ -9,9 +9,12 @@
  */
 /*=====================================================================================*/
 #define CLASS_IMPLEMENTATION
+#undef Dbg_FID
+#define Dbg_FID Dbg_FID_Def(IPC_FID,3)
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
+#include "dbg_log.h"
 #include "publisher.h"
 #include "mailbox.h"
 /*=====================================================================================* 
@@ -57,9 +60,8 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void Mailbox_init(void)
 {
-   printf("%s \n", __FUNCTION__);
    Mailbox_Obj.owner = IPC_TOTAL_TASK_IDS_ITEMS;
-   Mailbox_Obj.mailbox = Vector_Mail_Ptr();
+   Mailbox_Obj.mailbox = Queue_Mail();
    Mailbox_Obj.data_size = 0;
 
    Mailbox_Vtbl.ctor = Mailbox_Ctor;
@@ -98,23 +100,31 @@ bool_t Mailbox_unsubscribe(Mailbox_T * const this,   IPC_Mail_Id_T const mid)
 
 void Mailbox_push_mail(Mailbox_T * const this, Mail_T * const mail)
 {
-  this->mailbox.vtbl->push_back(&this->mailbox, &mail); 
+  this->mailbox.vtbl->push_back(&this->mailbox, mail);
+
+  for(Mail_T * it = this->mailbox.vtbl->begin(&this->mailbox);
+        it != this->mailbox.vtbl->end(&this->mailbox); ++it)
+  {
+     Dbg_Warn("mail %d {id %d, sender %d, recv %d}", this->owner,
+           it->mail_id, it->sender_task, it->receiver_task);
+  }
 }
 
 Mail_T const * Mailbox_pop_mail(Mailbox_T * const this)
 {
-   Mail_T * mail = NULL;
+   if(this->mailbox.vtbl->empty(&this->mailbox)) return NULL;
 
-   for(uint32_t i = 0; i < this->mailbox.vtbl->size(&this->mailbox); ++i)
+   for(Mail_T * mail = this->mailbox.vtbl->begin(&this->mailbox);
+         mail != this->mailbox.vtbl->end(&this->mailbox); ++mail)
    {
-      mail = this->mailbox.vtbl->at(&this->mailbox, i);
-      if(NULL != mail && (!mail->is_dumpable))
+      if(!mail->is_dumpable)
       {
          mail->is_dumpable = true;
-         break;
+         return mail;
       }
    }
-   return mail;
+
+   return NULL;
 }
 
 void Mailbox_dump(Mailbox_T * const this)
@@ -126,9 +136,18 @@ void Mailbox_dump(Mailbox_T * const this)
 
 Mail_T const * Mailbox_get_mail_by_mail_id(Mailbox_T * const this, IPC_Mail_Id_T const mid)
 {
-   // find mail by id
-   Mail_T * const mail = NULL;
-   return mail;
+   if(this->mailbox.vtbl->empty(&this->mailbox)) return NULL;
+
+   for(Mail_T * mail = this->mailbox.vtbl->begin(&this->mailbox);
+         mail != this->mailbox.vtbl->end(&this->mailbox); ++mail)
+   {
+      if(mid == mail->mail_id && !mail->is_dumpable)
+      {
+         mail->is_dumpable = true;
+         return mail;
+      }
+   }
+   return NULL;
 }
 
 /*=====================================================================================* 

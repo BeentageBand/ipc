@@ -9,9 +9,12 @@
  */
 /*=====================================================================================*/
 #define CLASS_IMPLEMENTATION
+#undef Dbg_FID
+#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
+#include "dbg_log.h"
 #include "ipc.h"
 #include "worker.h"
 /*=====================================================================================* 
@@ -95,7 +98,7 @@ void Worker_run(Task_T * const super)
       this->vtbl->on_loop(this);
    }
 
-   printf("shutdown %d\n", super->tid);
+   Dbg_Warn("shutdown %d\n", super->tid);
 
    this->vtbl->on_stop(this);
 

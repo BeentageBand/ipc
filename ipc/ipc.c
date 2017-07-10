@@ -8,10 +8,13 @@
  *
  */
 /*=====================================================================================*/
+#undef Dbg_FID
+#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
 #define CLASS_IMPLEMENTATION
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
+#include "dbg_log.h"
 #include "ipc_set.h"
 #include "ipc.h"
 #include "mailbox.h"
@@ -32,17 +35,7 @@
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
-typedef struct
-{
-   IPC_Task_Id_T tid;
-   Task_T * task;
-}Task_Stack_T;
 
-typedef struct
-{
-   IPC_Task_Id_T tid;
-   Mailbox_T * mbx;
-}Mailbox_Stack_T;
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
@@ -61,24 +54,22 @@ static char const * IPC_get_date(IPC_T * const this);
 /** Private **/
 static Task_T * const IPC_search_task(IPC_Task_Id_T const task_id);
 static Mailbox_T * const IPC_search_mailbox(IPC_Task_Id_T const task_id);
-static int IPC_Is_This_Task(void const * a,void const * b);
-static int IPC_Is_This_Mailbox(void const * a,void const * b);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
 CLASS_DEFINITION
 
 #undef TASK_ID
-#define TASK_ID(pid, tid, desc) {tid##_WORKER, NULL},
+#define TASK_ID(pid, tid, desc) NULL,
 
-static Task_Stack_T Task_Stack[] =
+static Task_T * Task_Stack[] =
 {
-      {IPC_BEGIN_TASK_ID, NULL},
+      NULL,
       IPC_WORKERS_IDS(TASK_ID)
 };
-static Mailbox_Stack_T Mbx_Stack[] =
+static Mailbox_T * Mbx_Stack[] =
 {
-      {IPC_BEGIN_TASK_ID, NULL},
+      NULL,
       IPC_WORKERS_IDS(TASK_ID)
 };
 /*=====================================================================================* 
@@ -94,9 +85,6 @@ static Mailbox_Stack_T Mbx_Stack[] =
  *=====================================================================================*/
 void IPC_init(void)
 {
-   qsort(Task_Stack,Num_Elems(Task_Stack), sizeof(*Task_Stack), IPC_Is_This_Task);
-   qsort(Mbx_Stack,Num_Elems(Mbx_Stack), sizeof(*Mbx_Stack), IPC_Is_This_Mailbox);
-
    IPC_Vtbl.Object.rtti = &IPC_Rtti;
    IPC_Vtbl.Object.destroy = IPC_Dtor;
    IPC_Vtbl.get_tid = IPC_get_tid;
@@ -119,36 +107,28 @@ void IPC_Dtor(Object_T * const obj)
    IPC_T * const this = _dynamic_cast(IPC, obj);
    Isnt_Nullptr(this,);
 
-}
-
-int IPC_Is_This_Task(void const * a,void const * b)
-{
-   IPC_Task_Id_T const * ta = (IPC_Task_Id_T const *) a;
-   IPC_Task_Id_T const * tb = (IPC_Task_Id_T const *) b;
-   return (*ta - *tb);
-}
-
-int IPC_Is_This_Mailbox(void const * a,void const * b)
-{
-   IPC_Task_Id_T const * ta = (IPC_Task_Id_T const *) a;
-   IPC_Task_Id_T const * tb = (IPC_Task_Id_T const *) b;
-   return (*ta - *tb);
+   for(IPC_Task_Id_T i = 0; i < IPC_TOTAL_TASK_IDS_ITEMS; ++i)
+   {
+      if(NULL != Mbx_Stack[i])
+      {
+         _delete(Mbx_Stack[i]);
+         free(Mbx_Stack[i]);
+      }
+   }
 }
 
 Task_T * const IPC_search_task(IPC_Task_Id_T const task_id)
 {
-   Task_Stack_T * const it = (Task_Stack_T * const) bsearch(&task_id, Task_Stack,Num_Elems(Task_Stack),
-         sizeof(*Task_Stack), IPC_Is_This_Task);
+   Task_T * const it = Task_Stack[task_id < IPC_TOTAL_TASK_IDS_ITEMS ? task_id : IPC_BEGIN_TASK_ID];
    Isnt_Nullptr(it, NULL);
-   return it->task;
+   return it;
 }
 
 Mailbox_T * const IPC_search_mailbox(IPC_Task_Id_T const task_id)
 {
-   Mailbox_Stack_T * const it = (Mailbox_Stack_T * const)bsearch(&task_id, Mbx_Stack,Num_Elems(Mbx_Stack),
-         sizeof(*Mbx_Stack), IPC_Is_This_Mailbox);
+   Mailbox_T * const it = Mbx_Stack[task_id < IPC_TOTAL_TASK_IDS_ITEMS ? task_id : IPC_BEGIN_TASK_ID];
    Isnt_Nullptr(it, NULL);
-   return it->mbx;
+   return it;
 }
 /*=====================================================================================*
  * Exported Function Definitions
@@ -168,7 +148,15 @@ int IPC_run_task(IPC_T * const this, Task_T * const task)
 };
 
 void IPC_set_mailbox(IPC_T * const this, uint32_t const mail_elems, uint32_t const mail_size)
-{}
+{
+   IPC_Task_Id_T tid = IPC_Self_Task_Id();
+   Dbg_Warn("%s tid %u", __FUNCTION__, tid);
+   if(tid < IPC_TOTAL_TASK_IDS_ITEMS && NULL == Mbx_Stack[tid])
+   {
+      Mbx_Stack[tid] = Mailbox_new();
+      Mbx_Stack[tid]->vtbl->ctor(Mbx_Stack[tid], tid, mail_elems, mail_size);
+   }
+}
 
 void IPC_task_ready(IPC_T * const this)
 {}
@@ -178,24 +166,18 @@ int IPC_wait_task(IPC_T * const this, Task_T * const task)
    return -1;
 }
 
-
 bool_t IPC_register_task(IPC_T * const this, Task_T * const task)
 {
    Isnt_Nullptr(task, false);
-   Task_Stack_T * const it = (Task_Stack_T * const) bsearch(&task->tid, Task_Stack,Num_Elems(Task_Stack),
-          sizeof(*Task_Stack), IPC_Is_This_Task);
-   it->task = task;
-   return NULL != it->task;
+   Task_Stack[task->tid] = task;
+   return NULL != Task_Stack[task->tid];
 }
 
 bool_t IPC_unregister_task(IPC_T * const this, Task_T * const task)
 {
    Isnt_Nullptr(task, false);
-   Task_Stack_T * const it = (Task_Stack_T * const) bsearch(&task->tid, Task_Stack,Num_Elems(Task_Stack),
-          sizeof(*Task_Stack), IPC_Is_This_Task);
-
-   it->task = NULL;
-   return NULL == it->task;
+   Task_Stack[task->tid] = task;
+   return NULL == Task_Stack[task->tid];
 }
 
 void IPC_sleep(IPC_T * const this, uint32_t const ms)
@@ -331,6 +313,8 @@ void IPC_Send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
    Isnt_Nullptr(this, );
 
    Mailbox_T * const mailbox = IPC_search_mailbox(receiver_task);
+   Isnt_Nullptr(mailbox, );
+
    Mail_T mail = Mail();
 
    mail.vtbl->ctor(&mail, mail_id, IPC_Self_Task_Id(), receiver_task, data, data_size);
@@ -379,11 +363,11 @@ Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint
    Isnt_Nullptr(this, NULL);
 
    Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
-   printf("mailbox %s\n", (mailbox)? "found" : "NULL");
+   Dbg_Warn("mailbox %s", (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
    IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
-   printf("IPC_Retreive_From_Mail_List ms = %d\n", tout_timestamp);
+   Dbg_Warn("IPC_Retreive_From_Mail_List ms = %d\n", tout_timestamp);
    do
    {
       for(i = 0; i < mail_elems; ++i)
@@ -408,7 +392,7 @@ Mail_T const * IPC_Retreive_Mail(uint32_t const timeout_ms)
    IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
 
    Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
-   printf("mailbox %s\n", (mailbox)? "found" : "NULL");
+   Dbg_Warn("mailbox %s\n", (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
    do

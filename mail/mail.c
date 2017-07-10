@@ -60,7 +60,6 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void Mail_init(void)
 {
-   printf("%s \n", __FUNCTION__);
    Mail_Obj.mail_id = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
    Mail_Obj.sender_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
    Mail_Obj.receiver_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;

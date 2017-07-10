@@ -9,9 +9,12 @@
  */
 /*=====================================================================================*/
 #define CLASS_IMPLEMENTATION
+#undef Dbg_FID
+#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
+#include "dbg_log.h"
 #include "ipc_linux_task.h"
 /*=====================================================================================* 
  * Standard Includes
@@ -34,7 +37,6 @@
 struct Linux_Task_Id_Tb
 {
    pthread_t ptid;
-   IPC_Task_Id_T tid;
    char const * const name;
 };
 /*=====================================================================================* 
@@ -44,7 +46,6 @@ static void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc
 static IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super);
 static int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task);
 static int IPC_Linux_Task_wait_task(IPC_T * const super, Task_T * const task);
-static int IPC_Linux_Task_is_this_task(void const * a, void const * b);
 
 /*=====================================================================================*
  * Local Object Definitions
@@ -52,10 +53,11 @@ static int IPC_Linux_Task_is_this_task(void const * a, void const * b);
 CLASS_DEFINITION
 
 #undef TASK_ID
-#define TASK_ID(pid, task, desc) {-1, task##_WORKER, #task},
+#define TASK_ID(pid, task, desc) 1,
 
-struct Linux_Task_Id_Tb Linux_Task_Lookup[] =
+static pthread_t Pthread_Stack[] =
 {
+   1,
    IPC_WORKERS_IDS(TASK_ID)
 };
 
@@ -75,9 +77,6 @@ void IPC_Linux_Task_init(void)
 {
    CHILD_CLASS_INITIALIZATION
    IPC_Linux_Task_Vtbl.ctor = IPC_Linux_Task_Ctor;
-
-   qsort(Linux_Task_Lookup, Num_Elems(Linux_Task_Lookup), sizeof(*Linux_Task_Lookup),
-         IPC_Linux_Task_is_this_task);
    pthread_attr_init(&PThread_Attr);
 }
 void IPC_Linux_Task_shut(void) {}
@@ -87,18 +86,11 @@ void IPC_Linux_Task_Dtor(Object_T * const obj)
 
 }
 
-int IPC_Linux_Task_is_this_task(void const * a, void const * b)
-{
-   pthread_t const * ta = (pthread_t const *)a;
-   pthread_t const * tb = (pthread_t const *)b;
-   return (*ta - *tb);
-}
-
 void * IPC_Linux_Task_runnable(void * arg)
 {
    Task_T * this_task = (Task_T *)arg;
    Isnt_Nullptr(this_task, NULL);
-   printf("IPC_Linux_Task_runnable\n\n");
+   Dbg_Warn("IPC_Linux_Task_runnable");
 
    this_task->vtbl->run(this_task);
    return NULL;
@@ -113,13 +105,18 @@ void IPC_Linux_Task_Ctor(IPC_Linux_Task_T * const this, IPC_T * const ipc)
 
 IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super)
 {
-   pthread_t ptid = pthread_self();
-   struct Linux_Task_Id_Tb * linux_task = bsearch(&ptid, Linux_Task_Lookup, Num_Elems(Linux_Task_Lookup),
-         sizeof(*Linux_Task_Lookup), IPC_Linux_Task_is_this_task);
-   printf("IPC Self linux_task = %s\n", (linux_task)? "found": "NULL");
-   Isnt_Nullptr(linux_task, IPC_TOTAL_TASK_IDS_ITEMS);
+   IPC_Task_Id_T tid;
 
-   return linux_task->tid;
+   for(tid = 0; tid < IPC_TOTAL_TASK_IDS_ITEMS; ++tid)
+   {
+      Dbg_Warn("self %lu == stack %lu", pthread_self(), Pthread_Stack[tid]);
+      if(pthread_equal(Pthread_Stack[tid], pthread_self()))
+      {
+         break;
+      }
+   }
+   Dbg_Warn("IPC Self linux_task = %u, pthread = %lu,", tid, Pthread_Stack[tid]);
+   return tid;
 }
 int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
 {
@@ -127,35 +124,17 @@ int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
 
    if(task->tid >= IPC_TOTAL_TASK_IDS_ITEMS) return -1;
 
-   pthread_t t;
-   int retval = pthread_create(&t, &PThread_Attr, IPC_Linux_Task_runnable, task);
+   int retval = pthread_create(&Pthread_Stack[task->tid], &PThread_Attr, IPC_Linux_Task_runnable, task);
 
-   for(uint32_t i = 0; i < Num_Elems(Linux_Task_Lookup); ++i)
-   {
-      if(task->tid == Linux_Task_Lookup[i].tid)
-      {
-         Linux_Task_Lookup[i].ptid = t;
-         break;
-      }
-   }
+   Dbg_Warn("Task %d created under pthread %ld", task->tid, Pthread_Stack[task->tid]);
    return retval;
 }
 
 int IPC_Linux_Task_wait_task(IPC_T * const super, Task_T * const task)
 {
    void * join = NULL;
-   pthread_t t = -1;
 
-   for(uint32_t i = 0; i < Num_Elems(Linux_Task_Lookup); ++i)
-   {
-      if(task->tid == Linux_Task_Lookup[i].tid)
-      {
-         t = Linux_Task_Lookup[i].ptid;
-         break;
-      }
-   }
-
-   pthread_join(t, &join);
+   pthread_join(Pthread_Stack[task->tid], &join);
    Isnt_Nullptr(join,-1);
 
    return *((int *)join);

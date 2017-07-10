@@ -33,7 +33,7 @@
 
 #define CLASS_MEMBERS(_member) \
 _member(IPC_Task_Id_T _private, owner) \
-_member(Vector_Mail_Ptr_T _private, mailbox) \
+_member(Queue_Mail_T _private, mailbox) \
 _member(size_t _private, data_size) \
 
 #define CLASS_METHODS(_method, _void_method) \
