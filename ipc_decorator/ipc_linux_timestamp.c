@@ -28,7 +28,9 @@
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
-
+#define TM_NANOSECONDS (1000000000L)
+#define TM_MICROSECONDS (1000000L)
+#define TM_MILLISECONDS (1000L)
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
@@ -48,7 +50,9 @@ static void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T *
 static uint32_t IPC_Linux_Timestamp_timestamp(IPC_T * const super);
 static size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super);
 static char const * IPC_Linux_Timestamp_get_date(IPC_T * const super);
+static void IPC_Linux_Decode(struct timespec * const tp);
 static char const * Date_Fmt = "%4d-%2d-%2d %2d:%2d";
+static struct timespec Linux_Timestamp_Init;
 /*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
@@ -69,11 +73,23 @@ void IPC_Linux_Timestamp_init(void)
    CHILD_CLASS_INITIALIZATION
    IPC_Linux_Timestamp_Vtbl.ctor = IPC_Linux_Timestamp_Ctor;
    IPC_Linux_Timestamp_Obj.date = (char *)malloc(sizeof(Date_Fmt));
+   clock_gettime(CLOCK_REALTIME, &Linux_Timestamp_Init);
 }
 void IPC_Linux_Timestamp_shut(void) {}
 
 void IPC_Linux_Timestamp_Dtor(Object_T * const obj)
+{}
+
+void IPC_Linux_Decode(struct timespec * const tp)
 {
+   tp->tv_sec -= Linux_Timestamp_Init.tv_sec;
+   tp->tv_nsec -= Linux_Timestamp_Init.tv_nsec;
+
+   if(0 > tp->tv_nsec)
+   {
+      tp->tv_nsec += TM_NANOSECONDS;
+      --tp->tv_sec;
+   }
 }
 /*=====================================================================================*
  * Exported Function Definitions
@@ -85,9 +101,11 @@ void IPC_Linux_Timestamp_Ctor(IPC_Linux_Timestamp_T * const this, IPC_T * const 
 
 uint32_t IPC_Linux_Timestamp_timestamp(IPC_T * const super)
 {
-   struct timespec tm_spec;
-   clock_gettime(CLOCK_REALTIME,&tm_spec);
-   return (uint32_t)(tm_spec.tv_nsec/(1000000UL));
+   struct timespec now;
+   clock_gettime(CLOCK_REALTIME, &now);
+   IPC_Linux_Decode(&now);
+
+   return  ((uint32_t)(now.tv_sec * TM_MILLISECONDS) + (uint32_t)(now.tv_nsec / TM_MICROSECONDS));
 }
 
 size_t IPC_Linux_Timestamp_get_date_length(IPC_T * const super)
@@ -100,6 +118,7 @@ char const * IPC_Linux_Timestamp_get_date(IPC_T * const super)
    IPC_Linux_Timestamp_T * const this = _dynamic_cast(IPC_Linux_Timestamp, super);
    Isnt_Nullptr(this, NULL);
    time_t linux_time = time(NULL);
+
    struct tm * tm = localtime(&linux_time);
    Isnt_Nullptr(tm, 0);
 

@@ -1,6 +1,6 @@
 /*=====================================================================================*/
 /**
- * worker.cpp
+ * linux_mutex.c
  * author : puch
  * date : Oct 22 2015
  *
@@ -10,23 +10,24 @@
 /*=====================================================================================*/
 #define CLASS_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
+#define Dbg_FID Dbg_FID_Def(IPC_FID,5)
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
 #include "dbg_log.h"
-#include "ipc.h"
-#include "worker.h"
+#include "linux_mutex.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
-
+#include <time.h>
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
 #undef CLASS_VIRTUAL_METHODS
-#define CLASS_VIRTUAL_METHODS(_ovr) \
-   _ovr(Task,run)
+#define CLASS_VIRTUAL_METHODS(_ovr_method)  \
+  _ovr_method(Mutex,lock) \
+  _ovr_method(Mutex,unlock) \
+
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
@@ -34,79 +35,68 @@
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
-static void Worker_ctor(Worker_T * const this, IPC_Task_Id_T const tid, uint32_t const mailbox_size);
-static void Worker_run(Task_T * const super);
-static bool_t Worker_is_alive(Worker_T * const this);
+
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-
-/*=====================================================================================* 
+static void Linux_Mutex_ctor(Linux_Mutex_T * const this);
+static bool_t Linux_Mutex_lock(Mutex_T * const this, uint32_t const tout_ms);
+static bool_t Linux_Mutex_unlock(Mutex_T * const this);
+/*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
 CLASS_DEFINITION
-/*=====================================================================================* 
+/*=====================================================================================*
  * Exported Object Definitions
  *=====================================================================================*/
 
-/*=====================================================================================* 
+/*=====================================================================================*
  * Local Inline-Function Like Macros
  *=====================================================================================*/
 
-/*=====================================================================================* 
+/*=====================================================================================*
  * Local Function Definitions
  *=====================================================================================*/
-void Worker_init(void)
+void Linux_Mutex_init(void)
 {
    CHILD_CLASS_INITIALIZATION
-   Worker_Vtbl.ctor = Worker_ctor;
+   Linux_Mutex_Vtbl.ctor = Linux_Mutex_ctor;
 }
 
-void Worker_shut(void) {}
+void Linux_Mutex_shut(void) {}
 
-void Worker_Dtor(Object_T * const obj)
+void Linux_Mutex_Dtor(Object_T * const obj)
 {
+   Linux_Mutex_T * const this = _dynamic_cast(Linux_Mutex, obj);
+   Isnt_Nullptr(this, );
+   pthread_mutex_destroy(&this->pmutex);
+}
+ /*=====================================================================================*
+  * Exported Function Definitions
+  *=====================================================================================*/
+void Linux_Mutex_ctor(Linux_Mutex_T * const this)
+{
+   pthread_mutex_init(&this->pmutex, NULL);
 }
 
-bool_t Worker_is_alive(Worker_T * const this)
+bool_t Linux_Mutex_lock(Mutex_T * const super, uint32_t const tout_ms)
 {
-   IPC_Mail_Id_T mailist[] = {WORKER_SHUTDOWN_MID};
-   Mail_T const * is_alive = IPC_Retreive_From_Mail_List(mailist, sizeof(mailist), 50);
-   Dbg_Info("Worker %d %s alive", this->Task.tid, (is_alive)? "is not":"is");
-   return NULL == is_alive;
+   Dbg_Info("%s", __FUNCTION__);
+   Linux_Mutex_T * const this = _dynamic_cast(Linux_Mutex, super);
+   Isnt_Nullptr(this, false);
+   struct timespec  tm_out = {0, tout_ms*1000000U};
+   return 0 == pthread_mutex_timedlock(&this->pmutex, &tm_out);
+}
+
+bool_t Linux_Mutex_unlock(Mutex_T * const super)
+{
+   Dbg_Info("%s", __FUNCTION__);
+   Linux_Mutex_T * const this = _dynamic_cast(Linux_Mutex, super);
+   Isnt_Nullptr(this, false);
+   return 0 == pthread_mutex_unlock(&this->pmutex);
 }
 /*=====================================================================================* 
- * Exported Function Definitions
- *=====================================================================================*/
-void Worker_ctor(Worker_T * const this, IPC_Task_Id_T const tid, uint32_t const mailbox_size)
-{
-   this->Task.vtbl->ctor(&this->Task, tid);
-   this->mailbox_size = mailbox_size;
-}
-
-void Worker_run(Task_T * const super)
-{
-   Worker_T * const this = _dynamic_cast(Worker, super);
-
-   IPC_Create_Mailbox(this->mailbox_size, 80);
-
-   IPC_Task_Ready();
-
-   this->vtbl->on_start(this);
-
-   while(Worker_is_alive(this))
-   {
-      this->vtbl->on_loop(this);
-   }
-
-   Dbg_Info("shutdown %d\n", super->tid);
-
-   this->vtbl->on_stop(this);
-
-   IPC_Destroy_Mailbox();
-}
-/*=====================================================================================* 
- * worker.c
+ * mutex.c
  *=====================================================================================*
  * Log History
  *

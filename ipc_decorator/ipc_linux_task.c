@@ -23,15 +23,16 @@
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Define Macros
- *=====================================================================================*/
 #define CLASS_VIRTUAL_METHODS(_ovr_method) \
    _ovr_method(IPC, get_tid) \
    _ovr_method(IPC, run_task) \
    _ovr_method(IPC, wait_task) \
 /*=====================================================================================* 
+ * Local Define Macros
+ *=====================================================================================*/
+#define UNINIT_PTHREAD (1)
+
+/*=====================================================================================*
  * Local Type Definitions
  *=====================================================================================*/
 struct Linux_Task_Id_Tb
@@ -53,11 +54,11 @@ static int IPC_Linux_Task_wait_task(IPC_T * const super, Task_T * const task);
 CLASS_DEFINITION
 
 #undef TASK_ID
-#define TASK_ID(pid, task, desc) 1,
+#define TASK_ID(pid, task, desc) UNINIT_PTHREAD,
 
 static pthread_t Pthread_Stack[] =
 {
-   1,
+   UNINIT_PTHREAD,
    IPC_WORKERS_IDS(TASK_ID)
 };
 
@@ -90,7 +91,7 @@ void * IPC_Linux_Task_runnable(void * arg)
 {
    Task_T * this_task = (Task_T *)arg;
    Isnt_Nullptr(this_task, NULL);
-   Dbg_Warn("IPC_Linux_Task_runnable");
+   Dbg_Info("IPC_Linux_Task_runnable");
 
    this_task->vtbl->run(this_task);
    return NULL;
@@ -109,13 +110,13 @@ IPC_Task_Id_T IPC_Linux_Task_get_tid(IPC_T * const super)
 
    for(tid = 0; tid < IPC_TOTAL_TASK_IDS_ITEMS; ++tid)
    {
-      Dbg_Warn("self %lu == stack %lu", pthread_self(), Pthread_Stack[tid]);
+      Dbg_Verbose("self %lu == stack %lu", pthread_self(), Pthread_Stack[tid]);
       if(pthread_equal(Pthread_Stack[tid], pthread_self()))
       {
          break;
       }
    }
-   Dbg_Warn("IPC Self linux_task = %u, pthread = %lu,", tid, Pthread_Stack[tid]);
+   Dbg_Verbose("IPC Self linux_task = %u, pthread = %lu,", tid, Pthread_Stack[tid]);
    return tid;
 }
 int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
@@ -124,9 +125,14 @@ int IPC_Linux_Task_run_task(IPC_T * const super, Task_T * const task)
 
    if(task->tid >= IPC_TOTAL_TASK_IDS_ITEMS) return -1;
 
-   int retval = pthread_create(&Pthread_Stack[task->tid], &PThread_Attr, IPC_Linux_Task_runnable, task);
+   int retval;
 
-   Dbg_Warn("Task %d created under pthread %ld", task->tid, Pthread_Stack[task->tid]);
+   if(UNINIT_PTHREAD == Pthread_Stack[task->tid])
+   {
+      retval = pthread_create(&Pthread_Stack[task->tid], &PThread_Attr, IPC_Linux_Task_runnable, task);
+   }
+
+   Dbg_Info("Task %d created under pthread %ld", task->tid, Pthread_Stack[task->tid]);
    return retval;
 }
 

@@ -67,6 +67,9 @@ static Task_T * Task_Stack[] =
       NULL,
       IPC_WORKERS_IDS(TASK_ID)
 };
+
+#undef TASK_ID
+#define TASK_ID(pid, tid, desc) NULL,
 static Mailbox_T * Mbx_Stack[] =
 {
       NULL,
@@ -150,7 +153,7 @@ int IPC_run_task(IPC_T * const this, Task_T * const task)
 void IPC_set_mailbox(IPC_T * const this, uint32_t const mail_elems, uint32_t const mail_size)
 {
    IPC_Task_Id_T tid = IPC_Self_Task_Id();
-   Dbg_Warn("%s tid %u", __FUNCTION__, tid);
+   Dbg_Verbose("%s tid %u", __FUNCTION__, tid);
    if(tid < IPC_TOTAL_TASK_IDS_ITEMS && NULL == Mbx_Stack[tid])
    {
       Mbx_Stack[tid] = Mailbox_new();
@@ -313,14 +316,13 @@ void IPC_Send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
    Isnt_Nullptr(this, );
 
    Mailbox_T * const mailbox = IPC_search_mailbox(receiver_task);
+   Dbg_Verbose("%s mbx %s", __FUNCTION__, (mailbox)? "found":"not found");
    Isnt_Nullptr(mailbox, );
 
    Mail_T mail = Mail();
 
    mail.vtbl->ctor(&mail, mail_id, IPC_Self_Task_Id(), receiver_task, data, data_size);
    mailbox->vtbl->push_mail(mailbox, &mail);
-
-   mail.vtbl->Object.destroy((Object_T *)&mail);
 }
 
 void IPC_Publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size)
@@ -355,7 +357,8 @@ void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const 
 Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
       uint32_t const timeout_ms)
 {
-   uint32_t i;
+   Dbg_Verbose("Retreive_From_Mail_List");
+
    IPC_T * this = NULL;
    Mail_T const * mail = NULL;
    Isnt_Nullptr(mail_list, NULL);
@@ -363,43 +366,31 @@ Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint
    Isnt_Nullptr(this, NULL);
 
    Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
-   Dbg_Warn("mailbox %s", (mailbox)? "found" : "NULL");
+   //Dbg_Verbose("mailbox %d %s", this->vtbl->get_tid(this), (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
-   IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
-   Dbg_Warn("IPC_Retreive_From_Mail_List ms = %d\n", tout_timestamp);
-   do
-   {
-      for(i = 0; i < mail_elems; ++i)
-      {
-         mail = mailbox->vtbl->get_mail_by_mail_id(mailbox, mail_list[i]);
-         if(NULL != mail)
-         {
-            break;
-         }
-      }
-   }while(mail != NULL && !IPC_Time_Elapsed(tout_timestamp));
+   mail = mailbox->vtbl->get_mail_by_mail_id(mailbox, mail_list, mail_elems, timeout_ms);
+
+   Dbg_Verbose("%s", mail ? "found" : "NULL");
    return mail;
 }
 
 Mail_T const * IPC_Retreive_Mail(uint32_t const timeout_ms)
 {
+   Dbg_Verbose("IPC_Retreive_Mail");
    Mail_T const * mail = NULL;
    IPC_T * this = NULL;
 
    IPC_get_instance(&this);
    Isnt_Nullptr(this, NULL);
-   IPC_Timestamp_T tout_timestamp = this->vtbl->timestamp(this) + timeout_ms;
 
    Mailbox_T * const mailbox = IPC_search_mailbox(this->vtbl->get_tid(this));
-   Dbg_Warn("mailbox %s\n", (mailbox)? "found" : "NULL");
+   //Dbg_Verbose("mailbox %d %s", this->vtbl->get_tid(this), (mailbox)? "found" : "NULL");
    Isnt_Nullptr(mailbox, NULL);
 
-   do
-   {
-      mail = mailbox->vtbl->pop_mail(mailbox);
-   }while(mail != NULL && !IPC_Time_Elapsed(tout_timestamp));
+   mail = mailbox->vtbl->pop_mail(mailbox, timeout_ms);
 
+   Dbg_Verbose("%s", mail ? "found" : "NULL");
    return mail;
 }
 
@@ -415,7 +406,10 @@ uint32_t IPC_Timestamp(void)
 
 bool_t IPC_Time_Elapsed(uint32_t const timestamp)
 {
-   return timestamp < IPC_Timestamp();
+   uint32_t tm_now = IPC_Timestamp();
+
+   Dbg_Warn("Elapsed %d < %d", timestamp, tm_now);
+   return timestamp <= tm_now;
 }
 
 void IPC_Put_Date_String(char * date_str)
