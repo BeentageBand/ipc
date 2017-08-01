@@ -23,6 +23,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Linux_Conditional
 #define CLASS_INHERITS Conditional
@@ -31,6 +32,9 @@ _member(pthread_cond_t _private, pcond) \
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, Mutex_T * const) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
+
 
 #ifdef __cplusplus
 extern "C" {

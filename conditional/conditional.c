@@ -36,7 +36,7 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Conditional_ctor(Conditional_T * const this, Mutex_T * const mutex);
+
 /*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
@@ -54,10 +54,8 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void Conditional_init(void)
 {
-   Conditional_Vtbl.object.destroy = Conditional_Dtor;
-   Conditional_Vtbl.ctor = Conditional_ctor;
-   Conditional_Vtbl.wait = NULL;
-   Conditional_Vtbl.signal = NULL;
+   //CLASS_METHODS(Method_Assign, Void_Method_Assign)
+   CLASS_VTBL.object.destroy = Conditional_Dtor;
 }
 
 void Conditional_shut(void) {}
@@ -72,6 +70,12 @@ void Conditional_ctor(Conditional_T * const this, Mutex_T * const mutex)
 {
    this->mutex = mutex;
 }
+
+bool_t Conditional_wait(Conditional_T * const this, uint32_t const timeout_ms)
+{ return false; }
+
+bool_t Conditional_signal(Conditional_T * const this)
+{ return false; }
 /*=====================================================================================* 
  * conditional.c
  *=====================================================================================*

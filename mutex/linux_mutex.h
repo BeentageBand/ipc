@@ -25,6 +25,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Linux_Mutex
 #define CLASS_INHERITS Mutex
@@ -33,6 +34,8 @@ _member(pthread_mutex_t _private, pmutex) \
 
 #define CLASS_METHODS(_method, _void_method) \
 void _void_method(ctor) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

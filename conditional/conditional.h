@@ -25,6 +25,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Conditional
 #define CLASS_INHERITS Object
@@ -35,6 +36,8 @@ _member(union Mutex _private * _private, mutex)
 void _method(ctor, union Mutex * const) \
 bool_t _method(wait, uint32_t const) \
 bool_t _void_method(signal) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

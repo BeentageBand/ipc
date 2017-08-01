@@ -25,6 +25,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME IPC_Linux_Timestamp
 #define CLASS_INHERITS IPC_Decorator
@@ -33,6 +34,8 @@ _member(char * _private, date)
 
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_T * const) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

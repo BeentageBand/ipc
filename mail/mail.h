@@ -26,6 +26,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Mail
 #define CLASS_INHERITS Object
@@ -51,6 +52,8 @@ void _method(set_receiver_task, IPC_Task_Id_T const) \
 IPC_Mail_Id_T _void_method(get_mail_id) \
 IPC_Task_Id_T _void_method(get_sender_task) \
 IPC_Task_Id_T _void_method(get_receiver_task) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

@@ -26,6 +26,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Task
 #define CLASS_INHERITS Object
@@ -36,6 +37,8 @@ _member(IPC_Task_Id_T _private, tid) \
 #define CLASS_METHODS(_method, _void_method) \
 void _method(ctor, IPC_Task_Id_T const) \
 void _void_method(run) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

@@ -25,12 +25,15 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME IPC_Light
 #define CLASS_INHERITS IPC
 #define CLASS_MEMBERS(_member) \
 
 #define CLASS_METHODS(_method, _void_method) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

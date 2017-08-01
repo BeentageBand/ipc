@@ -29,6 +29,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Mailbox
 #define CLASS_INHERITS Object
@@ -48,6 +49,8 @@ _member(Conditional_T _private * _private, cond) \
       Mail_T const * _method(pop_mail, uint32_t const) \
       Mail_T const * _method(get_mail_by_mail_id, IPC_Mail_Id_T const * const, uint32_t const, uint32_t const) \
       void _void_method(dump) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

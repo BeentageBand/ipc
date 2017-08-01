@@ -28,6 +28,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME IPC
 #define CLASS_INHERITS Object
@@ -46,6 +47,8 @@ void _method(set_mailbox, uint32_t const, uint32_t const) \
 uint32_t _void_method(timestamp) \
 size_t _void_method(get_date_length) \
 char const * _void_method(get_date) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {

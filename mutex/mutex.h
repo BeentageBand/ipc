@@ -25,6 +25,7 @@
 #undef CLASS_INHERITS
 #undef CLASS_MEMBERS
 #undef CLASS_METHODS
+#undef CLASS_CONSTRUCTORS
 
 #define CLASS_NAME Mutex
 #define CLASS_INHERITS Object
@@ -33,6 +34,8 @@
 #define CLASS_METHODS(_method, _void_method) \
 bool_t _method(lock, uint32_t const) \
 bool_t _void_method(unlock) \
+
+#define CLASS_CONSTRUCTORS(_ctor)
 
 #ifdef __cplusplus
 extern "C" {
