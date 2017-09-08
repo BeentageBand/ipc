@@ -52,9 +52,9 @@ extern void IPC_Sleep(uint32_t const ms);
 /**
  * IPC Mail Comm
  */
-extern void IPC_Create_Mailbox(uint32_t const max_mails, size_t const mail_size);
+extern void IPC_Register_Mailbox(uint32_t const max_mails, size_t const mail_size);
 
-extern void IPC_Destroy_Mailbox(void);
+extern void IPC_Unregister_Mailbox(void);
 
 extern bool_t IPC_Subscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
 

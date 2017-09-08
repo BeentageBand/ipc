@@ -22,7 +22,7 @@
  * Exported Define Macros
  *=====================================================================================*/
 #define WORKER_PRIVATE_MAIL_LIST \
-   PRIVATE_MAIL(WORKER_SHUTDOWN_MID,             "MAILS TO SHUTDOWN WORKER") \
+   PRIVATE_MAIL(WORKER_BCT_SHUTDOWN_MID,             "MAILS TO SHUTDOWN WORKER") \
 
 #define WORKER_SUBSCRIBABLE_MAIL_LIST \
 

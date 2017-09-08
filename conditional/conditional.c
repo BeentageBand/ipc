@@ -8,7 +8,7 @@
  *
  */
 /*=====================================================================================*/
-#define CLASS_IMPLEMENTATION
+#define OBJECT_IMPLEMENTATION
 #undef Dbg_FID
 #define Dbg_FID Dbg_FID_Def(IPC_FID,6)
 /*=====================================================================================*
@@ -40,7 +40,7 @@
 /*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
-CLASS_DEFINITION
+CLASS_DEF(Conditional)
 /*=====================================================================================*
  * Exported Object Definitions
  *=====================================================================================*/
@@ -52,23 +52,26 @@ CLASS_DEFINITION
 /*=====================================================================================*
  * Local Function Definitions
  *=====================================================================================*/
-void Conditional_init(void)
+void Conditional_Init(void)
 {
-   //CLASS_METHODS(Method_Assign, Void_Method_Assign)
-   CLASS_VTBL.object.destroy = Conditional_Dtor;
 }
 
-void Conditional_shut(void) {}
-
-void Conditional_Dtor(Object_T * const obj)
+void Conditional_Delete(struct Object * const obj)
 {}
 
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
-void Conditional_ctor(Conditional_T * const this, Mutex_T * const mutex)
+union Conditional Conditional_Mutex(Mutex_T * const mutex)
 {
-   this->mutex = mutex;
+	union Conditional this = Conditional_Default();
+   this.mutex = mutex;
+	return this;
+}
+
+union Conditional * Conditional_Mutex_New(Mutex_T * const mutex)
+{
+	Constructor_New_Impl(Conditional, Mutex, mutex);
 }
 
 bool_t Conditional_wait(Conditional_T * const this, uint32_t const timeout_ms)

@@ -21,24 +21,16 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
+#define Worker_INHERITS Task
+#define Worker_MEMBERS(_member) \
+_member(uint32_t _private, mailbox_size) \
 
-#define CLASS_NAME Worker
-#define CLASS_INHERITS Task
-#define CLASS_MEMBERS(_member) \
-_member(uint32_t, mailbox_size) \
-
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Task_Id_T const, uint32_t const) \
-void _void_method(on_start) \
-void _void_method(on_loop) \
-void _void_method(on_stop) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Worker_METHODS(_method, _class) \
+/*implement*/\
+_method(void, _class, on_mail, union Mail * const) \
+_method(void, _class, on_start, void) \
+_method(void, _class, on_loop, void) \
+_method(void, _class, on_stop  void) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +38,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Worker)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -54,7 +46,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Worker Worker_Tid(IPC_Task_Id_T const tid, uint32_t const mbx_size);
+extern union Worker * Worker_Tid_New(IPC_Task_Id_T const tid, uint32_t const mbx_size);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

@@ -40,13 +40,11 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Linux_Conditional_ctor(Linux_Conditional_T * const this, Mutex_T * const mutex);
-static bool_t Linux_Conditional_wait(Conditional_T * const this, uint32_t const tout_ms);
-static bool_t Linux_Conditional_signal(Conditional_T * const this);
+
 /*=====================================================================================*
  * Local Object Definitions
  *=====================================================================================*/
-CLASS_DEFINITION
+CLASS_DEF(Linux_Conditional)
 /*=====================================================================================*
  * Exported Object Definitions
  *=====================================================================================*/
@@ -60,8 +58,8 @@ CLASS_DEFINITION
  *=====================================================================================*/
 void Linux_Conditional_init(void)
 {
-   CHILD_CLASS_INITIALIZATION
-   Linux_Conditional_Vtbl.ctor = Linux_Conditional_ctor;
+   Linux_Conditional_Class.wait = Linux_Conditional_wait;
+   Linux_Conditional_Class.signal = Linux_Conditional_signal;
 }
 
 void Linux_Conditional_shut(void) {}
@@ -75,16 +73,24 @@ void Linux_Conditional_Dtor(Object_T * const obj)
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
-void Linux_Conditional_ctor(Linux_Conditional_T * const this, Mutex_T * const mutex)
+union Linux_Conditional Linux_Conditional_Mutex(union Mutex * const mutex)
 {
-   this->Conditional.vtbl->ctor(&this->Conditional, mutex);
-   pthread_cond_init(&this->pcond, NULL);
+	union Linux_Conditional this = Linux_Conditional_Default();
+	Object_Update_Info(this.Object, &Conditional_Mutex(mutex).Object,
+		sizeof(this.Conditional, sizeof(this.Conditional)));
+	pthread_cond_init(&this.pcond, NULL);
 
-   Linux_Mutex_T * const linux_mutex = _dynamic_cast(Linux_Mutex, mutex);
-   Isnt_Nullptr(linux_mutex,);
+	Linux_Mutex_T * const linux_mutex = _dynamic_cast(Linux_Mutex, mutex);
+	Isnt_Nullptr(linux_mutex, this);
+	return this;
+}
+union Linux_Conditional * Linux_Conditional_Mutex_New(union Mutex * const mutex)
+{
+	Constructor_New_Impl(Linux_Conditional, Mutex, mutex);
 }
 
-bool_t Linux_Conditional_wait(Conditional_T * const super, uint32_t const tout_ms)
+
+bool_t Linux_Conditional_wait(union Conditional * const super, uint32_t const tout_ms)
 {
    Dbg_Info("%s", __FUNCTION__);
    Linux_Conditional_T * const this = _dynamic_cast(Linux_Conditional, super);
@@ -97,7 +103,7 @@ bool_t Linux_Conditional_wait(Conditional_T * const super, uint32_t const tout_m
    return 0 == pthread_cond_timedwait(&this->pcond, &linux_mutex->pmutex, &tm_out);
 }
 
-bool_t Linux_Conditional_signal(Conditional_T * const super)
+bool_t Linux_Conditional_signal(union Conditional * const super)
 {
    Dbg_Info("%s", __FUNCTION__);
    Linux_Conditional_T * const this = _dynamic_cast(Linux_Conditional, super);

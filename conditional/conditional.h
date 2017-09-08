@@ -21,23 +21,14 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
+#define Conditional_INHERITS BASE_CLASS
 
-#define CLASS_NAME Conditional
-#define CLASS_INHERITS Object
-#define CLASS_MEMBERS(_member) \
+#define Conditional_MEMBERS(_member) \
 _member(union Mutex _private * _private, mutex)
 
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, union Mutex * const) \
-bool_t _method(wait, uint32_t const) \
-bool_t _void_method(signal) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Conditional_METHODS(_method, _class) \
+_method(bool_t, _class, wait, uint32_t const) \
+_method(bool_t, _class, signal, void) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,7 +36,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Conditional)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -53,7 +44,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Conditional Conditional_Mutex(union Mutex * const mutex);
+extern union Conditional * Conditional_Mutex_New(union Mutex * const mutex);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

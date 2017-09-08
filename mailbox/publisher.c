@@ -8,13 +8,12 @@
  *
  */
 /*=====================================================================================*/
-#define CLASS_IMPLEMENTATION
+#define OBJECT_IMPLEMENTATION Mailbox
 /*=====================================================================================*
  * Project Includes
  *=====================================================================================*/
 #include "publisher.h"
 #include "mailbox.h"
-#include "mailbox_ringbuffer.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -30,26 +29,30 @@
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
- typedef struct
- {
-    IPC_Mail_Id_T mid;
-    Vector_Mailbox_Ptr_T subscription;
- }Subscription_T;
+typedef union Mailbox * Mbx_Ptr;
+CLASS_DECL(Vector, Mbx_Ptr)
+CLASS_DECL(Map, IPC_Mail_Id_T, Vector_Mbx_Ptr_T)
+
+typedef union Map_IPC_Mail_Id_T_Vector_Mbx_Ptr_T Publisher_Subscription_T;
+
+
+#define Vector_Params Mbx_Ptr
+#include "cvector.c"
+#undef Vector_Params
+
+#define Map_Params, IPC_Mail_Id_T, Vector_Mbx_Ptr_T
+#include "cmap.c"
+#undef Map_Params
+
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Publisher_init(void);
+static void Publisher_Init(void);
 static int Subscription_Compare(void const * a, void const * b);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
-#undef IPC_MAIL
-#define IPC_MAIL(mail, description) {mail, {NULL}}, 
-
-static Subscription_T Subscription_List[] =
-{
-      IPC_SUBSCRIBABLE_MAIL_LIST
-};
+static Publisher_Subscription_T Publisher_Subscription;
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/
@@ -61,18 +64,13 @@ static Subscription_T Subscription_List[] =
 /*=====================================================================================* 
  * Local Function Definitions
  *=====================================================================================*/
-void Publisher_init(void)
+void Publisher_Init(void)
 {
    static bool_t once = false;
 
    if(!once)
    {
-      for(uint8_t i = 0; i < Num_Elems(Subscription_List); ++i)
-      {
-         Subscription_List[i].subscription = Vector_Mailbox_Ptr();
-      }
-      qsort(Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
-            Subscription_Compare);
+	   Publisher_Subscription = Map_IPC_Mail_Id_T_Vector_Mbx_Ptr();
    }
 }
 
@@ -87,13 +85,12 @@ int Subscription_Compare(void const * a, void const * b)
  *=====================================================================================*/
 bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
-   Publisher_init();
-   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail_id,
-         Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
-                     Subscription_Compare);
-   Isnt_Nullptr(found_sub, false);
-   // TODO find if exits, change vector to set
-   found_sub->subscription.vtbl->push_back(&found_sub->subscription, &mailbox);
+   Publisher_Init();
+   union Vector_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
+   if(NULL == vector_mbx)
+   {
+
+   }
    return true;
 }
 bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)

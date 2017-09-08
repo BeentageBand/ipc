@@ -21,21 +21,11 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
-
-#define CLASS_NAME Linux_Mutex
-#define CLASS_INHERITS Mutex
-#define CLASS_MEMBERS(_member) \
+#define Linux_Mutex_INHERITS Mutex
+#define Linux_Mutex_MEMBERS(_member, _class) \
 _member(pthread_mutex_t _private, pmutex) \
 
-#define CLASS_METHODS(_method, _void_method) \
-void _void_method(ctor) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Linux_Mutex_METHODS(_method, _class) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +33,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Linux_Mutex)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -51,7 +41,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Linux_Mutex Linux_Mutex(void);
+extern union Linux_Mutex * Linux_Mutex_New(void);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

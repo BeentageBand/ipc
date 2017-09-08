@@ -24,9 +24,7 @@
 /*=====================================================================================* 
  * Local X-Macros
  *=====================================================================================*/
-#undef CLASS_VIRTUAL_METHODS
-#define CLASS_VIRTUAL_METHODS(_ovr) \
-   _ovr(Task,run)
+
 /*=====================================================================================* 
  * Local Define Macros
  *=====================================================================================*/
@@ -34,13 +32,11 @@
 /*=====================================================================================* 
  * Local Type Definitions
  *=====================================================================================*/
-static void Worker_ctor(Worker_T * const this, IPC_Task_Id_T const tid, uint32_t const mailbox_size);
-static void Worker_run(Task_T * const super);
-static bool_t Worker_is_alive(Worker_T * const this);
+
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-
+static void Worker_runnable(union Task * const super);
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
@@ -56,55 +52,72 @@ CLASS_DEFINITION
 /*=====================================================================================* 
  * Local Function Definitions
  *=====================================================================================*/
-void Worker_init(void)
+void Worker_Init(void)
 {
-   CHILD_CLASS_INITIALIZATION
-   Worker_Vtbl.ctor = Worker_ctor;
+   Worker_Class.runnable = Worker_runnable;
 }
 
-void Worker_shut(void) {}
 
-void Worker_Dtor(Object_T * const obj)
+void Worker_Delete(Object_T * const obj)
 {
-}
-
-bool_t Worker_is_alive(Worker_T * const this)
-{
-   IPC_Mail_Id_T mailist[] = {WORKER_SHUTDOWN_MID};
-   Mail_T const * is_alive = IPC_Retreive_From_Mail_List(mailist, sizeof(mailist), 50);
-   Dbg_Info("Worker %d %s alive", this->Task.tid, (is_alive)? "is not":"is");
-   return NULL == is_alive;
 }
 /*=====================================================================================* 
  * Exported Function Definitions
  *=====================================================================================*/
-void Worker_ctor(Worker_T * const this, IPC_Task_Id_T const tid, uint32_t const mailbox_size)
+union Worker Worker_Tid(IPC_Task_Id_T const tid, uint32_t const mailbox_size)
 {
-   this->Task.vtbl->ctor(&this->Task, tid);
+	union Worker this = Worker_Default();
+   Object_Update_Info(&this.Object, &Task_Tid(tid).Object, sizeof(this.Task), 0);
    this->mailbox_size = mailbox_size;
+   return this;
 }
 
-void Worker_run(Task_T * const super)
+union Worker * Worker_Tid_New(IPC_Task_Id_T const tid, uint32_t const mailbox_size)
+{
+   Constructor_New_Impl(Worker, Tid, tid, mailbox_size);
+}
+
+void Worker_runnnable(Task_T * const super)
 {
    Worker_T * const this = _dynamic_cast(Worker, super);
+   Isnt_Nullptr(this,);
 
-   IPC_Create_Mailbox(this->mailbox_size, 80);
+   union Mailbox mailbox = Mailbox_Size(this->tid, this->mailbox_size);
+
+   Worker_Register_Mailbox(this, &mailbox);
 
    IPC_Task_Ready();
 
    this->vtbl->on_start(this);
 
-   while(Worker_is_alive(this))
+   while(true)
    {
       this->vtbl->on_loop(this);
+
+      union Mail * const mail = IPC_Retrieve(500);
+      if(NULL != mail)
+      {
+    	  this->vtbl->on_mail(this, mail);
+    	  if(WORKER_BCT_SHUTDOWN_MID == mail->mid)
+    	  {
+    		  break;
+    	  }
+      }
+      IPC_Sleep(200);
    }
 
    Dbg_Info("shutdown %d\n", super->tid);
 
    this->vtbl->on_stop(this);
 
-   IPC_Destroy_Mailbox();
+   Worker_Unregister_Mailbox(this, &mailbox);
+   _delete(&mailbox);
 }
+
+void Worker_on_start(union Worker * const this){}
+void Worker_on_mail(union Worker * const this, union Mail * const mail){}
+void Worker_on_loop(union Worker * const this){}
+void Worker_on_stop(union Worker * const this){}
 /*=====================================================================================* 
  * worker.c
  *=====================================================================================*

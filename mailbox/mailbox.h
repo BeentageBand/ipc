@@ -14,10 +14,9 @@
  * Project Includes
  *=====================================================================================*/
 #include "ipc_types.h"
-#include "conditional.h"
 #include "mail.h"
-#include "mutex.h"
-#include "mail_ringbuffer.h"
+#include "cqueue.h"
+#include "mailbox_ext.h"
 /*=====================================================================================* 
  * Standard Includes
  *=====================================================================================*/
@@ -25,32 +24,18 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
+#define Mailbox_INHERITS BASE_CLASS
 
-#define CLASS_NAME Mailbox
-#define CLASS_INHERITS Object
-
-#define CLASS_MEMBERS(_member) \
+#define Mailbox_MEMBERS(_member, _class) \
 _member(IPC_Task_Id_T _private, owner) \
-_member(Queue_Mail_T _private, mailbox) \
+_member(t_Queue(Mail) _private, mailbox) \
 _member(size_t _private, data_size) \
-_member(Mutex_T _private * _private, mutex) \
-_member(Conditional_T _private * _private, cond) \
+_member(union Mailbox_Ext _private * _private, cbk) \
 
-#define CLASS_METHODS(_method, _void_method) \
-      void _method(ctor, IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size) \
-      bool_t _method(subscribe, IPC_Mail_Id_T const) \
-      bool_t _method(unsubscribe, IPC_Mail_Id_T const) \
-      void _method(push_mail, Mail_T * const) \
-      Mail_T const * _method(pop_mail, uint32_t const) \
-      Mail_T const * _method(get_mail_by_mail_id, IPC_Mail_Id_T const * const, uint32_t const, uint32_t const) \
-      void _void_method(dump) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Mailbox_METHODS(_method, _class) \
+void _method(void, _class, push_mail, Mail_T * const) \
+_method(union Mail const *, _class, pop_mail, void) \
+_method(union Mail const *, _class, find_mail, IPC_Mail_Id_T const) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +43,9 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Queue, Mail);
+
+CLASS_DECL(Mailbox);
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -66,7 +53,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Mailbox Mailbox_Setup(IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size);
+extern union Mailbox * Mailbox_Setup_New(IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

@@ -19,22 +19,11 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
-
-#define CLASS_NAME Linux_Conditional
-#define CLASS_INHERITS Conditional
-#define CLASS_MEMBERS(_member) \
+#define Linux_Conditional_INHERITS Conditional
+#define Linux_Conditional_MEMBERS(_member) \
 _member(pthread_cond_t _private, pcond) \
 
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, Mutex_T * const) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
-
+#define Linux_Conditional_METHODS(_method, _class) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +31,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Linux_Conditional)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -50,7 +39,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Linux_Conditional Linux_Conditional_Mutex(union Mutex * const mutex);
+extern union Linux_Conditional * Linux_Conditional_Mutex_New(union Mutex * const mutex);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

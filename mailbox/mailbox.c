@@ -16,8 +16,8 @@
  *=====================================================================================*/
 #include "dbg_log.h"
 #include "ipc.h"
-#include "linux_conditional.h"
-#include "linux_mutex.h"
+#include "conditional.h"
+#include "mutex.h"
 #include "publisher.h"
 #include "mailbox.h"
 /*=====================================================================================* 
@@ -39,18 +39,11 @@
 /*=====================================================================================* 
  * Local Function Prototypes
  *=====================================================================================*/
-static void Mailbox_Ctor(Mailbox_T * const this, IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size);
-static bool_t Mailbox_subscribe(Mailbox_T * const this,  IPC_Mail_Id_T const mid);
-static bool_t Mailbox_unsubscribe(Mailbox_T * const this,   IPC_Mail_Id_T const mid);
-static void Mailbox_push_mail(Mailbox_T * const this, Mail_T * const mail);
-static Mail_T const * Mailbox_pop_mail(Mailbox_T * const this, uint32_t const tout_ms);
-static Mail_T const * Mailbox_get_mail_by_mail_id(Mailbox_T * const this, IPC_Mail_Id_T const * const mid, uint32_t const elems,
-      uint32_t const tout_ms);
-static void Mailbox_dump(Mailbox_T * const this);
+
 /*=====================================================================================* 
  * Local Object Definitions
  *=====================================================================================*/
-CLASS_DEFINITION
+CLASS_DEF(Mailbox)
 /*=====================================================================================* 
  * Exported Object Definitions
  *=====================================================================================*/

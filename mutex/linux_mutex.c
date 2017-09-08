@@ -57,15 +57,14 @@ CLASS_DEFINITION
 /*=====================================================================================*
  * Local Function Definitions
  *=====================================================================================*/
-void Linux_Mutex_init(void)
+void Linux_Mutex_Init(void)
 {
-   CHILD_CLASS_INITIALIZATION
-   Linux_Mutex_Vtbl.ctor = Linux_Mutex_ctor;
+   Linux_Mutex_Class.lock = Linux_Mutex_lock;
+   Linux_Mutex_Class.unlock = Linux_Mutex_unlock;
 }
 
-void Linux_Mutex_shut(void) {}
 
-void Linux_Mutex_Dtor(Object_T * const obj)
+void Linux_Mutex_Delete(struct Object * const obj)
 {
    Linux_Mutex_T * const this = _dynamic_cast(Linux_Mutex, obj);
    Isnt_Nullptr(this, );
@@ -74,10 +73,13 @@ void Linux_Mutex_Dtor(Object_T * const obj)
  /*=====================================================================================*
   * Exported Function Definitions
   *=====================================================================================*/
-void Linux_Mutex_ctor(Linux_Mutex_T * const this)
+union Linux_Mutex Linux_Mutex(void)
 {
-   pthread_mutex_init(&this->pmutex, NULL);
+	union Linux_Mutex this = Linux_Mutex_Default();
+   pthread_mutex_init(&this.pmutex, NULL);
+   return this;
 }
+union Linux_Mutex * Linux_Mutex_New(void);
 
 bool_t Linux_Mutex_lock(Mutex_T * const super, uint32_t const tout_ms)
 {

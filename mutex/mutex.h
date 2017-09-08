@@ -21,21 +21,12 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
+#define Mutex_INHERITS BASE_CLASS
+#define Mutex_MEMBERS(_member, _class) \
 
-#define CLASS_NAME Mutex
-#define CLASS_INHERITS Object
-#define CLASS_MEMBERS(_member) \
-
-#define CLASS_METHODS(_method, _void_method) \
-bool_t _method(lock, uint32_t const) \
-bool_t _void_method(unlock) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Mutex_METHODS(_method, _class) \
+ _method(bool_t, _class, lock, uint32_t const) \
+ _method(bool_t, _class, unlock, void) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +34,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Mutex)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -51,7 +42,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Mutex Mutex(void);
+extern union Mutex * Mutex_New(void);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/

@@ -22,23 +22,16 @@
 /*=====================================================================================* 
  * Exported Define Macros
  *=====================================================================================*/
-#undef CLASS_NAME
-#undef CLASS_INHERITS
-#undef CLASS_MEMBERS
-#undef CLASS_METHODS
-#undef CLASS_CONSTRUCTORS
+#define Task_INHERITS BASE_CLASS
 
-#define CLASS_NAME Task
-#define CLASS_INHERITS Object
-
-#define CLASS_MEMBERS(_member) \
+#define Task_MEMBERS(_member) \
 _member(IPC_Task_Id_T _private, tid) \
 
-#define CLASS_METHODS(_method, _void_method) \
-void _method(ctor, IPC_Task_Id_T const) \
-void _void_method(run) \
-
-#define CLASS_CONSTRUCTORS(_ctor)
+#define Task_METHODS(_method, _class) \
+_method(void, _class, run, void) \
+_method(void, _class, wait, uint32_t const) \
+/*implement*/\
+_method(void, _class, runnable, void) \
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +39,7 @@ extern "C" {
 /*=====================================================================================* 
  * Exported Type Declarations
  *=====================================================================================*/
-CLASS_DECLARATION
+CLASS_DECL(Task)
 /*=====================================================================================* 
  * Exported Object Declarations
  *=====================================================================================*/
@@ -54,7 +47,8 @@ CLASS_DECLARATION
 /*=====================================================================================* 
  * Exported Function Prototypes
  *=====================================================================================*/
-
+extern union Task Task_Tid(IPC_Task_Id_T const tid);
+extern union Task * Task_Tid_New(IPC_Task_Id_T const tid);
 /*=====================================================================================* 
  * Exported Function Like Macros
  *=====================================================================================*/
