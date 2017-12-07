@@ -1,6 +1,6 @@
 define $(_flavor_)_$(_feat_)_MAKE
 
-$(_flavor_)_$(_feat_)_inc=mailbox.h publisher.h
+$(_flavor_)_$(_feat_)_inc=mailbox.h mailbox_ext.h publisher.h
  
 $(_flavor_)_$(_feat_)_lib_objs=mailbox publisher
 
