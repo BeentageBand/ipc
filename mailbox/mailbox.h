@@ -1,70 +1,50 @@
-/*=====================================================================================*/
-/**
- * mailbox.h
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #ifndef MAILBOX_H_
 #define MAILBOX_H_
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
+ 
 #include "ipc_types.h"
 #include "mail.h"
-#include "cqueue.h"
 #include "mailbox_ext.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
 
-/*=====================================================================================* 
- * Exported Define Macros
- *=====================================================================================*/
-#define Mailbox_INHERITS BASE_CLASS
-
-#define Mailbox_MEMBERS(_member, _class) \
-_member(IPC_Task_Id_T _private, owner) \
-_member(t_Queue(Mail) _private, mailbox) \
-_member(size_t _private, data_size) \
-_member(union Mailbox_Ext _private * _private, cbk) \
-
-#define Mailbox_METHODS(_method, _class) \
-void _method(void, _class, push_mail, Mail_T * const) \
-_method(union Mail const *, _class, pop_mail, void) \
-_method(union Mail const *, _class, find_mail, IPC_Mail_Id_T const) \
+#define CQueue_Params Mail
+#include "cqueue.h"
+#undef CQueue_Params
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*=====================================================================================* 
- * Exported Type Declarations
- *=====================================================================================*/
-CLASS_DECL(Queue, Mail);
 
-CLASS_DECL(Mailbox);
-/*=====================================================================================* 
- * Exported Object Declarations
- *=====================================================================================*/
+typedef union Mailbox
+{
+	union Mailbox_Class _private * _private vtbl;
+	struct
+	{
+		struct Object Object;
+		IPC_Task_Id_T _private owner;
+		T_Queue(Mail) _private mailbox;
+		T_Alloc(Pool) _private pool_data;
+		size_t _private data_size;
+		union Mailbox_Ext _private * _private, cbk;
+	};
+}Mailbox_T;
 
-/*=====================================================================================* 
- * Exported Function Prototypes
- *=====================================================================================*/
-extern union Mailbox Mailbox_Setup(IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size);
-extern union Mailbox * Mailbox_Setup_New(IPC_Task_Id_T const owner, uint32_t const mail_elems, size_t const data_size);
-/*=====================================================================================* 
- * Exported Function Like Macros
- *=====================================================================================*/
+typedef union Mailbox_Class
+{
+	struct
+	{
+		struct Object Object;
+		void (* _private push_mail)(union Mailbox * const, union Mail * const);
+		union Mail * (* _private pop_mail)(union Mailbox * const);
+		union Mail * (* _private find_mail)(union Mailbox * const, IPC_Mail_Id_T const);
+	};
+}Mailbox_Class_T;
+
+extern Populate_Mailbox(union Mailbox * const this, IPC_Task_Id_T const owner, union Mail * const mail_buff, 
+		uint32_t const mail_elems, void * const data_buff, size_t const data_size);
+
+extern union Mailbox_Class _private Mailbox_Class;
+ 
 #ifdef __cplusplus
 }
 #endif
-/*=====================================================================================* 
- * mailbox.h
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
+ 
 #endif /*MAILBOX_H_*/

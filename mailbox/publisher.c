@@ -1,76 +1,36 @@
-/*=====================================================================================*/
-/**
- * publisher.cpp
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #define OBJECT_IMPLEMENTATION Mailbox
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
+ 
 #include "publisher.h"
 #include "mailbox.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
+ 
+typedef union Mailbox * Mbx_Ptr_T;
 
-/*=====================================================================================* 
- * Local X-Macros
- *=====================================================================================*/
+#define CSet_Params Mbx_Ptr
+#include "cset.h"
+#include "cset.c"
+#undef CSet_Params
 
-/*=====================================================================================* 
- * Local Define Macros
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Type Definitions
- *=====================================================================================*/
-typedef union Mailbox * Mbx_Ptr;
-CLASS_DECL(Vector, Mbx_Ptr)
-CLASS_DECL(Map, IPC_Mail_Id_T, Vector_Mbx_Ptr_T)
-
-typedef union Map_IPC_Mail_Id_T_Vector_Mbx_Ptr_T Publisher_Subscription_T;
-
-
-#define Vector_Params Mbx_Ptr
-#include "cvector.c"
-#undef Vector_Params
-
-#define Map_Params, IPC_Mail_Id_T, Vector_Mbx_Ptr_T
+#define CMap_Params, IPC_Mail_Id, CSet_Mbx_Ptr
+#include "cmap.h"
 #include "cmap.c"
-#undef Map_Params
+#undef CMap_Params
 
-/*=====================================================================================* 
- * Local Function Prototypes
- *=====================================================================================*/
+typedef CMap_IPC_Mail_Id_CSet_Mbx_Ptr_T Publisher_Subscription_T;
+
 static void Publisher_Init(void);
 static int Subscription_Compare(void const * a, void const * b);
-/*=====================================================================================* 
- * Local Object Definitions
- *=====================================================================================*/
+ 
 static Publisher_Subscription_T Publisher_Subscription;
-/*=====================================================================================* 
- * Exported Object Definitions
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Inline-Function Like Macros
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Function Definitions
- *=====================================================================================*/
+ 
 void Publisher_Init(void)
 {
    static bool_t once = false;
+   static struct CPair_IPC_Mail_Id_CSet_Mbx_Ptr publisher_subscription_buff[IPC_PBC_MID_END - IPC_PBC_MID_BEGIN];
 
    if(!once)
    {
-	   Publisher_Subscription = Map_IPC_Mail_Id_T_Vector_Mbx_Ptr();
+	   Populate_CMap_IPC_Mail_Id_CSet_Mbx_Ptr(&Publisher_Subscription, 
+			   publisher_subscription_buff, Num_Elems(publisher_subscription_buff));
    }
 }
 
@@ -80,30 +40,46 @@ int Subscription_Compare(void const * a, void const * b)
    IPC_Task_Id_T const * sb = (IPC_Task_Id_T const *)b;
    return (*sa - *sb);
 }
-/*=====================================================================================* 
- * Exported Function Definitions
- *=====================================================================================*/
+ 
 bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
+   static MailBox_Ptr_T mailbox_buffer[IPC_PBC_END - IPC_PBC_MID_BEGIN][IPC_MAX_TID];
+
    Publisher_Init();
-   union Vector_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
+   union CSet_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
+   
    if(NULL == vector_mbx)
    {
-
+      union CSet_Mbx_Ptr mbx_list;
+	  Populate_CSet_Mbx_Ptr(&mbx_list, mailbox_buffer[mail_id - IPC_PBC_MID_BEGIN], IPC_MAX_TID);
+      Publisher_Suscription->vtbl->insert(&Publisher_Subscription, mail_id, mbx_list);
+	  vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
    }
+
+   union Mailbox ** mbx = vector_mbx->vtbl->find(vector_mbx, mailbox);
+
+   if(NULL == mbx)
+   {
+	   vector_mbx->vtbl->insert(vector_mbx, mailbox);
+   }
+
    return true;
 }
+
 bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
 {
    Publisher_init();
-   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail_id,
-         Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
-                     Subscription_Compare);
-   Isnt_Nullptr(found_sub, false);
-   // TODO find if exits, change vector to set
-   // TODO erase found_sub->subscription.vtbl->erase(&found_sub->subscription, mailbox);
+
+   union CSet_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
+
+   if(NULL != vector_mbx)
+   {
+	   vector_mbx->vtbl->erase(vector_mbx, mailbox);
+   }
+
    return true;
 }
+
 void Publisher_publish_mail(Mail_T * const mail)
 {
    Publisher_init();
@@ -120,9 +96,3 @@ void Publisher_publish_mail(Mail_T * const mail)
       mbx->vtbl->push_mail(mbx, mail);
    }
 }
-/*=====================================================================================* 
- * publisher.cpp
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
