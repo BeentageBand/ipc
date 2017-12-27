@@ -1,63 +1,43 @@
-/*=====================================================================================*/
-/**
- * worker.h
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #ifndef WORKER_H_
 #define WORKER_H_
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
-#include "task.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Exported Define Macros
- *=====================================================================================*/
-#define Worker_INHERITS Task
-#define Worker_MEMBERS(_member) \
-_member(uint32_t _private, mailbox_size) \
-
-#define Worker_METHODS(_method, _class) \
-/*implement*/\
-_method(void, _class, on_mail, union Mail * const) \
-_method(void, _class, on_start, void) \
-_method(void, _class, on_loop, void) \
-_method(void, _class, on_stop  void) \
-
+ 
+#include "thread.h"
+#include "mailbox.h"
+ 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*=====================================================================================* 
- * Exported Type Declarations
- *=====================================================================================*/
-CLASS_DECL(Worker)
-/*=====================================================================================* 
- * Exported Object Declarations
- *=====================================================================================*/
 
-/*=====================================================================================* 
- * Exported Function Prototypes
- *=====================================================================================*/
-extern union Worker Worker_Tid(IPC_Task_Id_T const tid, uint32_t const mbx_size);
-extern union Worker * Worker_Tid_New(IPC_Task_Id_T const tid, uint32_t const mbx_size);
-/*=====================================================================================* 
- * Exported Function Like Macros
- *=====================================================================================*/
+typedef union Worker
+{
+	union Worker_Class _private * _private vtbl;
+	struct Object Object;
+	struct
+	{
+		union Thread Thread;
+		union Mailbox _private Mailbox;
+	};
+}Worker_T;
+
+typedef union Worker_Class
+{
+	struct Class Class;
+	struct
+	{
+		union Thread_Class Thread;
+		void (* _private on_mail)(union Worker * const, union Mail * const);
+		void (* _private on_star)(union Worker * const);
+		void (* _private on_loop)(union Worker * const);
+		void (* _private on_stop)(union Worker * const);
+	};
+}Worker_Class_T;
+
+extern union Worker_Class _private Worker_Class;
+ 
+extern void Populate_Worker(union Worker * const worker, IPC_Task_Id_T const tid);
+ 
 #ifdef __cplusplus
 }
 #endif
-/*=====================================================================================* 
- * worker.h
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
+ 
 #endif /*WORKER_H_*/
