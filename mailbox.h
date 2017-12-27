@@ -1,9 +1,7 @@
 #ifndef MAILBOX_H_
 #define MAILBOX_H_
  
-#include "ipc_types.h"
 #include "mail.h"
-#include "mailbox_ext.h"
 
 #define CQueue_Params Mail
 #include "cqueue.h"
@@ -13,36 +11,33 @@
 extern "C" {
 #endif
 
-typedef union Mailbox
+union Mailbox_Class
+{
+	struct
+	{
+		struct Class Class;
+		void (*_private push_mail)(union Mailbox * const this, union Mail * mail);
+		void (*_private retrieve)(union Mailbox * const this, union Mail * mail);
+		void (*_private retrieve_only)(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
+	};
+};
+
+union Mailbox
 {
 	union Mailbox_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
-		IPC_Task_Id_T _private owner;
-		T_Queue(Mail) _private mailbox;
-		T_Alloc(Pool) _private pool_data;
-		size_t _private data_size;
-		union Mailbox_Ext _private * _private, cbk;
+		CVector_Mail_T _private mailbox;
+		Alloc_Payload_T payload_allocator;
 	};
-}Mailbox_T;
-
-typedef union Mailbox_Class
-{
-	struct
-	{
-		struct Object Object;
-		void (* _private push_mail)(union Mailbox * const, union Mail * const);
-		union Mail * (* _private pop_mail)(union Mailbox * const);
-		union Mail * (* _private find_mail)(union Mailbox * const, IPC_Mail_Id_T const);
-	};
-}Mailbox_Class_T;
-
-extern Populate_Mailbox(union Mailbox * const this, IPC_Task_Id_T const owner, union Mail * const mail_buff, 
-		uint32_t const mail_elems, void * const data_buff, size_t const data_size);
+};
 
 extern union Mailbox_Class _private Mailbox_Class;
- 
+
+extern void Populate_Mailbox(union Mailbox * const this, Payload_T * const payload_buff, size_t const payload_size, 
+		union Mail * const mailbox,	size_t const mailbox_size)
+		
 #ifdef __cplusplus
 }
 #endif

@@ -1,17 +1,16 @@
 #ifndef PUBLISHER_H_
 #define PUBLISHER_H_
- 
-#include "mailbox.h"
+
+#include "ipc_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern bool Publisher_Subscribe(union Mailbox * const mbx, IPC_MID_T const mid);
 
-extern bool_t Publisher_subscribe(union Mailbox * const mailbox, IPC_Mail_Id_T const mail_id);
+extern bool Publisher_Subscribe(union Mailbox * const mbx, IPC_MID_T const mid);
 
-extern bool_t Publisher_unsubscribe(union Mailbox * const mailbox, IPC_Mail_Id_T const mail_id);
-
-extern void Publisher_publish_mail(union Mail * const mail);
+extern void Publisher_Publish(union Mail * const mail);
  
 #ifdef __cplusplus
 }

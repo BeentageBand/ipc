@@ -1,98 +1,63 @@
-#define OBJECT_IMPLEMENTATION Mailbox
+#define COBJECT_IMPLEMENTATION
  
 #include "publisher.h"
-#include "mailbox.h"
- 
-typedef union Mailbox * Mbx_Ptr_T;
+#include "ipc.h"
 
-#define CSet_Params Mbx_Ptr
+#define CSet_Params IPC_TID
 #include "cset.h"
 #include "cset.c"
 #undef CSet_Params
 
-#define CMap_Params, IPC_Mail_Id, CSet_Mbx_Ptr
-#include "cmap.h"
-#include "cmap.c"
-#undef CMap_Params
+typedef CSet_IPC_TID_T Subcription_List_T;
 
-typedef CMap_IPC_Mail_Id_CSet_Mbx_Ptr_T Publisher_Subscription_T;
+static void publisher_init(void);
 
-static void Publisher_Init(void);
-static int Subscription_Compare(void const * a, void const * b);
- 
-static Publisher_Subscription_T Publisher_Subscription;
- 
-void Publisher_Init(void)
+static Subscription_List_T Subscription_List[IPC_PBC_END - IPC_PBC_BEGIN];
+
+static IPC_TID_T Subscription_Buff[IPC_PBC_END - IPC_PBC_BEGIN][IPC_MAX_TIDS];
+
+void publisher_init(void)
 {
-   static bool_t once = false;
-   static struct CPair_IPC_Mail_Id_CSet_Mbx_Ptr publisher_subscription_buff[IPC_PBC_MID_END - IPC_PBC_MID_BEGIN];
-
-   if(!once)
-   {
-	   Populate_CMap_IPC_Mail_Id_CSet_Mbx_Ptr(&Publisher_Subscription, 
-			   publisher_subscription_buff, Num_Elems(publisher_subscription_buff));
-   }
+	uint32_t i;
+	for(i = 0; i < Num_Elems(Subscription_List); ++i)
+	{
+		Populate_CSet_IPC_TID(Subscription_List + i, Subscription_Buff + i, IPC_MAX_TIDS);
+	}
 }
 
-int Subscription_Compare(void const * a, void const * b)
+bool Publisher_Subscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 {
-   IPC_Task_Id_T const * sa = (IPC_Task_Id_T const *)a;
-   IPC_Task_Id_T const * sb = (IPC_Task_Id_T const *)b;
-   return (*sa - *sb);
-}
- 
-bool_t Publisher_subscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
-{
-   static MailBox_Ptr_T mailbox_buffer[IPC_PBC_END - IPC_PBC_MID_BEGIN][IPC_MAX_TID];
+	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
+	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
 
-   Publisher_Init();
-   union CSet_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
-   
-   if(NULL == vector_mbx)
-   {
-      union CSet_Mbx_Ptr mbx_list;
-	  Populate_CSet_Mbx_Ptr(&mbx_list, mailbox_buffer[mail_id - IPC_PBC_MID_BEGIN], IPC_MAX_TID);
-      Publisher_Suscription->vtbl->insert(&Publisher_Subscription, mail_id, mbx_list);
-	  vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
-   }
+	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
+	subscription->vtbl->insert(subscription, tid);
 
-   union Mailbox ** mbx = vector_mbx->vtbl->find(vector_mbx, mailbox);
-
-   if(NULL == mbx)
-   {
-	   vector_mbx->vtbl->insert(vector_mbx, mailbox);
-   }
-
-   return true;
+	return (subscription->vtbl->end(subscription) != subscription->vtbl->find(subscription, tid));
 }
 
-bool_t Publisher_unsubscribe(Mailbox_T * const mailbox, IPC_Mail_Id_T const mail_id)
+
+
+bool Publisher_Unsubscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 {
-   Publisher_init();
+	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
+	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
 
-   union CSet_Mbx_Ptr * vector_mbx = Publisher_Subscription->vtbl->find(&Publisher_Subscription, mail_id);
+	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
+	subscription->vtbl->erase(subscription, tid);
 
-   if(NULL != vector_mbx)
-   {
-	   vector_mbx->vtbl->erase(vector_mbx, mailbox);
-   }
-
-   return true;
+	return (subscription->vtbl->end(subscription) == subscription->vtbl->find(subscription, tid));
 }
 
-void Publisher_publish_mail(Mail_T * const mail)
+void Publisher_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-   Publisher_init();
-   Isnt_Nullptr(mail, );
-   Subscription_T * const found_sub = (Subscription_T * const) bsearch(&mail->mail_id,
-            Subscription_List, Num_Elems(Subscription_List), sizeof(*Subscription_List),
-                        Subscription_Compare);
-   Isnt_Nullptr(found_sub, );
+	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
+	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
 
-   for(uint8_t i = 0; i < found_sub->subscription.vtbl->size(&found_sub->subscription);
-         ++i)
-   {
-      Mailbox_T * const mbx = found_sub->subscription.vtbl->at(&found_sub->subscription, i);
-      mbx->vtbl->push_mail(mbx, mail);
-   }
+	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
+    IPC_TID_T * it = subscription->vtbl->begin(subscription);
+	for( ; it != subscription->vtbl->end(subscription); ++it)
+	{
+		IPC_Send((*it), mid, payload, pay_size);
+	}
 }

@@ -1,254 +1,195 @@
-/*=====================================================================================*/
-/**
- * ipc.cpp
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #undef Dbg_FID
 #define Dbg_FID Dbg_FID_Def(IPC_FID,0)
 #define CLASS_IMPLEMENTATION
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
+
 #include "dbg_log.h"
 #include "ipc_set.h"
 #include "ipc.h"
-#include "mailbox.h"
-#include "task.h"
-#include "task_ext.h"
-#include "ipc_ext.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
+#include "ipc_helper.h"
 
-/*=====================================================================================* 
- * Local X-Macros
- *=====================================================================================*/
+static union Thread * ipc_find_thread(IPC_TID_T const thread);
+static union Thread * ipc_find_mailbox(IPC_TID_T const mailbox);
 
-/*=====================================================================================* 
- * Local Define Macros
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Type Definitions
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Function Prototypes
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Object Definitions
- *=====================================================================================*/
-CLASS_DEF(IPC)
-
-/*=====================================================================================* 
- * Exported Object Definitions
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Inline-Function Like Macros
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Function Definitions
- *=====================================================================================*/
-void IPC_Init(void)
+union Thread * ipc_find_thread(IPC_TID_T const thread)
 {
-	IPC_Obj.publisher = Publisher();
-	IPC_Obj.mailboxes = Map_Mbx_Ptr();
-	IPC_Obj.tasks = Map_Task_Ptr();
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	CMap_IPC_TID_Thread_T * const thread_stack = ipc_help->thread_stack;
+	CPair_IPC_TID_Thread_T * found = thread_stack->vtbl->find(thread_stack, thread);
+	return (found != thread_stack->vtbl->end(thread_stack))? found->object : NULL;
 }
 
-void IPC_Delete(Object_T * const obj)
+union Thread * ipc_find_thread(IPC_TID_T const thread)
 {
-	_delete(&IPC_Obj.publisher);
-	_delete(&IPC_Obj.mailboxes);
-	_delete(&IPC_Obj.tasks);
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	CMap_IPC_TID_Mailbox_T * const mailbox_stack = ipc_help->mailbox_stack;
+	CPair_IPC_TID_Mailbox_T * found = mailbox_stack->vtbl->find(mailbox_stack, thread);
+	return (found != mailbox_stack->vtbl->end(thread_stack))? found->object : NULL;
 }
 
-/*=====================================================================================*
- * Exported Function Definitions
- *=====================================================================================*/
-union IPC * IPC_get_instance(void)
+IPC_TID_T IPC_Self(void)
 {
-	(void)IPC_Default();
-	return & IPC_Obj;
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	IPC_TID_T self_id  = ipc_help->vtbl->self(icp_help);
+	union Thread * found = ipc_find_thread(self_id);
+	return (NULL != found)? found->tid : MAX_TIDS;
 }
 
-bool_t Task_Register_To_Process(union Task * const task)
+void IPC_Ready(void)
 {
-	union IPC * ipc = IPC_get_instance();
-	Isnt_Nullptr(ipc, false);
-	ipc->tasks->vtbl->insert(&ipc->tasks, task->tid, task);
-	return true;
-}
-
-/** IPC APIs **/
-
-int IPC_Run(IPC_Task_Id_T const tid)
-{
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, -1);
-	union Task * const task = this->tasks->vtbl->find(&this->tasks, tid);
-	Isnt_Nullptr(task, -1);
-	return this->vtbl->run(this, task);
-}
-
-int IPC_Wait(IPC_Task_Id_T const tid, uint32_t wait_ms)
-{
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, -1);
-	union Task * const task = this->tasks->vtbl->find(&this->tasks, tid);
-	Isnt_Nullptr(task, -1);
-
-	return task->vtbl->wait(task, wait_ms);
-}
-
-void IPC_Register_Mailbox(union Mailbox * const mailbox)
-{
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, );
-	this->mailboxes->vtbl->insert(&this->mailboxes, mailbox->owner, mailbox);
-}
-
-void IPC_Unregister_Mailbox(void)
-{
-	union IPC * this = IPC_get_instance();
-   Isnt_Nullptr(this, );
-
-   this->mailboxes->vtbl->erase(&this->mailboxes, IPC_Self_Task_Id());
-
-}
-/**
- * TB Mail Comm
- */
-bool_t IPC_Subscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems)
-{
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, false);
-
-	union Mailbox * const mailbox = this->mailboxes->vtbl->find(&this->mailboxes, IPC_Self_Task_Id());
-
-	Isnt_Nullptr(this, false);
-
-	bool_t rc = true;
-	uint32_t i;
-
-	for(i = 0; i < mail_elems && rc; ++i)
+	union Thread * found = ipc_find_thread(IPC_Self());
+	if(NULL != found)
 	{
-		rc= this->publisher->vtbl->subscribe(&this->publisher, mail_list[i], mailbox);
+		found->vtbl->post(found);
+	}
+}
+
+void IPC_Wait(IPC_TID_T const tid, IPC_Clock_T const wait_ms)
+{
+	union Thread * found = ipc_find_thread(tid);
+	if(NULL != found)
+	{
+		(void)found->vtbl->wait(found, wait_ms);
+	}
+}
+	
+void IPC_Run(IPC_TID_T const tid)
+{
+	union Thread * found = ipc_find_thread(tid);
+	if(NULL != found)
+	{
+		found->vtbl->post(found);
+	}
+}
+
+bool IPC_Register_Mailbox(union Mailbox * const mbx)
+{
+	union IPC_Helper * ipc_help;
+
+	Allocate_IPC_Helper(ipc_help);
+
+	CMap_IPC_TID_Mailbox_T * const mailbox_stack = ipc_help->mailbox_stack;
+	mailbox_stack->vtbl->insert(mailbox_stack, IPC_Self(), &mbx);
+	return NULL != ipc_find_mailbox(IPC_Self());
+}
+
+bool IPC_Unregister_Mailbox(union Mailbox * const mbx)
+{
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+
+	CMap_IPC_TID_Mailbox_T * const mailbox_stack = ipc_help->mailbox_stack;
+	mailbox_stack->vtbl->erase(mailbox_stack, IPC_Self());
+	
+	return NULL == ipc_find_mailbox(IPC_Self());
+}
+
+
+bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size)
+{
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	union Publisher * const publisher = ipc_help->publisher;
+	union Mailbox * mailbox = ipc_find_mailbox(IPC_Self());
+	uint32_t i;
+	bool rc = true;
+	for( i; i < mailist_size && rc; ++i)
+	{
+		rc = Publisher_Subscribe(publisher, mailbox, mailist[i]);
 	}
 	return rc;
 }
 
-bool_t IPC_Unsubscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems)
+bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size)
 {
-	union IPC * const this = IPC_get_instance();
-	Isnt_Nullptr(this, false);
-
-	union Mailbox * mailbox = this->mailboxes->vtbl->find(&this->mailboxes, IPC_Self_Task_Id());
-	Isnt_Nullptr(mailbox, false);
-
-	bool_t rc = true;
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	union Publisher * const publisher = ipc_help->publisher;
+	union Mailbox * mailbox = ipc_find_mailbox(IPC_Self());
 	uint32_t i;
-	for(i = 0; i < mail_elems && rc; ++i)
+	bool rc = true;
+	for( i; i < mailist_size && rc; ++i)
 	{
-		rc = this->publisher->vtbl->subscribe(&this->publisher, mail_list[i], mailbox);
+		rc = Publisher_Unsubscribe(publisher, mailbox, mailist[i]);
 	}
 	return rc;
 }
 
-void IPC_Send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
-		void const * data, size_t const data_size)
+bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 {
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, );
+	union Mailbox * const mbx = ipc_find_mailbox(IPC_Self());
+	IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
 
-	union Mailbox * const mailbox = this->mailboxes->vtbl->find(&this->mailboxes, receiver_task);
-	Dbg_Verbose("%s mbx %s", __FUNCTION__, (mailbox)? "found":"not found");
-	Isnt_Nullptr(mailbox, );
+	bool rc = false;
+	do
+	{
+		rc = mbx->vtbl->retrieve(mbx, mail);
+		IPC_Sleep(50);// do something else
+	} while( !rc && !IPC_Time_Elapsed(timestamp));
 
-	union Mail mail = Mail_Fillup(mail_id, receiver_task, data, data_size);
-
-	mailbox->vtbl->push_mail(mailbox, &mail);
+	return rc;
 }
 
-void IPC_Publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size)
+bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_ms, IPC_MID_T const * const mailist,
+ uint32_t const mailist_size)
 {
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, );
+	union Mailbox * const mbx = ipc_find_mailbox(IPC_Self());
+	IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
 
-	union Mail mail = Mail_Fillup(mail_id, 0, data, data_size);
-	this->publisher->vtbl->publish_mail(&mail);
-
-	_delete(&mail);
+	bool rc = false;
+	uint8_t i = 0;
+	do
+	{
+		for(; i < mailist_size && !rc; ++i)
+		{
+			rc = mbx->vtbl->retrieve_only(mbx, mail, mailist[i]);
+		}
+		IPC_Sleep(50);// do something else
+	} while( !rc && !IPC_Time_Elapsed(timestamp));
+	
+	return rc;
 }
 
-void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size)
+void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-   union IPC * this = IPC_get_instance();
-   Isnt_Nullptr(this, );
-
-   union Mailbox * it;
-   for(it = this->mailboxes->vtbl->begin(&this->mailboxes);
-		it != NULL &&
-		it < this->mailboxes->vtbl->end(&this->mailboxes);
-		++it)
-   {
-      union Mail mail = Mail_Fillup(mail_id, it->owner, data, data_size);
-      it->vtbl->push_mail(mailbox, &mail);
-      _delete(&mail);
-   }
+	union Mailbox * const mbx = ipc_find_mailbox(rcv_tid);
+	if(NULL != mbx)
+	{
+		union Mail mail;
+		Populate_Mail(&mail, IPC_Self(), rcv_tid, mid, mbx->payload_alloc, payload, pay_size);
+		mbx->vtbl->push_mail(mbx, &mail);
+	}
 }
 
-union Mail const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
-      uint32_t const timeout_ms)
+void IPC_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-	Dbg_Verbose("Retreive_From_Mail_List");
-	Isnt_Nullptr(mail_list, NULL);
-
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, NULL);
-
-	union Mailbox * mailbox = this->mailboxes->vtbl->find(&this->mailboxes, IPC_Self_Task_Id());
-	Isnt_Nullptr(mailbox, NULL);
-
-	union Mail * const mail = mailbox->vtbl->find_only(mailbox, mail_list, mail_elems, timeout_ms);
-	//Dbg_Verbose("mailbox %d %s", this->vtbl->get_tid(this), (mailbox)? "found" : "NULL");
-	Isnt_Nullptr(mail, NULL);
-
-
-	Dbg_Verbose("%s", mail ? "found" : "NULL");
-	return mail;
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	
+	union Publisher * const publisher = ipc_help->publisher;
+	
+	Publisher_Publish(mid, payload, pay_size);
 }
 
-union Mail const * IPC_Retreive_Mail(uint32_t const timeout_ms)
+IPC_Clock_T IPC_Clock(void)
 {
-	Dbg_Verbose("Retreive_From_Mail_List");
-	Isnt_Nullptr(mail_list, NULL);
-
-	union IPC * this = IPC_get_instance();
-	Isnt_Nullptr(this, NULL);
-
-	union Mailbox * mailbox = this->mailboxes->vtbl->find(&this->mailboxes, IPC_Self_Task_Id());
-	Isnt_Nullptr(mailbox, NULL);
-
-	union Mail * const mail = mailbox->vtbl->pop_mail(mailbox, timeout_ms);
-	//Dbg_Verbose("mailbox %d %s", this->vtbl->get_tid(this), (mailbox)? "found" : "NULL");
-	Isnt_Nullptr(mail, NULL);
-
-
-	Dbg_Verbose("%s", mail ? "found" : "NULL");
-   return mail;
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	union Uptime * const uptime = ipc_help->uptime;
+	return uptime->millis(uptime);
 }
-/*=====================================================================================* 
- * ipc.cpp
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
+
+
+bool IPC_Clock_Elapsed(IPC_Clock_T const clock_ms)
+{
+	return clock_ms < IPC_Clock();
+}
+
+void IPC_Sleep(IPC_Clock_T const ms)
+{
+	union IPC_Helper * ipc_help;
+	Allocate_IPC_Helper(ipc_help);
+	ipc_help->vtbl->sleep(ipc_help);
+}

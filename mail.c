@@ -1,5 +1,4 @@
-#define OBJECT_IMPLEMENTATION
- 
+#define COBJECT_IMPLEMENTATION
 #include "mail.h"
 
 static void mail_delete(struct Object * const obj);
@@ -16,7 +15,7 @@ static IPC_Task_Id_T mail_get_receiver_task(union Mail * const this,void);
 
 union Mail_Class Mail_Class =
 {
-	{mail_delete},
+	{mail_delete, NULL},
 	mail_set_data,
 	mail_get_data,
 	mail_get_data_size,
@@ -31,21 +30,15 @@ union Mail_Class Mail_Class =
 
 static union Mail Mail = {NULL};
 
-void Mail_init(void)
+void mail_delete(struct Object * const object)
 {
-}
+	union Mail * const this = (Mail_T * ) Object_Cast(&Mail_Class, object);
 
-void mail_delete(struct Object * const obj)
-{
-   union Mail * const this = Object_Cast(&Mail_Class.Class, obj);
-   Isnt_Nullptr(this, );
+	if(NULL == this) return;
 
-   if(0 != this->data_size)
-   {
-      free(this->data);
-      this->data = NULL;
-   }
-   this->data_size = 0;
+	Alloc_Payload_T * const alloc = this->pay_allocator;
+
+	alloc->vtbl->free_block(this->payload, payload_size);
 }
  
 void Populate_Mail(union Mail * const this, IPC_Mail_Id_T const mail_id, IPC_Task_Id_T const sender_task,
@@ -61,14 +54,13 @@ void Populate_Mail(union Mail * const this, IPC_Mail_Id_T const mail_id, IPC_Tas
 	}
 
 	memcpy(this, &Mail, sizeof(Mail));
-
-	this->mail_id = mail_id;
-	this->sender_task = sender_task;
-	this->receiver_task = receiver_task;
-
-	this->vtbl->set_data(this, data, data_size);
+	this->sender = sender;
+	this->receiver = receiver;
+	this->pay_allocator = pay_allocator;
+	this->payload = pay_allocator->vtbl->alloc_block(pay_size);
+	this->pay_size = pay_size;
 }
-
+	
 void mail_set_data(Mail_T * const this, void const * data, size_t const data_size)
 {
    Isnt_Nullptr(this,);

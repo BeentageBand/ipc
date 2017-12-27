@@ -1,86 +1,52 @@
-/*=====================================================================================*/
-/**
- * ipc.h
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #ifndef IPC_H_
 #define IPC_H_
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
-#include "ipc_types.h"
-#include "mail.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
 
-/*=====================================================================================* 
- * Exported Define Macros
- *=====================================================================================*/
+#include "ipc_types.h"
+#include "mailbox.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*=====================================================================================* 
- * Exported Type Declarations
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Exported Object Declarations
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Exported Function Prototypes
- *=====================================================================================*/
 /**
  * IPC Task Handling
  * This apis should be used in task running
  */
-extern IPC_Task_Id_T IPC_Self_Task_Id(void);
+extern IPC_TID_T IPC_Self(void);
 
-extern void IPC_Task_Ready(void);
+extern void IPC_Ready(void);
 
-extern int IPC_Run(IPC_Task_Id_T const tid);
+extern void IPC_Wait(IPC_TID_T const tid, IPC_Clock_T const wait_ms);
 
-extern int IPC_Wait(IPC_Task_Id_T const tid);
+extern void IPC_Run(IPC_TID_T const tid);
 
-extern void IPC_Sleep(uint32_t const ms);
 /**
  * IPC Mail Comm
  */
-extern void IPC_Register_Mailbox(uint32_t const max_mails, size_t const mail_size);
+extern bool IPC_Register_Mailbox(union Mailbox * const mbx);
 
-extern void IPC_Unregister_Mailbox(void);
+extern bool IPC_Register_Mailbox(union Mailbox * const mbx);
 
-extern bool_t IPC_Subscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
+extern bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size);
 
-extern bool_t IPC_Unsubscribe_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems);
+extern bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size);
 
-extern void IPC_Send(IPC_Task_Id_T const receiver_task, IPC_Mail_Id_T mail_id,
-      void const * data, size_t const data_size);
+extern bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms);
 
-extern void IPC_Publish(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
+extern bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_ms, IPC_MID_T const * const mailist,
+		uint32_t const mailist_size);
 
-extern void IPC_Broadcast(IPC_Mail_Id_T const mail_id, void const * data, size_t const data_size);
-
-extern Mail_T const * IPC_Retreive_From_Mail_List(IPC_Mail_Id_T const * mail_list, uint32_t const mail_elems,
-      uint32_t const timeout_ms);
-
-extern Mail_T const * IPC_Retreive_Mail(uint32_t const timeout_ms);
+extern void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const payload, size_t const pay_size);
 
 /**
  * IPC Miscellaneous
  */
+extern void IPC_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size);
 
-extern uint32_t IPC_Timestamp(void);
+extern IPC_Clock_T IPC_Clock(void);
 
-extern bool_t IPC_Time_Elapsed(uint32_t const timestamp);
+extern bool IPC_Clock_Elapsed(IPC_Clock_T const clock_ms);
 
-extern void IPC_Put_Date_String(char * date_str);
+extern void IPC_Sleep(IPC_Clock_T const ms);
 
 #ifdef __cplusplus
 }
