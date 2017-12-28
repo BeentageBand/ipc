@@ -34,7 +34,7 @@ void mailbox_delete(struct Object * const obj)
 
 void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 {
-	CVector_Mailbox_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = this->mailbox;
 
 	mailbox->vtbl->push(mailbox, *mail);
 	
@@ -42,7 +42,7 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 	
 bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 {
-	CVector_Mail_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = this->mailbox;
 
 	bool rc = false;
 	if(!mailbox->vtbl->empty(mailbox))
@@ -62,7 +62,7 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 	
 bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid)
 {
-	CVector_Mail_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = this->mailbox;
 	bool rc = false;
 
 	if(!mailbox->vtbl->empty(mailbox))
@@ -91,12 +91,13 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 	return rc;
 }
 
-void Populate_Mailbox(union Mailbox * const this, union Mail * const mailbox, size_t const mailbox_size)
+void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size)
 {
 	if(NULL == Mailbox.vtbl)
 	{
 		Mailbox.vtbl = &Mailbox_Class;
 	}
 	memcpy(this, &Mailbox, sizeof(Mailbox));
-	Populate_CVector_Mail(&this->mailbox, mailbox, mailbox_size);
+	this->tid = tid;
+	Populate_CQueue_Mail(&this->mailbox, mailbox, mailbox_size);
 }

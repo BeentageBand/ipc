@@ -34,7 +34,7 @@ union Mailbox
 
 extern union Mailbox_Class _private Mailbox_Class;
 
-extern void Populate_Mailbox(union Mailbox * const mbx, union Mail * const mailbox, size_t const mailbox_size);
+extern void Populate_Mailbox(union Mailbox * const mbx, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size);
 		
 #ifdef __cplusplus
 }

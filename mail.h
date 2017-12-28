@@ -30,8 +30,8 @@ typedef union Mail_Class
 		void (* _private set_data)(union Mail * const ,void const * const, size_t const);
 		void (* _private dump)(union Mail * const );
 		void (* _private set_mail_id)(union Mail * const ,IPC_MID_T const);
-		void (* _private set_sender_task)(union Mail * const ,IPC_TID_T const);
-		void (* _private set_receiver_task)(union Mail * const ,IPC_TID_T const);
+		void (* _private set_sender)(union Mail * const ,IPC_TID_T const);
+		void (* _private set_receiver)(union Mail * const ,IPC_TID_T const);
 	};
 }Mail_Class_T;
 

@@ -14,7 +14,7 @@ typedef union Thread
 	struct
 	{
 		struct Object Object;
-		IPC_TTD_T _private tid;
+		IPC_TID_T _private tid;
 	};
 }Thread_T;
 

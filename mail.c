@@ -9,8 +9,8 @@ static void mail_delete(struct Object * const obj);
 static void mail_set_data(union Mail * const this,void const * const, size_t const);
 static void mail_dump(union Mail * const this);
 static void mail_set_mid(union Mail * const this,IPC_MID_T const);
-static void mail_set_sender_task(union Mail * const this,IPC_TID_T const);
-static void mail_set_receiver_task(union Mail * const this,IPC_TID_T const);
+static void mail_set_sender(union Mail * const this,IPC_TID_T const);
+static void mail_set_receiver(union Mail * const this,IPC_TID_T const);
 
 union Mail_Class Mail_Class =
 {
@@ -82,12 +82,12 @@ void mail_set_mid(union Mail * const this, IPC_MID_T const mid)
    this->mid = mid;
 }
 
-void mail_set_sender_task(union Mail * const this, IPC_TID_T const sender_task)
+void mail_set_sender(union Mail * const this, IPC_TID_T const sender_task)
 {
    this->sender_task = sender_task;
 }
 
-void mail_set_receiver_task(union Mail * const this, IPC_TID_T const receiver_task)
+void mail_set_receiver(union Mail * const this, IPC_TID_T const receiver_task)
 {
    this->receiver_task = receiver_task;
 }
