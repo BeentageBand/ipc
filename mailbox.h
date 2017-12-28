@@ -16,9 +16,9 @@ union Mailbox_Class
 	struct
 	{
 		struct Class Class;
-		void (*_private push_mail)(union Mailbox * const this, union Mail * mail);
-		void (*_private retrieve)(union Mailbox * const this, union Mail * mail);
-		void (*_private retrieve_only)(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
+		void (*_private push_mail)(union Mailbox * const, union Mail * const);
+		void (*_private retrieve)(union Mailbox * const, union Mail * const);
+		void (*_private retrieve_only)(union Mailbox * const, union Mail * const, IPC_MID_T const);
 	};
 };
 
@@ -28,15 +28,13 @@ union Mailbox
 	struct
 	{
 		struct Object Object;
-		CVector_Mail_T _private mailbox;
-		Alloc_Payload_T payload_allocator;
+		CQueue_Mail_T _private mailbox;
 	};
 };
 
 extern union Mailbox_Class _private Mailbox_Class;
 
-extern void Populate_Mailbox(union Mailbox * const this, Payload_T * const payload_buff, size_t const payload_size, 
-		union Mail * const mailbox,	size_t const mailbox_size)
+extern void Populate_Mailbox(union Mailbox * const mbx, union Mail * const mailbox, size_t const mailbox_size);
 		
 #ifdef __cplusplus
 }

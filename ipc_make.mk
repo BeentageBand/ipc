@@ -6,6 +6,7 @@ ipc.h \
 ipc_types.h \
 ipc_helper.h \
 mail.h \
+mail_payload.h \
 mailbox.h \
 mutex.h \
 publisher.h \
@@ -18,6 +19,7 @@ conditional \
 ipc \
 mail \
 mailbox \
+mail_payload \
 mutex \
 publisher \
 thread \

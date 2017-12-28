@@ -1,6 +1,6 @@
+#define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
-#define CLASS_IMPLEMENTATION
+#define Dbg_FID DBG_FID_DEF(IPC_FID,0)
 
 #include "dbg_log.h"
 #include "ipc_set.h"
@@ -8,7 +8,7 @@
 #include "ipc_helper.h"
 
 static union Thread * ipc_find_thread(IPC_TID_T const thread);
-static union Thread * ipc_find_mailbox(IPC_TID_T const mailbox);
+static union Mailbox * ipc_find_mailbox(IPC_TID_T const mailbox);
 
 union Thread * ipc_find_thread(IPC_TID_T const thread)
 {

@@ -31,7 +31,7 @@ typedef union Thread_Class
 
 extern union Thread_Class _private Thread_Class;
 
-extern void Populate_Thread(union Task * const task, IPC_Thread_Id_T const tid);
+extern void Populate_Thread(union Task * const task, IPC_TID_T const tid);
  
 #ifdef __cplusplus
 }

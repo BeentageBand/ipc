@@ -34,7 +34,7 @@ typedef union Worker_Class
 
 extern union Worker_Class _private Worker_Class;
  
-extern void Populate_Worker(union Worker * const worker, IPC_Task_Id_T const tid);
+extern void Populate_Worker(union Worker * const worker, IPC_TID_T const tid);
  
 #ifdef __cplusplus
 }

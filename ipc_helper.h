@@ -9,6 +9,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef union Thread * Thread_Ptr_T;
+
+#define CSet_Params Thread_Ptr
+#include "cset.h"
+#undef CSet_Params 
+
+typedef union Mailbox * Mailbox_Ptr_T;
+
+#define CSet_Params Mailbox_Ptr
+#include "cset.h"
+#undef CSet_Params 
  
 typedef union IPC_Helper
 {
@@ -16,8 +28,9 @@ typedef union IPC_Helper
 	struct
 	{
 		struct Object Object;
-		union CMap_Task_Ptr _private tasks;
-		union Timestamp _private timestamp;
+		CSet_Thread_Ptr_T _private rthreads;
+		CSet_Mailbox_Ptr_T _private rmailboxes;
+		IPC_Clock_T _private runtime;
 	};
 }IPC_Helper_T;
 

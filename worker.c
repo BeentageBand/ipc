@@ -1,6 +1,6 @@
-#define CLASS_IMPLEMENTATION
+#define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,0)
+#define Dbg_FID DBG_FID_DEF(IPC_FID,0)
  
 #include "dbg_log.h"
 #include "ipc.h"
@@ -33,7 +33,7 @@ void worker_delete(struct Object * const obj)
 	_delete(&this->mailbox);
 }
  
-void Populate_Worker(union Worker * const this, IPC_Task_Id_T const tid, union Mail * const mail_buff, 
+void Populate_Worker(union Worker * const this, IPC_TID_T const tid, union Mail * const mail_buff, 
 		size_t const mailsize)
 {
 	if(NULL == Worker.vtbl)
@@ -58,7 +58,7 @@ void worker_runnable(union Thread * const super)
 
    if(NULL == mailbox->vtbl)
    {
-	   Dbg_Error("No mailbox was initialized");
+	   Dbg_Fault("No mailbox was initialized");
 	   return;
    }
 

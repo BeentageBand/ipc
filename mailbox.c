@@ -1,7 +1,12 @@
 #define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,3)
+#define Dbg_FID DBG_FID_DEF(IPC_FID,3)
+
 #include "mailbox.h"
+
+#define CQueue_Params Mail
+#include "cqueue.c"
+#undef CQueue_Params
 
 static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
@@ -86,14 +91,12 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 	return rc;
 }
 
-void Populate_Mailbox(union Mailbox * const this, Payload_T * const payload_buff, size_t const payload_size, 
-		union Mail * const mailbox,	size_t const mailbox_size)
+void Populate_Mailbox(union Mailbox * const this, union Mail * const mailbox, size_t const mailbox_size)
 {
 	if(NULL == Mailbox.vtbl)
 	{
 		Mailbox.vtbl = &Mailbox_Class;
 	}
 	memcpy(this, &Mailbox, sizeof(Mailbox));
-	Populate_Alloc_Payload(&this->payload_allocator, payload_buff, payload_size);
 	Populate_CVector_Mail(&this->mailbox, mailbox, mailbox_size);
 }
