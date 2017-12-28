@@ -10,7 +10,7 @@ extern "C" {
 
 typedef union Mail
 {
-	struct Class _private * _private vtbl;
+	union Mail_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
@@ -27,9 +27,9 @@ typedef union Mail_Class
 	struct
 	{
 		struct Class Class;
-		void (* _private set_data)(union Mail * const ,void const * const, size_t const);
+		void (* _private set_payload)(union Mail * const ,void const * const, size_t const);
 		void (* _private dump)(union Mail * const );
-		void (* _private set_mail_id)(union Mail * const ,IPC_MID_T const);
+		void (* _private set_mid)(union Mail * const ,IPC_MID_T const);
 		void (* _private set_sender)(union Mail * const ,IPC_TID_T const);
 		void (* _private set_receiver)(union Mail * const ,IPC_TID_T const);
 	};
@@ -37,7 +37,7 @@ typedef union Mail_Class
 
 extern union Mail_Class _private Mail_Class;
 
-extern void Populate_Mail(union Mail * const mail, IPC_TID_T const sender, IPC_TID_T const receiver,
+extern void Populate_Mail(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const sender, IPC_TID_T const receiver,
 		void const * const payload, size_t const pay_size);
 
 #ifdef __cplusplus

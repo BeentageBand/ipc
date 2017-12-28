@@ -28,6 +28,7 @@ union Mailbox
 	struct
 	{
 		struct Object Object;
+		IPC_TID_T _private tid;
 		CQueue_Mail_T _private mailbox;
 	};
 };
