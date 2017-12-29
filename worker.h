@@ -26,7 +26,7 @@ typedef union Worker_Class
 	{
 		union Thread_Class Thread;
 		void (* _private on_mail)(union Worker * const, union Mail * const);
-		void (* _private on_star)(union Worker * const);
+		void (* _private on_start)(union Worker * const);
 		void (* _private on_loop)(union Worker * const);
 		void (* _private on_stop)(union Worker * const);
 	};

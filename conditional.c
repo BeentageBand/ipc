@@ -1,87 +1,61 @@
-/*=====================================================================================*/
-/**
- * conditional.c
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
-#define OBJECT_IMPLEMENTATION
+#define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
 #define Dbg_FID Dbg_FID_Def(IPC_FID,6)
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
+ 
+#include <pthread.h>
 #include "dbg_log.h"
-#include "mutex.h"
 #include "conditional.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
+#include "ipc_types.h"
 
-/*=====================================================================================* 
- * Local X-Macros
- *=====================================================================================*/
+ 
+static void conditional_delete(struct Object * const obj);
+static bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms);
+static bool_t conditional_signal(union Conditional * const this);
 
-/*=====================================================================================* 
- * Local Define Macros
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Type Definitions
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Local Function Prototypes
- *=====================================================================================*/
-
-/*=====================================================================================*
- * Local Object Definitions
- *=====================================================================================*/
-CLASS_DEF(Conditional)
-/*=====================================================================================*
- * Exported Object Definitions
- *=====================================================================================*/
-
-/*=====================================================================================*
- * Local Inline-Function Like Macros
- *=====================================================================================*/
-
-/*=====================================================================================*
- * Local Function Definitions
- *=====================================================================================*/
-void Conditional_Init(void)
+union Conditional_Class Conditional_Class =
 {
+	{conditional_delete, NULL},
+	NULL,
+	NULL
+};
+
+union Conditional Conditional = {NULL};
+
+static pthread_cond_attr_t Conditional_Pthread_Attr = PTHREAD_COND_ATTR_INIT;
+
+void conditional_delete(struct Object * const obj)
+{
+	union Conditional * const this = (Conditional_T *)Object_Cast(&Conditional_Class.Class, obj);
+	Isnt_Nullptr(this, );
+
+	this->mutex = NULL;
 }
 
-void Conditional_Delete(struct Object * const obj)
-{}
-
- /*=====================================================================================*
-  * Exported Function Definitions
-  *=====================================================================================*/
-union Conditional Conditional_Mutex(Mutex_T * const mutex)
+bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms)
 {
-	union Conditional this = Conditional_Default();
-   this.mutex = mutex;
-	return this;
+	struct timespec tp = {};
+	tp.tv_sec = wait_ms / IPC_CLOCK_MS_SEC;
+	tp.tv_nsec = wait_ms - (tp.sec * IPC_CLOCK_MS_SEC);
+
+	int rc = pthread_cond_timed_wait((pthread_cond_t *)&this->conditional, 
+			(pthread_mutex_t *)&this->mutex->mux, &tp);
+	return (0 == rc);
 }
 
-union Conditional * Conditional_Mutex_New(Mutex_T * const mutex)
+bool_t conditional_signal(union Conditional * const this)
 {
-	Constructor_New_Impl(Conditional, Mutex, mutex);
+	int rc = pthread_cond_signal((pthread_cond_t *)&this->conditional);
+	return (0 == rc);
 }
 
-bool_t Conditional_wait(Conditional_T * const this, uint32_t const timeout_ms)
-{ return false; }
-
-bool_t Conditional_signal(Conditional_T * const this)
-{ return false; }
-/*=====================================================================================* 
- * conditional.c
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
+void Populate_Conditional(union Conditional * const this, union Mutex * const mutex)
+{
+	if(NULL == Conditional.vtbl)
+	{
+		Conditional.vtbl = &Conditional_Class;
+		Conditional.conditional = 0;
+	}
+	pthread_cond_init((pthread_cond_t *)&this->conditional, &Conditional_Pthread_Attr);
+	memcpy(this, &Conditional, sizeof(Conditional));
+	this->mutex = mutex;
+}

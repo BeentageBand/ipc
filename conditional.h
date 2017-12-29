@@ -1,61 +1,40 @@
-/*=====================================================================================*/
-/**
- * conditional.h
- * author : puch
- * date : Oct 22 2015
- *
- * description : Any comments
- *
- */
-/*=====================================================================================*/
 #ifndef CONDITIONAL_H_
 #define CONDITIONAL_H_
-/*=====================================================================================*
- * Project Includes
- *=====================================================================================*/
-#include "object.h"
-/*=====================================================================================* 
- * Standard Includes
- *=====================================================================================*/
-
-/*=====================================================================================* 
- * Exported Define Macros
- *=====================================================================================*/
+ 
+#include "mutex.h"
+ 
 #define Conditional_INHERITS BASE_CLASS
-
-#define Conditional_MEMBERS(_member) \
-_member(union Mutex _private * _private, mutex)
-
-#define Conditional_METHODS(_method, _class) \
-_method(bool_t, _class, wait, uint32_t const) \
-_method(bool_t, _class, signal, void) \
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*=====================================================================================* 
- * Exported Type Declarations
- *=====================================================================================*/
-CLASS_DECL(Conditional)
-/*=====================================================================================* 
- * Exported Object Declarations
- *=====================================================================================*/
 
-/*=====================================================================================* 
- * Exported Function Prototypes
- *=====================================================================================*/
-extern union Conditional Conditional_Mutex(union Mutex * const mutex);
-extern union Conditional * Conditional_Mutex_New(union Mutex * const mutex);
-/*=====================================================================================* 
- * Exported Function Like Macros
- *=====================================================================================*/
+typedef union Conditional
+{
+	union Conditional_Class _private * _private vtbl;
+	struct
+	{
+		struct Object Object;
+		uint32_t _private conditional;
+		union Mutex _private * _private mutex;
+	};
+}Conditional_T;
+
+typedef union Conditional_Class
+{
+	struct
+	{
+		struct Class Class;
+		bool_t (* _private wait)(union Conditional * const, IPC_Clock_T const);
+		bool_t (* _private signal)(union Conditional * const);
+	};
+}Conditional_Class_T;
+
+extern Conditional_Class_T _private Conditional_Class;
+
+extern void Populate_Conditional(union Conditional * const conditional, union Mutex * const mux);
+
 #ifdef __cplusplus
 }
 #endif
-/*=====================================================================================* 
- * conditional.h
- *=====================================================================================*
- * Log History
- *
- *=====================================================================================*/
 #endif /*CONDITIONAL_H_*/
