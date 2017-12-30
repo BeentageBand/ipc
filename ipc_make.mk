@@ -11,6 +11,7 @@ mailbox.h \
 mutex.h \
 publisher.h \
 thread.h \
+uptime.h \
 worker.h \
 worker_evs.h \
 
@@ -18,11 +19,12 @@ $(_flavor_)_$(_feat_)_lib_objs= \
 conditional \
 ipc \
 mail \
-mailbox \
 mail_payload \
+mailbox \
 mutex \
 publisher \
 thread \
+uptime \
 worker \
 
 $(_flavor_)_$(_feat_)_lib=ipc

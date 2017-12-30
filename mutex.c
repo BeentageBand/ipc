@@ -19,7 +19,7 @@ union Mutex_Class Mutex_Class =
 
 static union Mutex Mutex = {NULL};
 
-static pthread_mutex_attr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_ATTR_INIT;
+static pthread_mutex_attr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_INITIALIZER;
 
 void mutex_delete(struct Object * const obj)
 {

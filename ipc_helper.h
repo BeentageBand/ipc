@@ -5,6 +5,7 @@
 #include "mailbox.h"
 #include "publisher.h"
 #include "thread.h"
+#include "uptime.h"
  
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +31,7 @@ typedef union IPC_Helper
 		struct Object Object;
 		CSet_Thread_Ptr_T _private rthreads;
 		CSet_Mailbox_Ptr_T _private rmailboxes;
-		IPC_Clock_T _private runtime;
+		union Uptime _private uptime;
 	};
 }IPC_Helper_T;
 

@@ -65,6 +65,22 @@ void thread_wait(union Thread * const this, uint32_t const wait_ms)
 	}
 }
 
+IPC_TID_T Thread_self(void)
+{
+	pthread_t pt = pthread_self();
+	IPC_TID_T tid;
+
+	for(tid = 0; tid < IPC_TID_MAX; ++tid)
+	{
+		if(pt == Thread_Pthread_Pool[tid])
+		{
+			break;
+		}
+	}
+
+	return tid;
+}
+
 void Populate_Thread(union Thread * const this, IPC_TID_T const tid)
 {
 	if(IPC_TID_MAX > tid) return ;

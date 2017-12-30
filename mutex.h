@@ -1,13 +1,14 @@
 #ifndef MUTEX_H_
 #define MUTEX_H_
 
+#include "ipc_types.h"
 #include "cobject.h"
  
 #ifdef __cplusplus
 extern "C" {
 #endif
  
-typedef uitn32_t IPC_MUX_T;
+typedef uint32_t IPC_MUX_T;
 
 typedef union Mutex
 {
@@ -24,7 +25,7 @@ typedef union Mutex_Class
 	struct
 	{
 		struct Class Class;
-		bool_t (* _private lock)(union Mutex * const);
+		bool_t (* _private lock)(union Mutex * const, IPC_Clock_T const);
 		bool_t (* _private unlock)(union Mutex * const);
 	};
 }Mutex_Class_T;

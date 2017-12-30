@@ -5,6 +5,8 @@
 #include "ipc_thread_ids.h"
 
 #define IPC_ENUM(id, desc) id,
+#define IPC_CLOCK_MS_SEC (1000UL)
+#define IPC_CLOCK_NS_MS (1000000UL)
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +27,7 @@ enum IPC_TID
 {
 	IPC_TID_MAIN = 0,
 	IPC_THREAD_LIST(IPC_ENUM)
-	IPC_MAX_TIDS
+	IPC_TID_MAX
 };
 
 typedef uint32_t IPC_TID_T;

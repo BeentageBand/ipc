@@ -1,5 +1,5 @@
-#ifndef TASK_H_
-#define TASK_H_
+#ifndef THREAD_H_
+#define THREAD_H_
  
 #include "ipc_types.h"
 #include "cobject.h"
@@ -32,8 +32,10 @@ typedef union Thread_Class
 extern union Thread_Class _private Thread_Class;
 
 extern void Populate_Thread(union Task * const task, IPC_TID_T const tid);
+
+extern IPC_TID_T Thread_self(void);
  
 #ifdef __cplusplus
 }
 #endif
-#endif /*TASK_H_*/
+#endif /*THREAD_H_*/

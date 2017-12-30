@@ -91,13 +91,12 @@ bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const maili
 {
 	union IPC_Helper * ipc_help;
 	Allocate_IPC_Helper(ipc_help);
-	union Publisher * const publisher = ipc_help->publisher;
 	union Mailbox * mailbox = ipc_find_mailbox(IPC_Self());
 	uint32_t i;
 	bool rc = true;
 	for( i; i < mailist_size && rc; ++i)
 	{
-		rc = Publisher_Subscribe(publisher, mailbox, mailist[i]);
+		rc = Publisher_Subscribe(mailbox, mailist[i]);
 	}
 	return rc;
 }
@@ -106,13 +105,12 @@ bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mai
 {
 	union IPC_Helper * ipc_help;
 	Allocate_IPC_Helper(ipc_help);
-	union Publisher * const publisher = ipc_help->publisher;
 	union Mailbox * mailbox = ipc_find_mailbox(IPC_Self());
 	uint32_t i;
 	bool rc = true;
 	for( i; i < mailist_size && rc; ++i)
 	{
-		rc = Publisher_Unsubscribe(publisher, mailbox, mailist[i]);
+		rc = Publisher_Unsubscribe(mailbox, mailist[i]);
 	}
 	return rc;
 }
@@ -167,8 +165,6 @@ void IPC_Publish(IPC_MID_T const mid, void const * const payload, size_t const p
 {
 	union IPC_Helper * ipc_help;
 	Allocate_IPC_Helper(ipc_help);
-	
-	union Publisher * const publisher = ipc_help->publisher;
 	
 	Publisher_Publish(mid, payload, pay_size);
 }
