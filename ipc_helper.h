@@ -1,11 +1,12 @@
 #ifndef IPC_HELPER_H_
 #define IPC_HELPER_H_
  
-#include "ipc_types.h"
+#include "conditional.h"
 #include "mailbox.h"
+#include "mutex.h"
 #include "publisher.h"
+#include "semaphore.h"
 #include "thread.h"
-#include "uptime.h"
  
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +26,7 @@ typedef union Mailbox * Mailbox_Ptr_T;
 
 typedef union IPC_Helper
 {
-	struct Class _private * _private vtbl;
+	union IPC_Helper_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;

@@ -30,6 +30,7 @@ union Mailbox
 		struct Object Object;
 		IPC_TID_T _private tid;
 		CQueue_Mail_T _private mailbox;
+		union Mail picked_mail;
 	};
 };
 

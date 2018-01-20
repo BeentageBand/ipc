@@ -65,7 +65,7 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 	CQueue_Mail_T * const mailbox = this->mailbox;
 	bool rc = false;
 
-	if(!mailbox->vtbl->empty(mailbox))
+	if(0 == mailbox->vtbl->size(mailbox))
 	{
 		if(0 == this->picked_mail->mid)
 		{
@@ -84,10 +84,11 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 		{
 			memcpy(&this->picked_mail, found, sizeof(this->picked_mail));
 			memcpy(mail, found, sizeof(this->picked_mail));
-			mailbox->vtbl->pop(mailbox);
+			mailbox->vtbl->pop_front(mailbox);
 			rc = true;
 		}
 	}
+
 	return rc;
 }
 

@@ -33,16 +33,15 @@ void mail_delete(struct Object * const object)
 	Mail_Payload_Free(&(this->payload));
 }
  
-void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const sender_task,
-      IPC_TID_T const receiver_task, void const * const payload, size_t const pay_size)
+void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const sender,
+      IPC_TID_T const receiver, void const * const payload, size_t const pay_size)
 {
 	if(NULL == Mail.vtbl)
 	{
 		Mail.vtbl = &Mail_Class;
-		Mail.mid = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
-		Mail.sender_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
-		Mail.receiver_task = IPC_BEGIN_PRIVATE_MAIL_LIST_ID;
-		Mail.is_dumpable = false;
+		Mail.mid = IPC_MAX_MID;
+		Mail.sender = IPC_MAX_TID;
+		Mail.receiver = IPC_MAX_TID;
 	}
 
 	memcpy(this, &Mail, sizeof(Mail));
@@ -55,10 +54,10 @@ void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const
 	
 void mail_set_payload(union Mail * const this, void const * const payload, size_t const pay_size)
 {
-	Isnt_Nullptr(this,);
-	Isnt_Nullptr(data,);
+	Isnt_Nullptr(this, );
+	Isnt_Nullptr(payload, );
 
-	if(NULL != this->data)
+	if(NULL != this->payload)
 	{
 	   if(this->pay_size != pay_size)
 	   {
@@ -68,13 +67,13 @@ void mail_set_payload(union Mail * const this, void const * const payload, size_
 
 	this->pay_size = pay_size;
 	Mail_Payload_Alloc(&(this->payload), this->pay_size);
-	memcpy(this->data, data, data_size);
+	memcpy(this->payload, payload, pay_size);
 }
 
 void mail_dump(union Mail * const this)
 {
    Isnt_Nullptr(this, );
-   this->is_dumpable = true;
+   //TODO remove this
 }
 
 void mail_set_mid(union Mail * const this, IPC_MID_T const mid)
@@ -84,10 +83,10 @@ void mail_set_mid(union Mail * const this, IPC_MID_T const mid)
 
 void mail_set_sender(union Mail * const this, IPC_TID_T const sender_task)
 {
-   this->sender_task = sender_task;
+   this->sender = sender_task;
 }
 
 void mail_set_receiver(union Mail * const this, IPC_TID_T const receiver_task)
 {
-   this->receiver_task = receiver_task;
+   this->receiver = receiver_task;
 }

@@ -20,30 +20,30 @@ static IPC_Clock_T ipc_helper_time(union IPC_Helper * const);
 static void ipc_helper_sleep(union IPC_Helper * const, IPC_Clock_T const sleep_ms);
 static bool ipc_helper_is_time_elapsed(union IPC_Helper * const, IPC_Clock_T const time_ms);
 
-static IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const);
-static bool ipc_helper_alloc_thread(union IPC_Helper * const, union Thread * const);
-static bool ipc_helper_free_thread(union IPC_Helper * const, union Thread * const);
-static bool ipc_helper_run_thread(union IPC_Helper * const, union Thread * const);
-static bool ipc_helper_join_thread(union IPC_Helper * const, union Thread * const);
+static IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper);
+static bool ipc_helper_alloc_thread(union IPC_Helper * const helper, union Thread * const thread);
+static bool ipc_helper_free_thread(union IPC_Helper * const helper, union Thread * const thread);
+static bool ipc_helper_run_thread(union IPC_Helper * const helper, union Thread * const thread);
+static bool ipc_helper_join_thread(union IPC_Helper * const helper, union Thread * const thread);
 
-static bool ipc_helper_alloc_mutex(union IPC_Helper * const, union Mutex * const);
-static bool ipc_helper_free_mutex(union IPC_Helper * const, union Mutex * const);
-static bool ipc_helper_lock_mutex(union IPC_Helper * const, union Mutex * const,
+static bool ipc_helper_alloc_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
+static bool ipc_helper_free_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
+static bool ipc_helper_lock_mutex(union IPC_Helper * const helper, union Mutex * const mutex,
 		IPC_Clock_T const wait_ms);
-static bool ipc_helper_unlock_mutex(union IPC_Helper * const, union Mutex * const);
+static bool ipc_helper_unlock_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
 
-static bool ipc_helper_alloc_semaphore(union IPC_Helper * const, union Semaphore * const,
+static bool ipc_helper_alloc_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
 		uint8_t const value);
-static bool ipc_helper_free_semaphore(union IPC_Helper * const, union Semaphore * const);
-static bool ipc_helper_wait_semaphore(union IPC_Helper * const, union Semaphore * const, 
+static bool ipc_helper_free_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore);
+static bool ipc_helper_wait_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore, 
 		IPC_Clock_T const wait_ms);
-static bool ipc_helper_post_semaphore(union IPC_Helper * const, union Semaphore * const);
+static bool ipc_helper_post_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore);
 
-static bool ipc_helper_alloc_conditional(union IPC_Helper * const, union Conditional * const);
-static bool ipc_helper_free_conditional(union IPC_Helper * const, union Conditional * const);
-static bool ipc_helper_wait_conditional(union IPC_Helper * const, union Conditional * const,
-		union Mutex * const, IPC_Clock_T const wait_ms);
-static bool ipc_helper_post_conditional(union IPC_Helper * const, union Conditional * const);
+static bool ipc_helper_alloc_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
+static bool ipc_helper_free_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
+static bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union Conditional * const conditional,
+		union Mutex * const mutex, IPC_Clock_T const wait_ms);
+static bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
 
 IPC_Helper_Class_T IPC_Helper_Class = 
 {
@@ -81,8 +81,8 @@ void ipc_helper_delete(struct Object * const obj)
 {
 	IPC_Helper_T * this = (IPC_Helper_T *) Object_Cast(&IPC_Helper_Class, obj);
 
-	this->threads = NULL;
-	this->mailboxes = NULL;
+	this->rthreads = NULL;
+	this->rmailboxes = NULL;
 }
 
 IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper)
@@ -106,16 +106,16 @@ void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_m
 	union IPC_Helper * this = helper;
 	while(this)
 	{
-		if(ipc_helper_time != this->vtbl->sleep)
+		if(ipc_helper_sleep != this->vtbl->sleep)
 		{
-			clock = this->vtbl->sleep(this);
+			this->vtbl->sleep(this, sleep_ms);
 		}
 	}
 }
 	
 IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper)
 {
-	IPC_TID_T tid = IPC_TID_MAX;
+	IPC_TID_T tid = IPC_MAX_TID;
 	union IPC_Helper * this = helper;
 	while(this)
 	{
@@ -246,12 +246,12 @@ bool ipc_helper_lock_mutex(union IPC_Helper * const helper, union Mutex * const 
 bool ipc_helper_unlock_mutex(union IPC_Helper * const helper, union Mutex * const mutex)
 {
 	bool rc = false;
-	union IPC_Helper ipc_helper * this = helper;
+	union IPC_Helper * this = helper;
 	while(this)
 	{
-		if(ipc_helper_lock_mutex != this->vtbl->lock_mutex)
+		if(ipc_helper_unlock_mutex != this->vtbl->unlock_mutex)
 		{
-			rc = this->vtbl->lock_mutex(this, mutex);
+			rc = this->vtbl->unlock_mutex(this, mutex);
 		}
 
 		this = this->next;
@@ -267,9 +267,9 @@ bool ipc_helper_alloc_semaphore(union IPC_Helper * const helper, union Semaphore
 	union IPC_Helper * this = helper;
 	while(this)
 	{
-		if(ipc_helper_lock_mutex != this->vtbl->lock_mutex)
+		if(ipc_helper_alloc_semaphore!= this->vtbl->alloc_semaphore)
 		{
-			rc = this->vtbl->lock_mutex(this, semaphore, value);
+			rc = this->vtbl->alloc_semaphore(this, semaphore, value);
 		}
 
 		this = this->next;
@@ -285,7 +285,7 @@ bool ipc_helper_free_semaphore(union IPC_Helper * const helper, union Semaphore 
 	{
 		if(ipc_helper_free_semaphore != this->vtbl->free_semaphore)
 		{
-			rc = this->vtbl->free_semaphore(this, mutex);
+			rc = this->vtbl->free_semaphore(this, semaphore);
 		}
 
 		this = this->next;
@@ -300,9 +300,9 @@ bool ipc_helper_wait_semaphore(union IPC_Helper * const helper, union Semaphore 
 	union IPC_Helper * this = helper;
 	while(this)
 	{
-		if(ipc_helper_lock_mutex != this->vtbl->lock_mutex)
+		if(ipc_helper_wait_semaphore != this->vtbl->wait_semaphore)
 		{
-			rc = this->vtbl->lock_mutex(this, semaphore, wait_ms);
+			rc = this->vtbl->wait_semaphore(this, semaphore, wait_ms);
 		}
 
 		this = this->next;
@@ -316,9 +316,9 @@ bool ipc_helper_post_semaphore(union IPC_Helper * const helper, union Semaphore 
 	union IPC_Helper * this = helper;
 	while(this)
 	{
-		if(ipc_helper_lock_mutex != this->vtbl->lock_mutex)
+		if(ipc_helper_post_semaphore != this->vtbl->post_semaphore)
 		{
-			rc = this->vtbl->lock_mutex(this, semaphore);
+			rc = this->vtbl->post_semaphore(this, semaphore);
 		}
 
 		this = this->next;
@@ -376,7 +376,7 @@ bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union Conditio
 	return rc;
 }
 
-bool ipc_helper_post_conditional(union IPC_Helper * const, union Conditional * const)
+bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional)
 {
 	bool rc = false;
 	union IPC_Helper * this = helper;
@@ -384,7 +384,7 @@ bool ipc_helper_post_conditional(union IPC_Helper * const, union Conditional * c
 	{
 		if(ipc_helper_wait_conditional != this->vtbl->wait_conditional)
 		{
-			rc = this->vtbl->wait_conditional(this, conditional, mutex, wait_ms);
+			rc = this->vtbl->post_conditional(this, conditional);
 		}
 
 		this = this->next;
@@ -402,16 +402,16 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
 {
 	static CSet_Thread_Ptr_T rthreads;
 	static CSet_Mailbox_Ptr_T rmailboxes;
-	static Thread_Ptr_T thread_set[IPC_TID_MAX] = {0};
-	static Mailbox_Ptr_T mailbox_set[IPC_TID_MAX] = {0};
+	static Thread_Ptr_T thread_set[IPC_MAX_TID] = {0};
+	static Mailbox_Ptr_T mailbox_set[IPC_MAX_TID] = {0};
 
 	if(NULL == IPC_Helper.vtbl)
 	{
 		IPC_Helper.vtbl = &IPC_Helper_Class;
 		Populate_CSet_Thread_Ptr(&rthreads, thread_set, Num_Elems(thread_set));
 		Populate_CSet_Mailbox_Ptr(&rmailboxes, mailbox_set, Num_Elems(mailbox_set)); 
-		IPC_Helper.threads = &rthreads;
-		IPC_Helper.mailboxes = &rmailboxes;
+		IPC_Helper.rthreads = &rthreads;
+		IPC_Helper.rmailboxes = &rmailboxes;
 	}
 
 	memcpy(this, &IPC_Helper, sizeof(IPC_Helper));
@@ -419,31 +419,31 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
 
 union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
 {
-	Isnt_Nullptr(IPC_Helper_Singleton->threads, NULL);
+	Isnt_Nullptr(IPC_Helper_Singleton->rthreads, NULL);
 
 	union Thread t = {NULL};
 	Populate_Thread(&t, thread);
 
-	CSet_IPC_TID_Thread_T * const thread_stack = IPC_Helper_Singleton->threads;
-	CPair_IPC_TID_Thread_T * found = thread_stack->vtbl->find(thread_stack, &t);
-	return (found != thread_stack->vtbl->end(thread_stack))? found : NULL;
+	CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
+	Thread_Ptr_T * found = thread_stack->vtbl->find(thread_stack, &t);
+	return (found != thread_stack->vtbl->end(thread_stack))? *found : NULL;
 }
 
 union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
 {
-	Isnt_Nullptr(IPC_Helper_Singleton->mailboxes, NULL);
+	Isnt_Nullptr(IPC_Helper_Singleton->rmailboxes, NULL);
 
 	union Mailbox m = {NULL};
-	Populate_Mailbox(&m, mailbox);
+	Populate_Mailbox(&m, mailbox, NULL, 0);
 
-	CSet_IPC_TID_Mailbox_T * const mailbox_stack = IPC_Helper_Singleton->threads;
-	CPair_IPC_TID_Mailbox_T * found = mailbox_stack->vtbl->find(thread_stack, &m);
-	return (found != mailbox_stack->vtbl->end(thread_stack))? found : NULL;
+	CSet_Mailbox_Ptr_T * const mailbox_stack = IPC_Helper_Singleton->rmailboxes;
+	Mailbox_Ptr_T * found = mailbox_stack->vtbl->find(mailbox_stack, &m);
+	return (found != mailbox_stack->vtbl->end(mailbox_stack))? *found : NULL;
 }
 
 void IPC_Helper_Append(union IPC_Helper * appendable)
 {
-	union IPC_Helper * this =IPC_Helper_get_instance();
+	union IPC_Helper * this = IPC_Helper_get_instance();
 	while(this)
 	{
 		if(this == appendable)
