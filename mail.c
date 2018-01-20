@@ -6,7 +6,7 @@
 #include "mail_payload.h"
 
 static void mail_delete(struct Object * const obj);
-static void mail_set_payload(union Mail * const this, void const * const payload, size_t const pay_size)
+static void mail_set_payload(union Mail * const this, void const * const payload, size_t const pay_size);
 static void mail_dump(union Mail * const this);
 static void mail_set_mid(union Mail * const this,IPC_MID_T const);
 static void mail_set_sender(union Mail * const this,IPC_TID_T const);
@@ -15,11 +15,11 @@ static void mail_set_receiver(union Mail * const this,IPC_TID_T const);
 union Mail_Class Mail_Class =
 {
 	{mail_delete, NULL},
-	mail_set_data,
+	mail_set_payload,
 	mail_dump,
 	mail_set_mid,
-	mail_set_sender_task,
-	mail_set_receiver_task,
+	mail_set_sender,
+	mail_set_receiver,
 };
 
 static union Mail Mail = {NULL};
@@ -28,8 +28,8 @@ void mail_delete(struct Object * const object)
 {
 	union Mail * const this = (union Mail * ) Object_Cast(&Mail_Class, object);
 
-	if(NULL == this) return;
-
+	Isnt_Nullptr(this, );
+	
 	Mail_Payload_Free(&(this->payload));
 }
  

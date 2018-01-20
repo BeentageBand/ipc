@@ -17,8 +17,8 @@ union Mailbox_Class
 	{
 		struct Class Class;
 		void (*_private push_mail)(union Mailbox * const, union Mail * const);
-		void (*_private retrieve)(union Mailbox * const, union Mail * const);
-		void (*_private retrieve_only)(union Mailbox * const, union Mail * const, IPC_MID_T const);
+		bool (*_private retrieve)(union Mailbox * const, union Mail * const);
+		bool (*_private retrieve_only)(union Mailbox * const, union Mail * const, IPC_MID_T const);
 	};
 };
 

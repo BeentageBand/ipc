@@ -18,6 +18,7 @@ worker_evs.h \
 $(_flavor_)_$(_feat_)_lib_objs= \
 conditional \
 ipc \
+ipc_helper \
 mail \
 mail_payload \
 mailbox \
