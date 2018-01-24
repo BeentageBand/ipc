@@ -29,12 +29,11 @@ void mailbox_delete(struct Object * const obj)
 	union  Mailbox * const this = (Mailbox_T *) Object_Cast(&Mailbox_Class.Class, obj);
 	if(NULL == this) return;
 	_delete(&this->mailbox);
-	_delete(&this->payload_allocator);
 }
 
 void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 {
-	CQueue_Mail_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = &this->mailbox;
 
 	mailbox->vtbl->push(mailbox, *mail);
 	
@@ -42,12 +41,12 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 	
 bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 {
-	CQueue_Mail_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = &this->mailbox;
 
 	bool rc = false;
 	if(!mailbox->vtbl->empty(mailbox))
 	{
-		if(0 == this->picked_mail->mid)
+		if(0 == this->picked_mail.mid)
 		{
 			_delete(&this->picked_mail);
 		}
@@ -62,12 +61,12 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 	
 bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid)
 {
-	CQueue_Mail_T * const mailbox = this->mailbox;
+	CQueue_Mail_T * const mailbox = &this->mailbox;
 	bool rc = false;
 
 	if(0 == mailbox->vtbl->size(mailbox))
 	{
-		if(0 == this->picked_mail->mid)
+		if(0 == this->picked_mail.mid)
 		{
 			_delete(&this->picked_mail);
 		}

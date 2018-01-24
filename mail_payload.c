@@ -3,6 +3,11 @@
 #include "ipc_mailist_ids.h"
 #include "cobject.h"
 
+#define MAIL_PAYLOAD_BIG_BLOCK_SIZE (1024)
+#define MAIL_PAYLOAD_MID_BLOCK_SIZE (256)
+#define MAIL_PAYLOAD_LIL_BLOCK_SIZE (32)
+#define MAIL_PAYLOAD_SIZE           (256)
+
 typedef struct Class Payload_Class_T;
 
 union Payload
@@ -11,7 +16,7 @@ union Payload
 	struct
 	{
 		struct Object Object;
-		void * ptr;
+		uint8_t * ptr;
 		size_t block_size;
 		size_t i;
 		size_t end;
@@ -28,7 +33,7 @@ static uint8_t Big_Pool_Buff[MAIL_PAYLOAD_SIZE * MAIL_PAYLOAD_BIG_BLOCK_SIZE];
 static uint8_t Mid_Pool_Buff[MAIL_PAYLOAD_SIZE * MAIL_PAYLOAD_MID_BLOCK_SIZE];
 static uint8_t Lil_Pool_Buff[MAIL_PAYLOAD_SIZE * MAIL_PAYLOAD_LIL_BLOCK_SIZE];
 
-static struct Payload Big_Pool =
+static union Payload Big_Pool =
 {
 	{payload_delete, NULL},
 	Big_Pool_Buff,
@@ -37,7 +42,7 @@ static struct Payload Big_Pool =
 	Num_Elems(Big_Pool_Buff)
 };
 
-static struct Payload Mid_Pool =
+static union Payload Mid_Pool =
 {
 	{payload_delete, NULL},
 	Mid_Pool_Buff,
@@ -45,7 +50,7 @@ static struct Payload Mid_Pool =
 	0,
 	Num_Elems(Mid_Pool_Buff)
 };
-static struct Payload Lil_Pool =
+static union Payload Lil_Pool =
 {
 	{payload_delete, NULL},
 	Lil_Pool_Buff,
