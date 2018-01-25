@@ -24,7 +24,7 @@ extern void IPC_Run(IPC_TID_T const tid);
  */
 extern bool IPC_Register_Mailbox(union Mailbox * const mbx);
 
-extern bool IPC_Register_Mailbox(union Mailbox * const mbx);
+extern bool IPC_Unregister_Mailbox(union Mailbox * const mbx);
 
 extern bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size);
 

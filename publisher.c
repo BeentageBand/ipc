@@ -53,7 +53,7 @@ bool Publisher_Unsubscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 
 void Publisher_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-    if(IPC_PBC_END_MID <= mid && IPC_PBC_BEGIN_MID > mid) return false;
+    if(IPC_PBC_END_MID <= mid && IPC_PBC_BEGIN_MID > mid) return ;
     uint32_t mid_idx = mid - IPC_PBC_BEGIN_MID;
 
     Subscription_List_T * subscription = Subscription_List + mid_idx;

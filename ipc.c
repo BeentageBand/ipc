@@ -9,7 +9,7 @@
 
 IPC_TID_T IPC_Self(void)
 {
-	union IPC_Helper * ipc_help = IPC_Helper_get_instance();
+	union IPC_Helper * ipc_help = IPC_get_instance();
 	IPC_TID_T self_id  = ipc_help->vtbl->self_thread(ipc_help);
 	union Thread * found = IPC_Helper_find_thread(self_id);
 	return (NULL != found)? found->tid : IPC_MAX_TID;
@@ -46,7 +46,7 @@ void IPC_Run(IPC_TID_T const tid)
 
 bool IPC_Register_Mailbox(union Mailbox * const mbx)
 {
-	union IPC_Helper * ipc_help = IPC_Helper_get_instance();
+	union IPC_Helper * ipc_help = IPC_get_instance();
 
 	CSet_Mailbox_Ptr_T * const mailbox_stack = &ipc_help->rmailboxes;
 	mailbox_stack->vtbl->insert(mailbox_stack, mbx);
@@ -55,7 +55,7 @@ bool IPC_Register_Mailbox(union Mailbox * const mbx)
 
 bool IPC_Unregister_Mailbox(union Mailbox * const mbx)
 {
-	union IPC_Helper * ipc_help = IPC_Helper_get_instance();
+	union IPC_Helper * ipc_help = IPC_get_instance();
 
 	CSet_Mailbox_Ptr_T * const mailbox_stack = &ipc_help->rmailboxes;
 	mailbox_stack->vtbl->erase(mailbox_stack, IPC_Self());
@@ -66,28 +66,22 @@ bool IPC_Unregister_Mailbox(union Mailbox * const mbx)
 
 bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size)
 {
-	union IPC_Helper * ipc_help;
-	Allocate_IPC_Helper(ipc_help);
-	union Mailbox * mailbox = IPC_Helper_find_mailbox(IPC_Self());
 	uint32_t i;
 	bool rc = true;
-	for( i; i < mailist_size && rc; ++i)
+	for(i = 0; i < mailist_size && rc; ++i)
 	{
-		rc = Publisher_Subscribe(mailbox, mailist[i]);
+		rc = Publisher_Subscribe(IPC_Self(), mailist[i]);
 	}
 	return rc;
 }
 
 bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size)
 {
-	union IPC_Helper * ipc_help;
-	Allocate_IPC_Helper(ipc_help);
-	union Mailbox * mailbox = IPC_Helper_find_mailbox(IPC_Self());
 	uint32_t i;
 	bool rc = true;
-	for( i; i < mailist_size && rc; ++i)
+	for(i = 0; i < mailist_size && rc; ++i)
 	{
-		rc = Publisher_Unsubscribe(mailbox, mailist[i]);
+		rc = Publisher_Unsubscribe(IPC_Self(), mailist[i]);
 	}
 	return rc;
 }
@@ -102,7 +96,7 @@ bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 	{
 		rc = mbx->vtbl->retrieve(mbx, mail);
 		IPC_Sleep(50);// do something else
-	} while( !rc && !IPC_Time_Elapsed(timestamp));
+	} while( !rc && !IPC_Clock_Elapsed(timestamp));
 
 	return rc;
 }
@@ -145,7 +139,7 @@ void IPC_Publish(IPC_MID_T const mid, void const * const payload, size_t const p
 
 IPC_Clock_T IPC_Clock(void)
 {
-	union IPC_Helper * ipc_help = IPC_Helper_get_instance();
+	union IPC_Helper * ipc_help = IPC_get_instance();
 	return ipc_help->vtbl->time(ipc_help);
 }
 
@@ -157,6 +151,6 @@ bool IPC_Clock_Elapsed(IPC_Clock_T const clock_ms)
 
 void IPC_Sleep(IPC_Clock_T const ms)
 {
-	union IPC_Helper * ipc_help = IPC_Helper_get_instance();
+	union IPC_Helper * ipc_help = IPC_get_instance();
 	ipc_help->vtbl->sleep(ipc_help, ms);
 }

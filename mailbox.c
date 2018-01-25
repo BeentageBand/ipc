@@ -15,10 +15,11 @@ static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail,
 
 union Mailbox_Class Mailbox_Class =
 {
-	{NULL, mailbox_delete},
+	{{NULL, mailbox_delete},
 	mailbox_push_mail,
 	mailbox_retrieve,
 	mailbox_retrieve_only
+	}
 };
 
 static union Mailbox Mailbox = {NULL};
@@ -28,6 +29,7 @@ void mailbox_delete(struct Object * const obj)
 	union  Mailbox * const this = (Mailbox_T *) Object_Cast(&Mailbox_Class.Class, obj);
 	if(NULL == this) return;
 	_delete(&this->mailbox);
+	_delete(&this->picked_mail);
 }
 
 void mailbox_push_mail(union Mailbox * const this, union Mail * mail)

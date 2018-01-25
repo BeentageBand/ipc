@@ -1,6 +1,8 @@
 #define COBJECT_IMPLEMENTATION
+#define Dbg_FID DBG_FID_DEF(IPC_FID, 3)
 
 #include "ipc_mailist_ids.h"
+#include "dbg_log.h"
 #include "cobject.h"
 
 #define MAIL_PAYLOAD_BIG_BLOCK_SIZE (1024)
@@ -130,6 +132,7 @@ size_t Mail_Payload_Alloc(void ** const payload, size_t const pay_size)
 	{
 		/* Do Nothing */
 	}
+	return pay_size;
 }
 
 size_t Mail_Payload_Free(void ** const payload)
@@ -151,4 +154,5 @@ size_t Mail_Payload_Free(void ** const payload)
 				
 		}
 	}
+	return rc;
 }
