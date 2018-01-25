@@ -12,9 +12,8 @@ static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
-}
 
-union Mailbox_Class _private Mailbox_Class =
+union Mailbox_Class Mailbox_Class =
 {
 	{NULL, mailbox_delete},
 	mailbox_push_mail,
@@ -22,7 +21,7 @@ union Mailbox_Class _private Mailbox_Class =
 	mailbox_retrieve_only
 };
 
-static union Mailbox_Class Mailbox_Class = {NULL};
+static union Mailbox Mailbox = {NULL};
 
 void mailbox_delete(struct Object * const obj)
 {
@@ -35,7 +34,7 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 {
 	CQueue_Mail_T * const mailbox = &this->mailbox;
 
-	mailbox->vtbl->push(mailbox, *mail);
+	mailbox->vtbl->push_front(mailbox, *mail);
 	
 }
 	
@@ -44,16 +43,16 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 	CQueue_Mail_T * const mailbox = &this->mailbox;
 
 	bool rc = false;
-	if(!mailbox->vtbl->empty(mailbox))
+	if(!mailbox->vtbl->size(mailbox))
 	{
 		if(0 == this->picked_mail.mid)
 		{
 			_delete(&this->picked_mail);
 		}
-		memcpy(&this->picked_mail, mailbox->vtbl->back(mailbox), sizeof(this->picked_mail));
-		memcpy(mail, found, sizeof(this->picked_mail));
+		memcpy(&this->picked_mail, mailbox->vtbl->end(mailbox) -1, sizeof(this->picked_mail));
+		memcpy(mail, &this->picked_mail, sizeof(this->picked_mail));
 
-		mailbox->vtbl->pop(mailbox);
+		mailbox->vtbl->pop_back(mailbox);
 		rc = true;
 	}
 	return rc;
@@ -83,7 +82,7 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 		{
 			memcpy(&this->picked_mail, found, sizeof(this->picked_mail));
 			memcpy(mail, found, sizeof(this->picked_mail));
-			mailbox->vtbl->pop_front(mailbox);
+			mailbox->vtbl->pop_back(mailbox);
 			rc = true;
 		}
 	}

@@ -1,102 +1,89 @@
 #define COBJECT_IMPLEMENTATION
- 
+
 #include <pthread.h>
+#include "ipc_helper.h"
 #include "thread.h"
-#include "thread_ext.h"
+#include "semaphore.h"
 
 #define THREAD_INIT(tid, desc) -1,
 
 static void thread_delete(struct Object * const obj);
 static void thread_run(union Thread * const this);
-static void thread_wait(union Thread * const this);
+static void thread_wait(union Thread * const this, IPC_Clock_T const wait_ms);
 static void thread_runnable(union Thread * const this);
 static void * thread_routine(void * arg);
 
 union Thread_Class Thread_Class =
 {
-	{thread_delete, NULL},
-	thread_run,
-	thread_wait,
-	thread_runnable
+        {thread_delete, NULL},
+        thread_run,
+        thread_wait,
+        thread_runnable
 };
 
 static union Thread Thread = {NULL};
 
 static pthread_t Thread_Pthread_Pool[] =
 {
-	IPC_THREAD_LIST(THREAD_INIT)
+        IPC_THREAD_LIST(THREAD_INIT)
 };
 
-static pthread_attr_t Thread_Pthread_Attr = PTHREAD_ATTR_INIT;
+static pthread_attr_t Thread_Pthread_Attr;
 
 void thread_delete(struct Object * const obj)
 {
-   Thread_T * const this = Object_Cast(&Thread_Class, obj);
-   Isnt_Nullptr(this,);
+    Thread_T * const this = Object_Cast(&Thread_Class, obj);
+    Isnt_Nullptr(this,);
 
-   pthread_cancel(Thread_Pthread_Pool[this->tid]);
+    IPC_Helper_T * ipc_helper = IPC_get_instance();
+    ipc_helper->vtbl->join_thread(ipc_helper, this);
+    IPC_Unregister_Thread(this);
+    ipc_helper->vtbl->free_thread(ipc_helper, this);
 }
- 
+
 void thread_run(union Thread * const this)
 {
+    IPC_Helper_T * ipc_helper = IPC_get_instance();
 
-	if(0 == pthread_create(Thread_Pthread_Pool[this->tid], thread_routine, (void *)this))
-	{
-	}
-}
-
-void * thread_routine(void * arg)
-{
-	union Thread * const this = (Thread_T *)Object_Cast(Thread_Class.Class, (struct Object *) arg);
-	Isnt_Nullptr(this, NULL);
-	
-	this->vtbl->runnable(this);
-	
-	return this;
+    if(ipc_helper->vtbl->run_thread(ipc_helper, this))
+    {
+        union Semaphore * t_sem = &this->sem_ready;
+        t_sem->vtbl->post(t_sem);
+    }
 }
 
 void thread_runnable(union Thread * const this){}//Implements!
 
 void thread_wait(union Thread * const this, uint32_t const wait_ms)
 {
-	if(Thread_Join(this))
-	{
+    union Semaphore * t_sem = &this->sem_ready;
 
-	}
-}
+    if(t_sem->vtbl->wait(t_sem, wait_ms))
+    {
 
-IPC_TID_T Thread_self(void)
-{
-	pthread_t pt = pthread_self();
-	IPC_TID_T tid;
-
-	for(tid = 0; tid < IPC_TID_MAX; ++tid)
-	{
-		if(pt == Thread_Pthread_Pool[tid])
-		{
-			break;
-		}
-	}
-
-	return tid;
+    }
 }
 
 void Populate_Thread(union Thread * const this, IPC_TID_T const tid)
 {
-	if(IPC_TID_MAX > tid) return ;
-	
-	if(NULL == Thread.vtbl)
-	{
-		Thread.vtbl = &Thread_Class;
-		Thread.tid = 0;
-	}
+    if(IPC_MAX_TID <= tid) return ;
 
-	memcpy(this, &Thread, sizeof(Thread));
+    if(NULL == Thread.vtbl)
+    {
+        pthread_attr_init(&Thread_Pthread_Attr);
+        Thread.vtbl = &Thread_Class;
+        Thread.tid = 0;
+    }
 
-	this->tid = tid;
 
-	if(-1 == Thread_Pthread_Pool[this->tid])
-	{
-		pthread_init(&Thread_Pthread_Pool + this->tid, &Thread_Pthread_Attr);
-	}
+    if(-1 == Thread_Pthread_Pool[this->tid])
+    {
+        if(IPC_Helper_find_thread(tid))
+        {
+            IPC_Register_Thread(this);
+
+            memcpy(this, &Thread, sizeof(Thread));
+            Populate_Semaphore(&this->sem_ready, 1);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 #define COBJECT_IMPLEMENTATION
- 
+
 #include "publisher.h"
 #include "ipc.h"
 
@@ -8,56 +8,59 @@
 #include "cset.c"
 #undef CSet_Params
 
-typedef CSet_IPC_TID_T Subcription_List_T;
+typedef CSet_IPC_TID_T Subscription_List_T;
 
 static void publisher_init(void);
 
-static Subscription_List_T Subscription_List[IPC_PBC_END - IPC_PBC_BEGIN];
+static Subscription_List_T Subscription_List[IPC_PBC_END_MID - IPC_PBC_BEGIN_MID];
 
-static IPC_TID_T Subscription_Buff[IPC_PBC_END - IPC_PBC_BEGIN][IPC_MAX_TIDS];
+static IPC_TID_T Subscription_Buff[IPC_PBC_END_MID - IPC_PBC_BEGIN_MID][IPC_MAX_TID];
 
 void publisher_init(void)
 {
-	uint32_t i;
-	for(i = 0; i < Num_Elems(Subscription_List); ++i)
-	{
-		Populate_CSet_IPC_TID(Subscription_List + i, Subscription_Buff + i, IPC_MAX_TIDS);
-	}
+    uint32_t i;
+    for(i = 0; i < Num_Elems(Subscription_List); ++i)
+    {
+        Populate_CSet_IPC_TID(Subscription_List + i, Subscription_Buff + i, IPC_MAX_TID);
+    }
 }
 
 bool Publisher_Subscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 {
-	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
-	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
+    if(IPC_PBC_END_MID <= mid && IPC_PBC_BEGIN_MID > mid) return false;
+    uint32_t mid_idx = mid - IPC_PBC_BEGIN_MID;
 
-	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
-	subscription->vtbl->insert(subscription, tid);
+    Subscription_List_T * subscription = Subscription_List + mid_idx;
+    subscription->vtbl->insert(subscription, tid);
 
-	return (subscription->vtbl->end(subscription) != subscription->vtbl->find(subscription, tid));
+    return (subscription->vtbl->end(subscription) != subscription->vtbl->find(subscription, tid));
 }
 
 
 
 bool Publisher_Unsubscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 {
-	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
-	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
+    if(IPC_PBC_END_MID <= mid && IPC_PBC_BEGIN_MID > mid) return false;
+    uint32_t mid_idx = mid - IPC_PBC_BEGIN_MID;
 
-	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
-	subscription->vtbl->erase(subscription, tid);
+    union Mailbox * mbx = IPC_Helper_find_mailbox(tid);
 
-	return (subscription->vtbl->end(subscription) == subscription->vtbl->find(subscription, tid));
+    Subscription_List_T * subscription = Subscription_List + mid_idx;
+    subscription->vtbl->erase(subscription, tid);
+
+    return (subscription->vtbl->end(subscription) == subscription->vtbl->find(subscription, tid));
 }
 
 void Publisher_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-	if(IPC_PBC_END <= mid && IPC_PBC_BEGIN > mid) return false;
-	uint32_t mid_idx = mid - IPC_PBC_BEGIN;
+    if(IPC_PBC_END_MID <= mid && IPC_PBC_BEGIN_MID > mid) return false;
+    uint32_t mid_idx = mid - IPC_PBC_BEGIN_MID;
 
-	Subscriptions_List_T * subscription = Subcription_List + mid_idx;
+    Subscription_List_T * subscription = Subscription_List + mid_idx;
     IPC_TID_T * it = subscription->vtbl->begin(subscription);
-	for( ; it != subscription->vtbl->end(subscription); ++it)
-	{
-		IPC_Send((*it), mid, payload, pay_size);
-	}
+
+    for( ; it != subscription->vtbl->end(subscription); ++it)
+    {
+        IPC_Send((*it), mid, payload, pay_size);
+    }
 }

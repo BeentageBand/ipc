@@ -22,7 +22,7 @@ union Mailbox_Class
 	};
 };
 
-union Mailbox
+typedef union Mailbox
 {
 	union Mailbox_Class _private * _private vtbl;
 	struct
@@ -32,7 +32,7 @@ union Mailbox
 		CQueue_Mail_T _private mailbox;
 		union Mail picked_mail;
 	};
-};
+}Mailbox_T;
 
 extern union Mailbox_Class _private Mailbox_Class;
 

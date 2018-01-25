@@ -12,6 +12,7 @@ typedef union Worker
 {
 	union Worker_Class _private * _private vtbl;
 	struct Object Object;
+	Dbg_Info("IPC_Gtest_Worker_on_start %d", this->Task.tid);
 	struct
 	{
 		union Thread Thread;

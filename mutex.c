@@ -12,14 +12,14 @@ static bool_t mutex_unlock(union Mutex * const this);
  
 union Mutex_Class Mutex_Class =
 {
-	{mutex_delete, NULL};
+	{mutex_delete, NULL},
 	mutex_lock,
 	mutex_unlock,
 };
 
 static union Mutex Mutex = {NULL};
 
-static pthread_mutex_attr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutexattr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_INITIALIZER;
 
 void mutex_delete(struct Object * const obj)
 {
@@ -30,13 +30,13 @@ void mutex_delete(struct Object * const obj)
 }
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
-
+{
 	int rc = 1;
 
 	IPC_Clock_T timeout_ms = IPC_Clock() + wait_ms;
 	while(rc && IPC_Clock_Elapsed(timeout_ms))
 	{
-		rc = pthread_mutex_trylock((pthread_mutex_t *)this->mutex);
+		rc = pthread_mutex_trylock((pthread_mutex_t *)this->mux);
 	}
 
 	return (0 == rc);
@@ -44,13 +44,15 @@ bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
 
 bool_t mutex_unlock(union Mutex * const this)
 {
+	return false;
 }
+
 void Populate_Mutex(union Mutex * const this)
 {
 	if(NULL == Mutex.vtbl)
 	{
 		Mutex.vtbl = &Mutex_Class;
-		Mutext.mux = 0;
+		Mutex.mux = 0;
 	}
 
 	memcpy(this, &Mutex, sizeof(Mutex));

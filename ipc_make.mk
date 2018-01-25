@@ -10,6 +10,7 @@ mail_payload.h \
 mailbox.h \
 mutex.h \
 publisher.h \
+semaphore.h \
 thread.h \
 uptime.h \
 worker.h \
@@ -24,6 +25,7 @@ mail_payload \
 mailbox \
 mutex \
 publisher \
+semaphore \
 thread \
 uptime \
 worker \
