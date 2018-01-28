@@ -2,7 +2,7 @@
 #define THREAD_H_
  
 #include "ipc_types.h"
-#include "semaphore.h"
+#include "sem.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +16,7 @@ typedef union Thread
 		struct Object Object;
 		IPC_TID_T _private tid;
 		union Semaphore sem_ready;
+		void _private * _private attr;
 	};
 }Thread_T;
 

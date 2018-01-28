@@ -3,6 +3,7 @@
 
 #include "ipc_types.h"
 #include "mailbox.h"
+#include "thread.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +26,10 @@ extern void IPC_Run(IPC_TID_T const tid);
 extern bool IPC_Register_Mailbox(union Mailbox * const mbx);
 
 extern bool IPC_Unregister_Mailbox(union Mailbox * const mbx);
+
+extern bool IPC_Register_Thread(union Thread * const thread);
+
+extern bool IPC_Unregister_Thread(union Thread * const thread);
 
 extern bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size);
 

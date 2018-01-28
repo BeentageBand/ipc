@@ -4,6 +4,9 @@
 #include "ipc_types.h"
 #include "cobject.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef union Uptime
 {
 	union Uptime_Class _private * _private vtbl;
@@ -27,4 +30,7 @@ extern Uptime_Class_T _private Uptime_Class;
 
 extern void Populate_Uptime(union Uptime * const uptime);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /*UPTIME_H_*/

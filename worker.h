@@ -21,7 +21,6 @@ typedef union Worker
 
 typedef union Worker_Class
 {
-	struct Class Class;
 	struct
 	{
 		union Thread_Class Thread;
@@ -30,6 +29,7 @@ typedef union Worker_Class
 		void (* _private on_loop)(union Worker * const);
 		void (* _private on_stop)(union Worker * const);
 	};
+	struct Class Class;
 }Worker_Class_T;
 
 extern union Worker_Class _private Worker_Class;

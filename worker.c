@@ -16,8 +16,8 @@ static void worker_on_stop(union Worker * const this);
 union Worker_Class Worker_Class =
 {
         {worker_delete, NULL},
-        worker_on_start,
         worker_on_mail,
+        worker_on_start,
         worker_on_loop,
         worker_on_stop
 };
@@ -85,11 +85,14 @@ void Populate_Worker(union Worker * const this, IPC_TID_T const tid, union Mail 
 {
     if(NULL == Worker.vtbl)
     {
-        Populate_Thread(&Worker.Thread, tid);
+        Populate_Thread(&Worker.Thread, IPC_MAX_TID);
         Object_Init(&Worker.Object, &Worker_Class.Class, sizeof(Worker_Class.Thread));
         Worker_Class.Thread.runnable = worker_runnable;
     }
     memcpy(this, &Worker, sizeof(Worker));
+
+    Populate_Thread(&this->Thread, tid);
+    this->vtbl = &Worker_Class;
 
     Populate_Mailbox(&this->mailbox, tid, mail_buff, mailsize);
 }

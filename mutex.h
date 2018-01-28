@@ -8,7 +8,10 @@
 extern "C" {
 #endif
  
-typedef uint32_t IPC_MUX_T;
+typedef struct
+{
+        char _mux[40];
+}IPC_MUX_T;
 
 typedef union Mutex
 {

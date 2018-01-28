@@ -1,6 +1,7 @@
+
 #define COBJECT_IMPLEMENTATION
 
-#include "semaphore.h"
+#include "sem.h"
 #include "ipc_helper.h"
 
 

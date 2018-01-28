@@ -5,7 +5,7 @@
 #include "mailbox.h"
 #include "mutex.h"
 #include "publisher.h"
-#include "semaphore.h"
+#include "sem.h"
 #include "thread.h"
  
 #ifdef __cplusplus

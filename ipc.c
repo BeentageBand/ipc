@@ -48,19 +48,38 @@ bool IPC_Register_Mailbox(union Mailbox * const mbx)
 {
 	union IPC_Helper * ipc_help = IPC_get_instance();
 
-	CSet_Mailbox_Ptr_T * const mailbox_stack = &ipc_help->rmailboxes;
+	CSet_Mailbox_Ptr_T * const mailbox_stack = ipc_help->rmailboxes;
 	mailbox_stack->vtbl->insert(mailbox_stack, mbx);
-	return NULL != IPC_Helper_find_mailbox(IPC_Self());
+	return NULL != IPC_Helper_find_mailbox(mbx->tid);
 }
 
 bool IPC_Unregister_Mailbox(union Mailbox * const mbx)
 {
 	union IPC_Helper * ipc_help = IPC_get_instance();
 
-	CSet_Mailbox_Ptr_T * const mailbox_stack = &ipc_help->rmailboxes;
-	mailbox_stack->vtbl->erase(mailbox_stack, IPC_Self());
+	CSet_Mailbox_Ptr_T * const mailbox_stack = ipc_help->rmailboxes;
+	mailbox_stack->vtbl->erase(mailbox_stack, mbx);
 	
-	return NULL == IPC_Helper_find_mailbox(IPC_Self());
+	return NULL == IPC_Helper_find_mailbox(mbx->tid);
+}
+
+bool IPC_Register_Thread(union Thread * const thread)
+{
+	union IPC_Helper * ipc_help = IPC_get_instance();
+
+	CSet_Thread_Ptr_T * const thread_stack = ipc_help->rthreads;
+	thread_stack->vtbl->insert(thread_stack, thread);
+	return NULL != IPC_Helper_find_thread(thread->tid);
+}
+
+bool IPC_Unregister_Thread(union Thread * const thread)
+{
+	union IPC_Helper * ipc_help = IPC_get_instance();
+
+	CSet_Thread_Ptr_T * const thread_stack = ipc_help->rthreads;
+	thread_stack->vtbl->erase(thread_stack, thread);
+
+	return NULL == IPC_Helper_find_thread(thread->tid);
 }
 
 
@@ -116,7 +135,7 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
 			rc = mbx->vtbl->retrieve_only(mbx, mail, mailist[i]);
 		}
 		IPC_Sleep(50);// do something else
-	} while( !rc && !IPC_Time_Elapsed(timestamp));
+	} while( !rc && !IPC_Clock_Elapsed(timestamp));
 	
 	return rc;
 }

@@ -12,6 +12,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 enum IPC_MID
 {
 	IPC_PBC_BEGIN_MID = 0,

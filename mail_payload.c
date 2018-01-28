@@ -1,7 +1,6 @@
 #define COBJECT_IMPLEMENTATION
 #define Dbg_FID DBG_FID_DEF(IPC_FID, 3)
 
-#include "ipc_mailist_ids.h"
 #include "dbg_log.h"
 #include "cobject.h"
 
@@ -61,6 +60,11 @@ static union Payload Lil_Pool =
 	Num_Elems(Lil_Pool_Buff)
 };
 
+
+void payload_delete(struct Object * const obj)
+{
+
+}
 
 size_t payload_alloc(union Payload * const this, void ** const payload)
 {
