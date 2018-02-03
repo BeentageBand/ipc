@@ -76,6 +76,11 @@ IPC_Helper_Class_T IPC_Helper_Class =
 
 static union IPC_Helper IPC_Helper = {NULL};
 static union IPC_Helper * IPC_Helper_Singleton = NULL;
+static CSet_Thread_Ptr_T rthreads;
+static CSet_Mailbox_Ptr_T rmailboxes;
+static Thread_Ptr_T thread_set[IPC_MAX_TID] = {0};
+static Mailbox_Ptr_T mailbox_set[IPC_MAX_TID] = {0};
+
 
 void ipc_helper_delete(struct Object * const obj)
 {
@@ -416,29 +421,31 @@ union IPC_Helper * IPC_get_instance(void)
 
 static int ipc_helper_thread_cmp(void const * a, void const *b)
 {
-    Thread_T * const thread_a = (Thread_T *)a;
-    Thread_T * const thread_b = (Thread_T *)b;
+    Thread_Ptr_T * const thread_a = (Thread_Ptr_T *)a;
+    Thread_Ptr_T * const thread_b = (Thread_Ptr_T *)b;
 
-    return ((int)thread_a->tid - (int)thread_b->tid);
+    if((*thread_a)->tid <  (*thread_b)->tid) return -1;
+    if((*thread_a)->tid == (*thread_b)->tid) return 0;
+    if((*thread_a)->tid >  (*thread_b)->tid) return 1;
 }
 
 static int ipc_helper_mailbox_cmp(void const * a, void const *b)
 {
-    Mailbox_T * const mailbox_a = (Mailbox_T *)a;
-    Mailbox_T * const mailbox_b = (Mailbox_T *)b;
+    Mailbox_Ptr_T * const mailbox_a = (Mailbox_Ptr_T *)a;
+    Mailbox_Ptr_T * const mailbox_b = (Mailbox_Ptr_T *)b;
 
-    return ((int)mailbox_a->tid - (int)mailbox_b->tid);
+    if((*mailbox_a)->tid <  (*mailbox_b)->tid) return -1;
+    if((*mailbox_a)->tid == (*mailbox_b)->tid) return 0;
+    if((*mailbox_a)->tid >  (*mailbox_b)->tid) return 1;
 }
 
 void Populate_IPC_Helper(union IPC_Helper * const this)
 {
-    static CSet_Thread_Ptr_T rthreads;
-    static CSet_Mailbox_Ptr_T rmailboxes;
-    static Thread_Ptr_T thread_set[IPC_MAX_TID] = {0};
-    static Mailbox_Ptr_T mailbox_set[IPC_MAX_TID] = {0};
-
     if(NULL == IPC_Helper.vtbl)
     {
+        memset(thread_set, 0, sizeof(thread_set));
+        memset(mailbox_set, 0, sizeof(mailbox_set));
+
         IPC_Helper.vtbl = &IPC_Helper_Class;
         Populate_CSet_Cmp_Thread_Ptr(&rthreads, thread_set, Num_Elems(thread_set), ipc_helper_thread_cmp);
         Populate_CSet_Cmp_Mailbox_Ptr(&rmailboxes, mailbox_set, Num_Elems(mailbox_set), ipc_helper_mailbox_cmp);
@@ -459,6 +466,16 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
 
         CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
         Thread_Ptr_T * found = thread_stack->vtbl->find(thread_stack, &t);
+
+        Thread_Ptr_T * it = thread_stack->vtbl->begin(thread_stack);
+        for(; it != thread_stack->vtbl->end(thread_stack); ++it)
+        {
+            printf("%s %d tid = %d, ", __func__, (int)*it, (*it)->tid);
+        }
+
+        printf("\n");
+        bool is_found = (found != thread_stack->vtbl->end(thread_stack));
+		printf("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
         return (found != thread_stack->vtbl->end(thread_stack))? *found : NULL;
 }
 

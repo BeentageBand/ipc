@@ -81,8 +81,9 @@ static pthread_condattr_t POSIX_Cond_Attr = PTHREAD_COND_INITIALIZER;
 static pthread_attr_t POSIX_Thread_Attr;
 static pthread_mutexattr_t POSIX_Mux_Attr;
 
-static pthread_t POSIX_Pool[IPC_MAX_MID] =
+static pthread_t POSIX_Pool[IPC_MAX_TID] =
 {
+        -1,
         IPC_THREAD_LIST(THREAD_INIT)
 };
 
