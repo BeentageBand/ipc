@@ -1,5 +1,7 @@
 #define COBJECT_IMPLEMENTATION
+#define Dbg_FID DBG_FID_DEF(IPC_FID, 0)
 
+#include "dbg_log.h"
 #include "ipc_helper.h"
 
 typedef union Thread * Thread_Ptr_T;
@@ -44,6 +46,9 @@ static bool ipc_helper_free_conditional(union IPC_Helper * const helper, union C
 static bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union Conditional * const conditional,
         union Mutex * const mutex, IPC_Clock_T const wait_ms);
 static bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
+
+static int ipc_helper_thread_cmp(Thread_Ptr_T const * a, Thread_Ptr_T const *b);
+static int ipc_helper_mailbox_cmp(Mailbox_Ptr_T const * a,Mailbox_Ptr_T const *b);
 
 IPC_Helper_Class_T IPC_Helper_Class = 
 {{
@@ -187,7 +192,7 @@ bool ipc_helper_run_thread(union IPC_Helper * const helper, union Thread * const
     union IPC_Helper * this = helper;
     while(this)
     {
-        if(ipc_helper_run_thread != this->vtbl->join_thread)
+        if(ipc_helper_run_thread != this->vtbl->run_thread)
         {
             rc = this->vtbl->run_thread(this, thread);
         }
@@ -419,24 +424,22 @@ union IPC_Helper * IPC_get_instance(void)
         return IPC_Helper_Singleton;
 }
 
-static int ipc_helper_thread_cmp(void const * a, void const *b)
+int ipc_helper_thread_cmp(Thread_Ptr_T const * a, Thread_Ptr_T const * b)
 {
-    Thread_Ptr_T * const thread_a = (Thread_Ptr_T *)a;
-    Thread_Ptr_T * const thread_b = (Thread_Ptr_T *)b;
+    if((*a)->tid < (*b)->tid) return -1;
+    if((*a)->tid ==  (*b)->tid) return 0;
+    if((*a)->tid >  (*b)->tid) return 1;
 
-    if((*thread_a)->tid <  (*thread_b)->tid) return -1;
-    if((*thread_a)->tid == (*thread_b)->tid) return 0;
-    if((*thread_a)->tid >  (*thread_b)->tid) return 1;
+    return 0;
 }
 
-static int ipc_helper_mailbox_cmp(void const * a, void const *b)
+int ipc_helper_mailbox_cmp(Mailbox_Ptr_T const * a,Mailbox_Ptr_T const *b)
 {
-    Mailbox_Ptr_T * const mailbox_a = (Mailbox_Ptr_T *)a;
-    Mailbox_Ptr_T * const mailbox_b = (Mailbox_Ptr_T *)b;
+    if((*a)->tid <  (*b)->tid) return -1;
+    if((*a)->tid == (*b)->tid) return 0;
+    if((*a)->tid >  (*b)->tid) return 1;
 
-    if((*mailbox_a)->tid <  (*mailbox_b)->tid) return -1;
-    if((*mailbox_a)->tid == (*mailbox_b)->tid) return 0;
-    if((*mailbox_a)->tid >  (*mailbox_b)->tid) return 1;
+    return 0;
 }
 
 void Populate_IPC_Helper(union IPC_Helper * const this)
@@ -447,8 +450,10 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
         memset(mailbox_set, 0, sizeof(mailbox_set));
 
         IPC_Helper.vtbl = &IPC_Helper_Class;
-        Populate_CSet_Cmp_Thread_Ptr(&rthreads, thread_set, Num_Elems(thread_set), ipc_helper_thread_cmp);
-        Populate_CSet_Cmp_Mailbox_Ptr(&rmailboxes, mailbox_set, Num_Elems(mailbox_set), ipc_helper_mailbox_cmp);
+        Populate_CSet_Cmp_Thread_Ptr(&rthreads, thread_set, Num_Elems(thread_set),
+                (CSet_Cmp_T) ipc_helper_thread_cmp);
+        Populate_CSet_Cmp_Mailbox_Ptr(&rmailboxes, mailbox_set, Num_Elems(mailbox_set),
+                (CSet_Cmp_T) ipc_helper_mailbox_cmp);
         IPC_Helper.rthreads = &rthreads;
         IPC_Helper.rmailboxes = &rmailboxes;
     }
@@ -470,12 +475,11 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
         Thread_Ptr_T * it = thread_stack->vtbl->begin(thread_stack);
         for(; it != thread_stack->vtbl->end(thread_stack); ++it)
         {
-            printf("%s %d tid = %d, ", __func__, (int)*it, (*it)->tid);
+            Dbg_Info("%s %d tid = %d, ", __func__, (int)*it, (*it)->tid);
         }
 
-        printf("\n");
         bool is_found = (found != thread_stack->vtbl->end(thread_stack));
-		printf("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
+		Dbg_Info("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
         return (found != thread_stack->vtbl->end(thread_stack))? *found : NULL;
 }
 

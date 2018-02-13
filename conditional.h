@@ -11,7 +11,7 @@ extern "C" {
 
 typedef union Conditional
 {
-	union Conditional_Class _private * _private vtbl;
+	struct Conditional_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
@@ -20,14 +20,11 @@ typedef union Conditional
 	};
 }Conditional_T;
 
-typedef union Conditional_Class
+typedef struct Conditional_Class
 {
-	struct
-	{
 		struct Class Class;
 		bool_t (* _private wait)(union Conditional * const, IPC_Clock_T const);
 		bool_t (* _private signal)(union Conditional * const);
-	};
 }Conditional_Class_T;
 
 extern Conditional_Class_T _private Conditional_Class;

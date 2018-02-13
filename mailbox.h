@@ -11,20 +11,10 @@
 extern "C" {
 #endif
 
-union Mailbox_Class
-{
-	struct
-	{
-		struct Class Class;
-		void (*_private push_mail)(union Mailbox * const, union Mail * const);
-		bool (*_private retrieve)(union Mailbox * const, union Mail * const);
-		bool (*_private retrieve_only)(union Mailbox * const, union Mail * const, IPC_MID_T const);
-	};
-};
 
 typedef union Mailbox
 {
-	union Mailbox_Class _private * _private vtbl;
+	struct Mailbox_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
@@ -34,7 +24,15 @@ typedef union Mailbox
 	};
 }Mailbox_T;
 
-extern union Mailbox_Class _private Mailbox_Class;
+typedef struct Mailbox_Class
+{
+		struct Class Class;
+		void (*_private push_mail)(union Mailbox * const, union Mail * const);
+		bool (*_private retrieve)(union Mailbox * const, union Mail * const);
+		bool (*_private retrieve_only)(union Mailbox * const, union Mail * const, IPC_MID_T const);
+}Mailbox_Class_T;
+
+extern struct Mailbox_Class _private Mailbox_Class;
 
 extern void Populate_Mailbox(union Mailbox * const mbx, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size);
 		

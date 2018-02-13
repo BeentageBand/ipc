@@ -6,10 +6,12 @@
  */
 
 #define COBJECT_IMPLEMENTATION
+#define Dbg_FID DBG_FID_DEF(IPC_FID, 4)
 
 #include <pthread.h>
 #include <semaphore.h>
 #include <time.h>
+#include "dbg_log.h"
 #include "ipc_posix.h"
 
 #define THREAD_INIT(tid, desc) -1,
@@ -90,9 +92,19 @@ static pthread_t POSIX_Pool[IPC_MAX_TID] =
 void * ipc_posix_routine(void * thread)
 {
     union Thread * const this = _cast(Thread, (union Thread *)thread);
+
     Isnt_Nullptr(this, NULL);
 
-    this->vtbl->runnable(this);
+    Dbg_Info("%s for thread = %d", __func__, this->tid);
+
+    if(this->vtbl && this->vtbl->runnable)
+    {
+        this->vtbl->runnable(this);
+    }
+    else
+    {
+        Dbg_Fault("%s:Unable to run thread %d", __func__, this->tid);
+    }
 
     pthread_exit((void *)this);
     return NULL;
@@ -231,12 +243,12 @@ bool ipc_posix_unlock_mutex(union IPC_Helper * const helper, union Mutex * const
 bool ipc_posix_alloc_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
         uint8_t const value)
 {
-    return 0 == sem_init((sem_t *)&semaphore->value, 0, value);
+    return 0 == sem_init((sem_t *)&semaphore->sem, 0, value);
 }
 
 bool ipc_posix_free_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore)
 {
-    return 0 == sem_destroy((sem_t *)&semaphore->value);
+    return 0 == sem_destroy((sem_t *)&semaphore->sem);
 }
 
 bool ipc_posix_wait_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
@@ -244,12 +256,12 @@ bool ipc_posix_wait_semaphore(union IPC_Helper * const helper, union Semaphore *
 {
     struct timespec timespec;
     ipc_posix_make_timespec(&timespec, wait_ms);
-    return 0 == sem_timedwait((sem_t *)&semaphore->value, &timespec);
+    return 0 == sem_timedwait((sem_t *)&semaphore->sem, &timespec);
 }
 
 bool ipc_posix_post_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore)
 {
-    return 0 == sem_post((sem_t *)&semaphore->value);
+    return 0 == sem_post((sem_t *)&semaphore->sem);
 }
 
 bool ipc_posix_alloc_conditional(union IPC_Helper * const helper, union Conditional * const conditional)

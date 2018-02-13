@@ -1,6 +1,8 @@
 
 #define COBJECT_IMPLEMENTATION
+#define Dbg_FID DBG_FID_DEF(IPC_FID, 4)
 
+#include "dbg_log.h"
 #include "sem.h"
 #include "ipc_helper.h"
 
@@ -9,7 +11,7 @@ static void semaphore_delete(struct Object * obj);
 static bool semaphore_wait(union Semaphore * const this, IPC_Clock_T const wait_ms);
 static bool semaphore_post(union Semaphore * const this);
 
-union Semaphore_Class Semaphore_Class =
+struct Semaphore_Class Semaphore_Class =
 {
         {semaphore_delete, NULL},
         semaphore_wait,
@@ -46,6 +48,7 @@ void Populate_Semaphore(union Semaphore * const this, uint32_t value)
         Semaphore.vtbl = &Semaphore_Class;
     }
 
+    memcpy(this, &Semaphore, sizeof(Semaphore));
     IPC_Helper_T * ipc_help = IPC_get_instance();
     ipc_help->vtbl->alloc_semaphore(ipc_help, this, value);
 }

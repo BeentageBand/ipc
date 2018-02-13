@@ -23,7 +23,7 @@ typedef union Worker_Class
 {
 	struct
 	{
-		union Thread_Class Thread;
+		struct Thread_Class Thread;
 		void (* _private on_mail)(union Worker * const, union Mail * const);
 		void (* _private on_start)(union Worker * const);
 		void (* _private on_loop)(union Worker * const);

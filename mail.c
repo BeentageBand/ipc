@@ -26,7 +26,7 @@ static union Mail Mail = {NULL};
 
 void mail_delete(struct Object * const object)
 {
-	union Mail * const this = (union Mail * ) Object_Cast(&Mail_Class, object);
+	union Mail * const this = (union Mail * ) Object_Cast(&Mail_Class.Class, object);
 
 	Isnt_Nullptr(this, );
 	

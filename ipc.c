@@ -30,8 +30,8 @@ void IPC_Wait(IPC_TID_T const tid, IPC_Clock_T const wait_ms)
 	union Thread * found = IPC_Helper_find_thread(tid);
 	if(NULL != found)
 	{
-		//TODO Thread safe support
-//		(void)found->vtbl->wait(found, wait_ms);
+	    found->vtbl->wait(found, wait_ms);
+	    _delete(found);
 	}
 }
 	

@@ -2,6 +2,7 @@
 #undef Dbg_FID
 #define Dbg_FID DBG_FID_DEF(IPC_FID,3)
 
+#include "dbg_log.h"
 #include "mailbox.h"
 
 #define CQueue_Params Mail
@@ -13,13 +14,12 @@ static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
 
-union Mailbox_Class Mailbox_Class =
+struct Mailbox_Class Mailbox_Class =
 {
-	{{NULL, mailbox_delete},
+	{mailbox_delete, NULL},
 	mailbox_push_mail,
 	mailbox_retrieve,
 	mailbox_retrieve_only
-	}
 };
 
 static union Mailbox Mailbox = {NULL};

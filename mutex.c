@@ -1,16 +1,17 @@
 #define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,4)
+#define Dbg_FID DBG_FID_DEF(IPC_FID,4)
 
 #include <pthread.h>
 #include "dbg_log.h"
+#include "ipc.h"
 #include "mutex.h"
 
 static void mutex_delete(struct Object * const obj);
 static bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms);
 static bool_t mutex_unlock(union Mutex * const this);
 
-union Mutex_Class Mutex_Class =
+struct Mutex_Class Mutex_Class =
 {
         {mutex_delete, NULL},
         mutex_lock,

@@ -15,7 +15,7 @@ typedef struct
 
 typedef union Mutex
 {
-	union Mutex_Class _private * _private vtbl;
+	struct Mutex_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
@@ -23,14 +23,11 @@ typedef union Mutex
 	};
 }Mutex_T;
 
-typedef union Mutex_Class
+typedef struct Mutex_Class
 {
-	struct
-	{
 		struct Class Class;
 		bool_t (* _private lock)(union Mutex * const, IPC_Clock_T const);
 		bool_t (* _private unlock)(union Mutex * const);
-	};
 }Mutex_Class_T;
 
 extern Mutex_Class_T _private Mutex_Class;

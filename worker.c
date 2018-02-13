@@ -14,12 +14,18 @@ static void worker_on_loop(union Worker * const this);
 static void worker_on_stop(union Worker * const this);
 
 union Worker_Class Worker_Class =
-{
-        {worker_delete, NULL},
+{{
+        {
+                {worker_delete, NULL},
+                NULL,
+                NULL,
+                NULL
+        },
         worker_on_mail,
         worker_on_start,
         worker_on_loop,
         worker_on_stop
+}
 };
 
 static union Worker Worker = {NULL};

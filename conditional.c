@@ -1,6 +1,6 @@
 #define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_Def(IPC_FID,6)
+#define Dbg_FID Dbg_FID_DEF(IPC_FID,6)
  
 #include <pthread.h>
 #include <time.h>
@@ -12,11 +12,11 @@ static void conditional_delete(struct Object * const obj);
 static bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms);
 static bool_t conditional_signal(union Conditional * const this);
 
-union Conditional_Class Conditional_Class =
+struct Conditional_Class Conditional_Class =
 {
 	{conditional_delete, NULL},
-	NULL,
-	NULL
+	conditional_wait,
+	conditional_signal
 };
 
 union Conditional Conditional = {NULL};
@@ -38,7 +38,7 @@ bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_m
 	tp.tv_sec = wait_ms / IPC_CLOCK_MS_SEC;
 	tp.tv_nsec = wait_ms - (tp.tv_sec * IPC_CLOCK_MS_SEC);
 
-	tp.tv_nsec - IPC_CLOCK_NS_MS;
+	tp.tv_nsec -= IPC_CLOCK_NS_MS;
 
 	int rc = pthread_cond_timed_wait((pthread_cond_t *)&this->conditional, 
 			(pthread_mutex_t *)&this->mutex->mux, &tp);

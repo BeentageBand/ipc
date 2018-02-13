@@ -10,7 +10,7 @@ extern "C" {
 
 typedef union Thread
 {
-	union Thread_Class _private * _private vtbl;
+	struct Thread_Class _private * _private vtbl;
 	struct
 	{
 		struct Object Object;
@@ -20,18 +20,15 @@ typedef union Thread
 	};
 }Thread_T;
 
-typedef union Thread_Class
+typedef struct Thread_Class
 {
-	struct
-	{
-		struct Class Class;
-		void (* _private run)(union Thread * const);
-		void (* _private wait)(union Thread * const, IPC_Clock_T const);
-		void (* _private runnable)(union Thread * const);
-	};
+	struct Class Class;
+	void (* _private run)(union Thread * const);
+	void (* _private wait)(union Thread * const, IPC_Clock_T const);
+	void (* _private runnable)(union Thread * const);
 }Thread_Class_T;
 
-extern union Thread_Class _private Thread_Class;
+extern struct Thread_Class _private Thread_Class;
 
 extern void Populate_Thread(union Thread * const thread, IPC_TID_T const tid);
 
