@@ -12,7 +12,7 @@ static void mail_set_mid(union Mail * const this,IPC_MID_T const);
 static void mail_set_sender(union Mail * const this,IPC_TID_T const);
 static void mail_set_receiver(union Mail * const this,IPC_TID_T const);
 
-union Mail_Class Mail_Class =
+struct Mail_Class Mail_Class =
 {
 	{mail_delete, NULL},
 	mail_set_payload,
@@ -47,9 +47,8 @@ void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const
 	memcpy(this, &Mail, sizeof(Mail));
 	this->sender = sender;
 	this->receiver = receiver;
-	this->pay_size = pay_size;
-
-	Mail_Payload_Alloc(&(this->payload), this->pay_size);
+	this->mid = mid;
+	this->vtbl->set_payload(this, payload, pay_size);
 }
 	
 void mail_set_payload(union Mail * const this, void const * const payload, size_t const pay_size)

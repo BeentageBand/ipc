@@ -120,6 +120,7 @@ void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_m
         {
             this->vtbl->sleep(this, sleep_ms);
         }
+        this = this->next;
     }
 }
 
@@ -472,19 +473,14 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
         CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
         Thread_Ptr_T * found = thread_stack->vtbl->find(thread_stack, &t);
 
-        Thread_Ptr_T * it = thread_stack->vtbl->begin(thread_stack);
-        for(; it != thread_stack->vtbl->end(thread_stack); ++it)
-        {
-            Dbg_Info("%s %d tid = %d, ", __func__, (int)*it, (*it)->tid);
-        }
-
         bool is_found = (found != thread_stack->vtbl->end(thread_stack));
-		Dbg_Info("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
-        return (found != thread_stack->vtbl->end(thread_stack))? *found : NULL;
+        Dbg_Verb("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
+        return (is_found)? *found : NULL;
 }
 
 union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
 {
+        (void)IPC_get_instance();
         Isnt_Nullptr(IPC_Helper_Singleton->rmailboxes, NULL);
 
         union Mailbox m = {NULL};
@@ -492,7 +488,10 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
 
         CSet_Mailbox_Ptr_T * const mailbox_stack = IPC_Helper_Singleton->rmailboxes;
         Mailbox_Ptr_T * found = mailbox_stack->vtbl->find(mailbox_stack, &m);
-        return (found != mailbox_stack->vtbl->end(mailbox_stack))? *found : NULL;
+
+        bool is_found = (found != mailbox_stack->vtbl->end(mailbox_stack));
+        Dbg_Verb("%s tid %d %s found!!\n", __func__, mailbox, (is_found)? "is": "is not");
+        return (is_found)? *found : NULL;
 }
 
 void IPC_Helper_Append(union IPC_Helper * appendable)
@@ -507,7 +506,7 @@ void IPC_Helper_Append(union IPC_Helper * appendable)
             return;
         }
         this = this->next;
-	}
+    }
 
     this->next = appendable;
 }

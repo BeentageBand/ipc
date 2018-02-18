@@ -73,7 +73,7 @@ void payload_delete(struct Object * const obj)
 
 size_t payload_alloc(union Payload * const this, void ** const payload)
 {
-    if(this->i < this->end)
+    if(this->i >= this->end)
     {
         Dbg_Fault("Overflow on");
         return 0;
@@ -88,7 +88,7 @@ size_t payload_alloc(union Payload * const this, void ** const payload)
                 0 == memcmp(this->ptr + i, this->ptr + i + 1, this->block_size - 1U) )
         {
             *payload = (this->ptr + i);
-            ++this->i;
+            this->i += this->block_size;
             break;
         }
 
@@ -110,9 +110,10 @@ size_t payload_free(union Payload * const this, void ** const payload)
         {
             memset(*payload, 0, this->block_size);
             *payload = 0;
-            --this->i;
+            this->i -= this->block_size;
             break;
         }
+        i -= this->block_size;
     }
 
     return i;
