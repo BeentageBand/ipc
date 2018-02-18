@@ -302,7 +302,8 @@ void Populate_IPC_POSIX(union IPC_POSIX * const this)
 {
     if(NULL == IPC_POSIX.vtbl)
     {
-        IPC_POSIX.vtbl = &IPC_POSIX_Class;
+		Populate_IPC_Helper(&IPC_POSIX.IPC_Helper);
+		Object_Init(&IPC_POSIX.Object, &IPC_POSIX_Class.Class, sizeof(IPC_POSIX_Class));
         pthread_condattr_init(&POSIX_Cond_Attr);
         pthread_attr_init(&POSIX_Thread_Attr);
         pthread_mutexattr_init(&POSIX_Mux_Attr);

@@ -70,7 +70,7 @@ typedef union IPC_Helper_Class
 	};
 }IPC_Helper_Class_T;
 
-extern IPC_Helper_Class_T _private IPC_Class;
+extern IPC_Helper_Class_T _private IPC_Helper_Class;
 
 extern union IPC_Helper * IPC_get_instance(void);
 

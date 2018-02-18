@@ -498,6 +498,8 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
 void IPC_Helper_Append(union IPC_Helper * appendable)
 {
     union IPC_Helper * this = IPC_get_instance();
+
+    if(this == appendable) return;
     while(this->next)
     {
         if(this == appendable)
@@ -505,7 +507,7 @@ void IPC_Helper_Append(union IPC_Helper * appendable)
             return;
         }
         this = this->next;
-    }
+	}
 
     this->next = appendable;
 }
