@@ -53,8 +53,6 @@ void worker_runnable(union Thread * const super)
         return;
     }
 
-    IPC_Ready();
-
     this->vtbl->on_start(this);
 
     while(true)
