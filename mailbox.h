@@ -1,7 +1,9 @@
 #ifndef MAILBOX_H_
 #define MAILBOX_H_
  
+#include "conditional.h"
 #include "mail.h"
+#include "mutex.h"
 
 #define CQueue_Params Mail
 #include "cqueue.h"
@@ -21,6 +23,8 @@ typedef union Mailbox
 		IPC_TID_T _private tid;
 		CQueue_Mail_T _private mailbox;
 		union Mail picked_mail;
+		union Mutex mux;
+		union Conditional cond;
 	};
 }Mailbox_T;
 

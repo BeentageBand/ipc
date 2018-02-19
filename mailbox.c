@@ -2,6 +2,8 @@
 #undef Dbg_FID
 #define Dbg_FID DBG_FID_DEF(IPC_FID,3)
 
+#define IPC_MAILBOX_LOCK_MS (200)
+
 #include "dbg_log.h"
 #include "mailbox.h"
 
@@ -52,73 +54,98 @@ void mailbox_delete(struct Object * const obj)
 void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
 {
 	CQueue_Mail_T * const mailbox = &this->mailbox;
+    union Conditional * const cond = &this->cond;
+    union Mutex * const mutex = & this->mux;
+
+    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
+    {
 	mailbox->vtbl->push_front(mailbox, *mail);
+    cond->vtbl->signal(cond);
+    }
+    mutex->vtbl->unlock(mutex);
 	
 }
 	
 bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
 {
-	CQueue_Mail_T * const mailbox = &this->mailbox;
+    CQueue_Mail_T * const mailbox = &this->mailbox;
+    union Conditional * const cond = &this->cond;
+    union Mutex * const mutex = & this->mux;
 
-	bool rc = false;
-	if(!mailbox->vtbl->size(mailbox))
-	{
-		if(NULL != this->picked_mail.vtbl)
-		{
-		    //Delete previously picked mail
-			_delete(&this->picked_mail);
-		}
-		//Copy from previous mail
-		memcpy(&this->picked_mail, mailbox->vtbl->end(mailbox) -1, sizeof(this->picked_mail));
-		memcpy(mail, &this->picked_mail, sizeof(this->picked_mail));
+    bool rc = false;
+    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
+    {
+        while(!mailbox->vtbl->size(mailbox))
+        {
+            cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS));
+        }
 
-		mailbox->vtbl->pop_back(mailbox);
-		rc = true;
-	}
-	return rc;
+       if(!mailbox->vtbl->size(mailbox))
+        {
+            if(NULL != this->picked_mail.vtbl)
+            {
+                //Delete previously picked mail
+                _delete(&this->picked_mail);
+            }
+            //Copy from previous mail
+            union Mail * mend = mailbox->vtbl->end(mailbox);
+            memcpy(&this->picked_mail, --mend, sizeof(this->picked_mail));
+            memcpy(mail, &this->picked_mail, sizeof(this->picked_mail));
+
+            mailbox->vtbl->pop_back(mailbox);
+            rc = true;
+        }
+    }
+
+    mutex->vtbl->unlock(mutex);
+    return rc;
 }
 	
 bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid)
 {
-	CQueue_Mail_T * const mailbox = &this->mailbox;
-	bool rc = false;
+    CQueue_Mail_T * const mailbox = &this->mailbox;
+    union Conditional * const cond = &this->cond;
+    bool rc = false;
 
-	if(0 == mailbox->vtbl->size(mailbox))
-	{
-	    //check picked mail is an active cobject
-		if(NULL != this->picked_mail.vtbl)
-		{
-			_delete(&this->picked_mail);
-		}
-		//TODO use calgorithm find
+    if(cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+    {
+        if(0 == mailbox->vtbl->size(mailbox))
+        {
+            //check picked mail is an active cobject
+            if(NULL != this->picked_mail.vtbl)
+            {
+                _delete(&this->picked_mail);
+            }
+            //TODO use calgorithm find
 #ifdef CAlgo_find_Params
-		mail->mid = mid;
-		union Mail * found = CAlgo_Mail_find_first(mailbox->vtbl->begin(mailbox),
-		    mailbox->vtbl->end(mailbox),
-		    mail,
-		    (CAlgo_Find_Cmp_T)calgo_mail_cmp);
+            mail->mid = mid;
+            union Mail * found = CAlgo_Mail_find_first(mailbox->vtbl->begin(mailbox),
+                    mailbox->vtbl->end(mailbox),
+                    mail,
+                    (CAlgo_Find_Cmp_T)calgo_mail_cmp);
 #else
-		union Mail * found;
+            union Mail * found;
 #endif
 
-		for(found = mailbox->vtbl->begin(mailbox); found != mailbox->vtbl->end(mailbox); ++found)
-		{
-			if(mid == found->mid)
-			{
-				break;
-			}
-		}
+            for(found = mailbox->vtbl->begin(mailbox); found != mailbox->vtbl->end(mailbox); ++found)
+            {
+                if(mid == found->mid)
+                {
+                    break;
+                }
+            }
 
-		if(found != mailbox->vtbl->end(mailbox))
-		{
-			memcpy(&this->picked_mail, found, sizeof(this->picked_mail));
-			memcpy(mail, found, sizeof(this->picked_mail));
-			mailbox->vtbl->pop_back(mailbox);
-			rc = true;
-		}
-	}
+            if(found != mailbox->vtbl->end(mailbox))
+            {
+                memcpy(&this->picked_mail, found, sizeof(this->picked_mail));
+                memcpy(mail, found, sizeof(this->picked_mail));
+                mailbox->vtbl->pop_back(mailbox);
+                rc = true;
+            }
+        }
+    }
 
-	return rc;
+    return rc;
 }
 
 void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size)
@@ -130,4 +157,6 @@ void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mai
 	memcpy(this, &Mailbox, sizeof(Mailbox));
 	this->tid = tid;
 	Populate_CQueue_Mail(&this->mailbox, mailbox, mailbox_size);
+	Populate_Mutex(&this->mux);
+	Populate_Conditional(&this->cond, &this->mux);
 }
