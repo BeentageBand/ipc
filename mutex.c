@@ -54,10 +54,10 @@ void Populate_Mutex(union Mutex * const this)
     if(NULL == Mutex.vtbl)
     {
         Mutex.vtbl = &Mutex_Class;
-        memcpy(&Mutex.mux, 0, sizeof(Mutex.mux));
+        memset(&Mutex.mux._mux, 0, sizeof(Mutex.mux._mux));
     }
 
     memcpy(this, &Mutex, sizeof(Mutex));
 
-    pthread_mutex_init((pthread_mutex_t *) &this->mux, &Mutex_Pthread_Attr);
+    pthread_mutex_init((pthread_mutex_t *) this->mux._mux, &Mutex_Pthread_Attr);
 }

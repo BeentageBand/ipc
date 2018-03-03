@@ -77,10 +77,10 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
     {
         while(!mailbox->vtbl->size(mailbox))
         {
-            cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS));
+            cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS);
         }
 
-       if(!mailbox->vtbl->size(mailbox))
+       if(mailbox->vtbl->size(mailbox))
         {
             if(NULL != this->picked_mail.vtbl)
             {

@@ -67,6 +67,9 @@ bool IPC_Register_Thread(union Thread * const thread)
 {
 	union IPC_Helper * ipc_help = IPC_get_instance();
 
+	union Mutex * const mux = ipc_help->single_mux;
+
+	mux->vtbl->lock(mux, 10000);
 	CSet_Thread_Ptr_T * const thread_stack = ipc_help->rthreads;
 	thread_stack->vtbl->insert(thread_stack, thread);
 	return NULL != IPC_Helper_find_thread(thread->tid);

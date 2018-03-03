@@ -33,6 +33,7 @@ typedef union IPC_Helper
 		union IPC_Helper _private * _private next;
 		CSet_Thread_Ptr_T _private *  _private rthreads;
 		CSet_Mailbox_Ptr_T _private * _private rmailboxes;
+		union Mutex _private * _private single_mux;
 	};
 }IPC_Helper_T;
 

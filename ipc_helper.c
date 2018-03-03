@@ -83,16 +83,22 @@ static union IPC_Helper IPC_Helper = {NULL};
 static union IPC_Helper * IPC_Helper_Singleton = NULL;
 static CSet_Thread_Ptr_T rthreads;
 static CSet_Mailbox_Ptr_T rmailboxes;
-static Thread_Ptr_T thread_set[IPC_MAX_TID] = {0};
-static Mailbox_Ptr_T mailbox_set[IPC_MAX_TID] = {0};
-
+static Thread_Ptr_T Thread_Set[IPC_MAX_TID] = {0};
+static Mailbox_Ptr_T Mailbox_Set[IPC_MAX_TID] = {0};
+static union Mutex Singleton_Mux = {NULL};
 
 void ipc_helper_delete(struct Object * const obj)
 {
     IPC_Helper_T * this = (IPC_Helper_T *) Object_Cast(&IPC_Helper_Class.Class, obj);
 
-    this->rthreads = NULL;
-    this->rmailboxes = NULL;
+    union Mutex * const mux = this->single_mux;
+
+    mux->vtbl->lock(mux, 10000);
+    _delete(this->rthreads);
+    _delete(this->rmailboxes);
+
+    mux->vtbl->unlock(mux);
+    _delete(this->single_mux);
 }
 
 IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper)
@@ -447,18 +453,20 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
 {
     if(NULL == IPC_Helper.vtbl)
     {
-        memset(thread_set, 0, sizeof(thread_set));
-        memset(mailbox_set, 0, sizeof(mailbox_set));
+        memset(Thread_Set, 0, sizeof(Thread_Set));
+        memset(Mailbox_Set, 0, sizeof(Mailbox_Set));
 
         IPC_Helper.vtbl = &IPC_Helper_Class;
-        Populate_CSet_Cmp_Thread_Ptr(&rthreads, thread_set, Num_Elems(thread_set),
+
+        Populate_Mutex(&Singleton_Mux);
+
+        Populate_CSet_Cmp_Thread_Ptr(&rthreads, Thread_Set, Num_Elems(Thread_Set),
                 (CSet_Cmp_T) ipc_helper_thread_cmp);
-        Populate_CSet_Cmp_Mailbox_Ptr(&rmailboxes, mailbox_set, Num_Elems(mailbox_set),
+        Populate_CSet_Cmp_Mailbox_Ptr(&rmailboxes, Mailbox_Set, Num_Elems(Mailbox_Set),
                 (CSet_Cmp_T) ipc_helper_mailbox_cmp);
         IPC_Helper.rthreads = &rthreads;
         IPC_Helper.rmailboxes = &rmailboxes;
     }
-
     memcpy(this, &IPC_Helper, sizeof(IPC_Helper));
 }
 
@@ -466,14 +474,28 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
 {
         (void)IPC_get_instance();
         Isnt_Nullptr(IPC_Helper_Singleton->rthreads, NULL);
+        Isnt_Nullptr(IPC_Helper_Singleton->single_mux, NULL);
 
         union Thread t = {NULL};
         t.tid = thread;
 
-        CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
-        Thread_Ptr_T * found = thread_stack->vtbl->find(thread_stack, &t);
+        union Mutex * const mux = IPC_Helper_Singleton->single_mux;
 
-        bool is_found = (found != thread_stack->vtbl->end(thread_stack));
+        bool is_found = false;
+        Thread_Ptr_T * found = NULL;
+
+        if(mux->vtbl->lock(mux, 1000))
+        {
+            CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
+            found = thread_stack->vtbl->find(thread_stack, &t);
+            bool is_found = (found != thread_stack->vtbl->end(thread_stack));
+        }
+        else
+        {
+            Dbg_Fault("unable to lock %s", __func__);
+        }
+
+        mux->vtbl->unlock(mux);
         Dbg_Verb("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
         return (is_found)? *found : NULL;
 }
@@ -486,10 +508,22 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
         union Mailbox m = {NULL};
         Populate_Mailbox(&m, mailbox, NULL, 0);
 
-        CSet_Mailbox_Ptr_T * const mailbox_stack = IPC_Helper_Singleton->rmailboxes;
-        Mailbox_Ptr_T * found = mailbox_stack->vtbl->find(mailbox_stack, &m);
+        union Mutex * const mux = IPC_Helper_Singleton->single_mux;
+        bool is_found = false;
+        Mailbox_Ptr_T* found = NULL;
 
-        bool is_found = (found != mailbox_stack->vtbl->end(mailbox_stack));
+        if(mux->vtbl->lock(mux, 1000))
+        {
+            CSet_Mailbox_Ptr_T * const mailbox_stack = IPC_Helper_Singleton->rmailboxes;
+            found = mailbox_stack->vtbl->find(mailbox_stack, &m);
+            bool is_found = (found != mailbox_stack->vtbl->end(mailbox_stack));
+        }
+        else
+        {
+            Dbg_Fault("unable to lock %s", __func__);
+        }
+
+        mux->vtbl->unlock(mux);
         Dbg_Verb("%s tid %d %s found!!\n", __func__, mailbox, (is_found)? "is": "is not");
         return (is_found)? *found : NULL;
 }
@@ -509,4 +543,5 @@ void IPC_Helper_Append(union IPC_Helper * appendable)
     }
 
     this->next = appendable;
+    IPC_destroy_instance();
 }

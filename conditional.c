@@ -1,6 +1,6 @@
 #define COBJECT_IMPLEMENTATION
 #undef Dbg_FID
-#define Dbg_FID Dbg_FID_DEF(IPC_FID,6)
+#define Dbg_FID DBG_FID_DEF(IPC_FID,6)
  
 #include <pthread.h>
 #include <time.h>
@@ -40,7 +40,7 @@ bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_m
 
 	tp.tv_nsec -= IPC_CLOCK_NS_MS;
 
-	int rc = pthread_cond_timed_wait((pthread_cond_t *)&this->conditional, 
+	int rc = pthread_cond_timedwait((pthread_cond_t *)&this->conditional,
 			(pthread_mutex_t *)&this->mutex->mux, &tp);
 	return (0 == rc);
 }
