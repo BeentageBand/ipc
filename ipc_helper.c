@@ -3,6 +3,7 @@
 
 #include "dbg_log.h"
 #include "ipc_helper.h"
+#include "ipc.h"
 
 typedef union Thread * Thread_Ptr_T;
 
@@ -488,7 +489,7 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
         {
             CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
             found = thread_stack->vtbl->find(thread_stack, &t);
-            bool is_found = (found != thread_stack->vtbl->end(thread_stack));
+            is_found = (found != thread_stack->vtbl->end(thread_stack));
         }
         else
         {

@@ -13,6 +13,7 @@
 #include <time.h>
 #include "dbg_log.h"
 #include "ipc_posix.h"
+#include "ipc.h"
 
 #define THREAD_INIT(tid, desc) -1,
 static void * ipc_posix_routine(void * thread);
