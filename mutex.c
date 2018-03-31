@@ -6,17 +6,18 @@
 #include "dbg_log.h"
 #include "ipc.h"
 #include "mutex.h"
+#include "ipc_helper.h"
 
 static void mutex_delete(struct Object * const obj);
 static bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms);
 static bool_t mutex_unlock(union Mutex * const this);
 
 struct Mutex_Class Mutex_Class =
-{
-        {mutex_delete, NULL},
-        mutex_lock,
-        mutex_unlock,
-};
+    {
+	{mutex_delete, NULL},
+	mutex_lock,
+	mutex_unlock,
+    };
 
 static union Mutex Mutex = {NULL};
 
@@ -24,40 +25,43 @@ static pthread_mutexattr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_INITIALIZER;
 
 void mutex_delete(struct Object * const obj)
 {
-    union Mutex * const this = (Mutex_T *)Object_Cast(&Mutex_Class.Class, obj);
-    Isnt_Nullptr(this,);
+  union Mutex * const this = (Mutex_T *)Object_Cast(&Mutex_Class.Class, obj);
+  Isnt_Nullptr(this,);
 
-    pthread_mutex_destroy((pthread_mutex_t *)&this->mux);
-    memcpy(&this->mux, 0, sizeof(this->mux));
+  union IPC_Helper * const ipc_helper = IPC_get_instance();
+  Isnt_Nullptr(ipc_helper, );
+
+  ipc_helper->vtbl->free_mutex(ipc_helper, this);
+  memset(&this->mux, 0, sizeof(this->mux));
 }
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
 {
-    int rc = 1;
+  union IPC_Helper * const ipc_helper = IPC_get_instance();
+  Isnt_Nullptr(ipc_helper, false);
 
-    IPC_Clock_T timeout_ms = IPC_Clock() + wait_ms;
-    while(rc && IPC_Clock_Elapsed(timeout_ms))
-    {
-        rc = pthread_mutex_trylock((pthread_mutex_t *)&this->mux);
-    }
-
-    return (0 == rc);
+  return ipc_helper->vtbl->lock_mutex(ipc_helper, this, wait_ms);
 }
 
 bool_t mutex_unlock(union Mutex * const this)
 {
-    return false;
+  union IPC_Helper * const ipc_helper = IPC_get_instance();
+  Isnt_Nullptr(ipc_helper, false);
+
+  return ipc_helper->vtbl->unlock_mutex(ipc_helper, this);
 }
 
 void Populate_Mutex(union Mutex * const this)
 {
-    if(NULL == Mutex.vtbl)
+  if(NULL == Mutex.vtbl)
     {
-        Mutex.vtbl = &Mutex_Class;
-        memset(&Mutex.mux._mux, 0, sizeof(Mutex.mux._mux));
+      Mutex.vtbl = &Mutex_Class;
+      memset(&Mutex.mux._mux, 0, sizeof(Mutex.mux._mux));
     }
 
-    memcpy(this, &Mutex, sizeof(Mutex));
+  union IPC_Helper * const ipc_helper = IPC_get_instance();
+  Isnt_Nullptr(ipc_helper, );
 
-    pthread_mutex_init((pthread_mutex_t *) this->mux._mux, &Mutex_Pthread_Attr);
+  memcpy(this, &Mutex, sizeof(Mutex));
+  ipc_helper->vtbl->alloc_mutex(ipc_helper, this);
 }
