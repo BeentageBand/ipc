@@ -2,7 +2,6 @@
 #undef Dbg_FID
 #define Dbg_FID DBG_FID_DEF(IPC_FID,4)
 
-#include <pthread.h>
 #include "dbg_log.h"
 #include "ipc.h"
 #include "mutex.h"
@@ -20,8 +19,6 @@ struct Mutex_Class Mutex_Class =
     };
 
 static union Mutex Mutex = {NULL};
-
-static pthread_mutexattr_t Mutex_Pthread_Attr = PTHREAD_MUTEX_INITIALIZER;
 
 void mutex_delete(struct Object * const obj)
 {

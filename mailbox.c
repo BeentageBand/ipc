@@ -60,7 +60,7 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
     if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
 	mailbox->vtbl->push_front(mailbox, *mail);
-    cond->vtbl->signal(cond);
+	cond->vtbl->signal(cond);
     }
     mutex->vtbl->unlock(mutex);
 	

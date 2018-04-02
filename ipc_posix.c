@@ -107,7 +107,7 @@ void * ipc_posix_routine(void * thread)
       Dbg_Fault("%s:Unable to run thread %d", __func__, this->tid);
     }
 
-  pthread_exit((void *)this);
+  pthread_exit(NULL);
   return NULL;
 }
 

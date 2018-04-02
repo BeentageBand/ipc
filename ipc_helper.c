@@ -508,7 +508,7 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
   Isnt_Nullptr(IPC_Helper_Singleton->rmailboxes, NULL);
 
   union Mailbox m = {NULL};
-  Populate_Mailbox(&m, mailbox, NULL, 0);
+  m.tid = mailbox;
 
   union Mutex * const mux = IPC_Helper_Singleton->single_mux;
   bool is_found = false;

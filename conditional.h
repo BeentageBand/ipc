@@ -3,11 +3,14 @@
  
 #include "mutex.h"
  
-#define Conditional_INHERITS BASE_CLASS
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct IPC_COND
+{
+  char _cond[40];
+}IPC_COND_T;
 
 typedef union Conditional
 {
@@ -15,7 +18,7 @@ typedef union Conditional
 	struct
 	{
 		struct Object Object;
-		uint32_t _private conditional;
+		IPC_COND_T _private conditional;
 		union Mutex _private * _private mutex;
 	};
 }Conditional_T;

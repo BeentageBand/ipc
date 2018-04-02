@@ -47,7 +47,7 @@ void IPC_Run(IPC_TID_T const tid)
 bool IPC_Register_Mailbox(union Mailbox * const mbx)
 {
   union IPC_Helper * ipc_help = IPC_get_instance();
-  union Mutex * mux = ipc_help->single_mux;
+  union Mutex * const mux = ipc_help->single_mux;
 
   if(mux->vtbl->lock(mux, 10000))
     {
@@ -129,8 +129,15 @@ bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mai
 
 bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 {
-  union Mailbox * const mbx = IPC_Helper_find_mailbox(IPC_Self());
+  IPC_TID_T const self = IPC_Self();
+  union Mailbox * const mbx = IPC_Helper_find_mailbox(self);
   IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
+
+  if(!mbx)
+  {
+	  Dbg_Fault("Mailbox %d not found!!", self);
+	  return false;
+  }
 
   bool rc = false;
   do
@@ -145,8 +152,15 @@ bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_ms, IPC_MID_T const * const mailist,
 			       uint32_t const mailist_size)
 {
-  union Mailbox * const mbx = IPC_Helper_find_mailbox(IPC_Self());
+  IPC_TID_T const self = IPC_Self();
+  union Mailbox * const mbx = IPC_Helper_find_mailbox(self);
   IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
+
+  if(!mbx)
+  {
+	  Dbg_Fault("Mailbox %d not found!!", self);
+	  return false;
+  }
 
   bool rc = false;
   uint8_t i = 0;

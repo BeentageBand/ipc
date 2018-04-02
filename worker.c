@@ -45,13 +45,7 @@ void worker_runnable(union Thread * const super)
   Isnt_Nullptr(this,);
 
   union Mailbox * const mailbox = &this->mailbox;
-  IPC_Register_Mailbox(&this->mailbox);
-
-  if(NULL == mailbox->vtbl)
-    {
-      Dbg_Fault("No mailbox was initialized");
-      return;
-    }
+  IPC_Register_Mailbox(mailbox);
 
   this->vtbl->on_start(this);
 
@@ -61,7 +55,7 @@ void worker_runnable(union Thread * const super)
 
       union Mail mail = {NULL};
 
-      if(IPC_Retrieve_Mail(&mail, 500))
+    if(IPC_Retrieve_Mail(&mail, 500))
 	{
 	  this->vtbl->on_mail(this, &mail);
 	  if(WORKER_INT_SHUTDOWN_MID == mail.mid)
