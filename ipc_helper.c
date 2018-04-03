@@ -491,13 +491,13 @@ union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
       CSet_Thread_Ptr_T * const thread_stack = IPC_Helper_Singleton->rthreads;
       found = thread_stack->vtbl->find(thread_stack, &t);
       is_found = (found != thread_stack->vtbl->end(thread_stack));
+      mux->vtbl->unlock(mux);
     }
   else
     {
       Dbg_Fault("unable to lock %s", __func__);
     }
 
-  mux->vtbl->unlock(mux);
   Dbg_Verb("%s tid %d %s found!!\n", __func__, thread, (is_found)? "is": "is not");
   return (is_found)? *found : NULL;
 }
@@ -518,14 +518,14 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
     {
       CSet_Mailbox_Ptr_T * const mailbox_stack = IPC_Helper_Singleton->rmailboxes;
       found = mailbox_stack->vtbl->find(mailbox_stack, &m);
-      bool is_found = (found != mailbox_stack->vtbl->end(mailbox_stack));
+      is_found = (found != mailbox_stack->vtbl->end(mailbox_stack));
+      mux->vtbl->unlock(mux);
     }
   else
     {
       Dbg_Fault("unable to lock %s", __func__);
     }
 
-  mux->vtbl->unlock(mux);
   Dbg_Verb("%s tid %d %s found!!\n", __func__, mailbox, (is_found)? "is": "is not");
   return (is_found)? *found : NULL;
 }

@@ -55,7 +55,7 @@ void worker_runnable(union Thread * const super)
 
       union Mail mail = {NULL};
 
-    if(IPC_Retrieve_Mail(&mail, 500))
+      if(IPC_Retrieve_Mail(&mail, 500))
 	{
 	  this->vtbl->on_mail(this, &mail);
 	  if(WORKER_INT_SHUTDOWN_MID == mail.mid)

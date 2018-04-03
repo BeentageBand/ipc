@@ -61,8 +61,8 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
     {
 	mailbox->vtbl->push_front(mailbox, *mail);
 	cond->vtbl->signal(cond);
+	mutex->vtbl->unlock(mutex);
     }
-    mutex->vtbl->unlock(mutex);
 	
 }
 	
@@ -75,10 +75,9 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
     bool rc = false;
     if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
-        while(!mailbox->vtbl->size(mailbox))
-        {
-            cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS);
-        }
+        while(!mailbox->vtbl->size(mailbox) &&
+            cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+        {}
 
        if(mailbox->vtbl->size(mailbox))
         {
@@ -95,9 +94,9 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
             mailbox->vtbl->pop_back(mailbox);
             rc = true;
         }
+       mutex->vtbl->unlock(mutex);
     }
 
-    mutex->vtbl->unlock(mutex);
     return rc;
 }
 	
@@ -105,11 +104,16 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 {
     CQueue_Mail_T * const mailbox = &this->mailbox;
     union Conditional * const cond = &this->cond;
+    union Mutex * const mutex = & this->mux;
     bool rc = false;
 
-    if(cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
-        if(0 == mailbox->vtbl->size(mailbox))
+	while(!mailbox->vtbl->size(mailbox) &&
+	    cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+	  {}
+
+        if(mailbox->vtbl->size(mailbox))
         {
             //check picked mail is an active cobject
             if(NULL != this->picked_mail.vtbl)
@@ -125,7 +129,6 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
                     (CAlgo_Find_Cmp_T)calgo_mail_cmp);
 #else
             union Mail * found;
-#endif
 
             for(found = mailbox->vtbl->begin(mailbox); found != mailbox->vtbl->end(mailbox); ++found)
             {
@@ -134,6 +137,7 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
                     break;
                 }
             }
+#endif
 
             if(found != mailbox->vtbl->end(mailbox))
             {
