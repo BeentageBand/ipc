@@ -18,6 +18,7 @@ static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
+static void mailbox_dump_ipc(CQueue_Mail_T * const mailbox, Dbg_Lvl_T const dbg_lvl);
 
 struct Mailbox_Class Mailbox_Class =
 {
@@ -57,13 +58,15 @@ void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
     union Conditional * const cond = &this->cond;
     union Mutex * const mutex = & this->mux;
 
+	Dbg_Info("%s:mid %d", __func__, mail->mid);
+
     if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
-	mailbox->vtbl->push_front(mailbox, *mail);
-	cond->vtbl->signal(cond);
-	mutex->vtbl->unlock(mutex);
+		mailbox->vtbl->push_front(mailbox, *mail);
+		mailbox_dump_ipc(mailbox, DBG_INFO_LVL);
+		cond->vtbl->signal(cond);
+		mutex->vtbl->unlock(mutex);
     }
-	
 }
 	
 bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
@@ -77,7 +80,7 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
     {
         while(!mailbox->vtbl->size(mailbox) &&
             cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
-        {}
+        {}//Wait until mailbox has a mail
 
        if(mailbox->vtbl->size(mailbox))
         {
@@ -94,7 +97,8 @@ bool mailbox_retrieve(union Mailbox * const this, union Mail * mail)
             mailbox->vtbl->pop_back(mailbox);
             rc = true;
         }
-       mutex->vtbl->unlock(mutex);
+	    mailbox_dump_ipc(mailbox, DBG_INFO_LVL);
+        mutex->vtbl->unlock(mutex);
     }
 
     return rc;
@@ -109,9 +113,9 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
 
     if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
-	while(!mailbox->vtbl->size(mailbox) &&
-	    cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
-	  {}
+		while(!mailbox->vtbl->size(mailbox) &&
+			cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+		{}//Wait until mailbox has a mail
 
         if(mailbox->vtbl->size(mailbox))
         {
@@ -144,12 +148,28 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
                 memcpy(&this->picked_mail, found, sizeof(this->picked_mail));
                 memcpy(mail, found, sizeof(this->picked_mail));
                 mailbox->vtbl->pop_back(mailbox);
+			    mailbox_dump_ipc(mailbox, DBG_INFO_LVL);
                 rc = true;
             }
         }
+		mutex->vtbl->unlock(mutex);
     }
 
     return rc;
+}
+
+void mailbox_dump_ipc(CQueue_Mail_T * const mailbox, Dbg_Lvl_T const dbg_lvl)
+{
+	union Mail * it;
+	Dbg_Info("[");
+	for(it = mailbox->vtbl->begin(mailbox);
+		it != mailbox->vtbl->end(mailbox);
+		++it)
+	{
+		Dbg_Info("%d, ", it->mid);
+	}
+
+	Dbg_Info("]");
 }
 
 void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size)

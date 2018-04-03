@@ -181,8 +181,9 @@ void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const p
   union Mailbox * const mbx = IPC_Helper_find_mailbox(rcv_tid);
   if(NULL != mbx)
     {
+	  Dbg_Info("%s: send mail %d to %d", __func__, mid, rcv_tid);
       union Mail mail;
-      Populate_Mail(&mail, IPC_Self(), rcv_tid, mid, payload, pay_size);
+      Populate_Mail(&mail, mid, IPC_Self(), rcv_tid, payload, pay_size);
       mbx->vtbl->push_mail(mbx, &mail);
     }
 }
