@@ -14,10 +14,10 @@ static void thread_runnable(union Thread * const this);
 
 struct Thread_Class Thread_Class =
     {
-	{thread_delete, NULL},
-	thread_run,
-	thread_wait,
-	thread_runnable
+   {thread_delete, NULL},
+   thread_run,
+   thread_wait,
+   thread_runnable
     };
 
 static union Thread Thread = {NULL};

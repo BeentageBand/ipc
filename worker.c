@@ -6,6 +6,7 @@
 #include "ipc.h"
 #include "worker.h"
 
+#define WORKER_SHUTDOWN_TOUT_MS (5000U)
 static void worker_delete(struct Object * const obj);
 static void worker_runnable(union Thread * const super);
 static void worker_on_start(union Worker * const this);
@@ -15,16 +16,16 @@ static void worker_on_stop(union Worker * const this);
 
 union Worker_Class Worker_Class =
     {{
-	{
-	    {worker_delete, NULL},
-	    NULL,
-	    NULL,
-	    NULL
-	},
-	worker_on_mail,
-	worker_on_start,
-	worker_on_loop,
-	worker_on_stop
+   {
+       {worker_delete, NULL},
+       NULL,
+       NULL,
+       NULL
+   },
+   worker_on_mail,
+   worker_on_start,
+   worker_on_loop,
+   worker_on_stop
     }
     };
 
@@ -33,44 +34,46 @@ static union Worker Worker = {NULL};
 
 void worker_delete(struct Object * const obj)
 {
-  union Worker * const this = (union Worker *) Object_Cast(&Worker_Class.Class, obj);
-  Isnt_Nullptr(this,);
+   union Worker * const this = (union Worker *) Object_Cast(&Worker_Class.Class, obj);
+   Isnt_Nullptr(this,);
+   IPC_Send(this->Thread.tid, WORKER_INT_SHUTDOWN_MID, NULL, 0);
 
-  _delete(&this->mailbox);
+   this->vtbl->Thread.wait(&this->Thread, WORKER_SHUTDOWN_TOUT_MS);
+   _delete(&this->mailbox);
 }
 
 void worker_runnable(union Thread * const super)
 {
-  union Worker * const this = _cast(Worker, super);
-  Isnt_Nullptr(this,);
+   union Worker * const this = _cast(Worker, super);
+   Isnt_Nullptr(this,);
 
-  union Mailbox * const mailbox = &this->mailbox;
-  IPC_Register_Mailbox(mailbox);
+   union Mailbox * const mailbox = &this->mailbox;
+   IPC_Register_Mailbox(mailbox);
 
-  this->vtbl->on_start(this);
+   this->vtbl->on_start(this);
 
-  while(true)
-    {
+   while(true)
+   {
       this->vtbl->on_loop(this);
 
       union Mail mail = {NULL};
 
       if(IPC_Retrieve_Mail(&mail, 500))
-	{
-	  this->vtbl->on_mail(this, &mail);
-	  if(WORKER_INT_SHUTDOWN_MID == mail.mid)
-	    {
-	      break;
-	    }
-	}
+   {
+      this->vtbl->on_mail(this, &mail);
+      if(WORKER_INT_SHUTDOWN_MID == mail.mid)
+      {
+         break;
+      }
+   
       IPC_Sleep(200);
-    }
+   }
 
-  Dbg_Info("shutdown %d\n", super->tid);
+   Dbg_Info("shutdown %d\n", super->tid);
 
-  this->vtbl->on_stop(this);
+   this->vtbl->on_stop(this);
 
-  IPC_Unregister_Mailbox(&this->mailbox);
+   IPC_Unregister_Mailbox(&this->mailbox);
 }
 
 void worker_on_start(union Worker * const this){}
@@ -79,7 +82,7 @@ void worker_on_loop(union Worker * const this){}
 void worker_on_stop(union Worker * const this){}
 
 void Populate_Worker(union Worker * const this, IPC_TID_T const tid, union Mail * const mail_buff,
-		     size_t const mailsize)
+           size_t const mailsize)
 {
   if(NULL == Worker.vtbl)
     {

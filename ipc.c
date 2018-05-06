@@ -20,8 +20,7 @@ void IPC_Ready(void)
   union Thread * found = IPC_Helper_find_thread(IPC_Self());
   if(NULL != found)
     {
-      //TODO Thread safe support
-      //		found->vtbl->post(found);
+
     }
 }
 
@@ -135,8 +134,8 @@ bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 
   if(!mbx)
   {
-	  Dbg_Fault("Mailbox %d not found!!", self);
-	  return false;
+     Dbg_Fault("Mailbox %d not found!!", self);
+     return false;
   }
 
   bool rc = false;
@@ -150,7 +149,7 @@ bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 }
 
 bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_ms, IPC_MID_T const * const mailist,
-			       uint32_t const mailist_size)
+                uint32_t const mailist_size)
 {
   IPC_TID_T const self = IPC_Self();
   union Mailbox * const mbx = IPC_Helper_find_mailbox(self);
@@ -158,8 +157,8 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
 
   if(!mbx)
   {
-	  Dbg_Fault("Mailbox %d not found!!", self);
-	  return false;
+     Dbg_Fault("Mailbox %d not found!!", self);
+     return false;
   }
 
   bool rc = false;
@@ -167,9 +166,9 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
   do
     {
       for(; i < mailist_size && !rc; ++i)
-	{
-	  rc = mbx->vtbl->retrieve_only(mbx, mail, mailist[i]);
-	}
+   {
+     rc = mbx->vtbl->retrieve_only(mbx, mail, mailist[i]);
+   }
       IPC_Sleep(50);// do something else
     } while( !rc && !IPC_Clock_Elapsed(timestamp));
 
@@ -181,7 +180,7 @@ void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const p
   union Mailbox * const mbx = IPC_Helper_find_mailbox(rcv_tid);
   if(NULL != mbx)
     {
-	  Dbg_Info("%s: send mail %d to %d", __func__, mid, rcv_tid);
+     Dbg_Info("%s: send mail %d to %d", __func__, mid, rcv_tid);
       union Mail mail;
       Populate_Mail(&mail, mid, IPC_Self(), rcv_tid, payload, pay_size);
       mbx->vtbl->push_mail(mbx, &mail);

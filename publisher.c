@@ -13,6 +13,7 @@
 typedef CSet_IPC_TID_T Subscription_List_T;
 
 static void publisher_init(void);
+static void publisher_dump_subscription(Subscription_List_T * const subscription, IPC_TID_T const tid);
 
 static Subscription_List_T Subscription_List[IPC_PBC_END_MID - IPC_PBC_BEGIN_MID];
 
@@ -28,6 +29,19 @@ void publisher_init(void)
             Populate_CSet_IPC_TID(Subscription_List + i, Subscription_Buff[i], IPC_MAX_TID);
         }
     }
+}
+
+void publisher_dump_subscription(Subscription_List_T * const subscription, IPC_TID_T const tid)
+{
+   IPC_TID_T * it;
+   Dbg_Info("Subscription %d:", tid);
+   for(it = subscription->vtbl->begin(subscription);
+      it != subscription->vtbl->end(subscription);
+      ++it)
+   {
+      IPC_TID_T tid = *it;
+      Dbg_Info("%d,", tid);
+   }
 }
 
 bool Publisher_Subscribe(IPC_TID_T const tid, IPC_MID_T const mid)
@@ -59,13 +73,19 @@ bool Publisher_Unsubscribe(IPC_TID_T const tid, IPC_MID_T const mid)
 void Publisher_Publish(IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
     publisher_init();
-    if(IPC_PBC_END_MID <= mid || IPC_PBC_BEGIN_MID > mid) return;
+    if(IPC_PBC_END_MID <= mid || IPC_PBC_BEGIN_MID > mid)
+   {
+      Dbg_Warn("IPC_MID %d is not public", mid);
+      return;
+   }
     uint32_t mid_idx = mid - IPC_PBC_BEGIN_MID;
 
     Subscription_List_T * subscription = Subscription_List + mid_idx;
-    IPC_TID_T * it = subscription->vtbl->begin(subscription);
+    IPC_TID_T * it;
 
-    for( ; it != subscription->vtbl->end(subscription); ++it)
+    for(it = subscription->vtbl->begin(subscription);
+      it != subscription->vtbl->end(subscription);
+      ++it)
     {
         IPC_Send((*it), mid, payload, pay_size);
     }

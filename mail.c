@@ -31,6 +31,8 @@ void mail_delete(struct Object * const object)
   Isnt_Nullptr(this, );
 
   Mail_Payload_Free(&(this->payload));
+  this->payload = NULL;
+  this->pay_size = 0;
 }
 
 void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const sender,
@@ -61,6 +63,7 @@ void mail_set_payload(union Mail * const this, void const * const payload, size_
 	{
 	  Mail_Payload_Free(this->payload);
 	  this->payload = NULL;
+	  this->pay_size = 0;
 	}
     }
 
