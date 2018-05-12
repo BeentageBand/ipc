@@ -303,8 +303,11 @@ void ipc_posix_make_timespec(struct timespec * const tm, IPC_Clock_T const clock
 
 void Populate_IPC_POSIX(union IPC_POSIX * const this)
 {
+
   if(NULL == IPC_POSIX.vtbl)
     {
+      POSIX_Pool[IPC_MAIN_TID] = pthread_self();
+      Dbg_Warn("Start IPC POSIX: starter thread %d is IPC_MAIN_TID", POSIX_Pool[IPC_MAIN_TID]);
       Populate_IPC_Helper(&IPC_POSIX.IPC_Helper);
       Object_Init(&IPC_POSIX.Object, &IPC_POSIX_Class.Class, 0);
       pthread_condattr_init(&POSIX_Cond_Attr);

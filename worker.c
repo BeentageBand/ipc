@@ -36,7 +36,13 @@ void worker_delete(struct Object * const obj)
 {
    union Worker * const this = (union Worker *) Object_Cast(&Worker_Class.Class, obj);
    Isnt_Nullptr(this,);
+   if (this->Thread.tid == IPC_MAX_TID)
+     {
+       Dbg_Fault("%s deleted worker",__func__);
+       return;
+     }
    IPC_Send(this->Thread.tid, WORKER_INT_SHUTDOWN_MID, NULL, 0);
+
 
    this->vtbl->Thread.wait(&this->Thread, WORKER_SHUTDOWN_TOUT_MS);
    _delete(&this->mailbox);
