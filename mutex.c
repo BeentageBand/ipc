@@ -13,9 +13,9 @@ static bool_t mutex_unlock(union Mutex * const this);
 
 struct Mutex_Class Mutex_Class =
     {
-	{mutex_delete, NULL},
-	mutex_lock,
-	mutex_unlock,
+   {mutex_delete, NULL},
+   mutex_lock,
+   mutex_unlock,
     };
 
 static union Mutex Mutex = {NULL};

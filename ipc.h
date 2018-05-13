@@ -40,7 +40,7 @@ extern bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t co
 extern bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms);
 
 extern bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_ms, IPC_MID_T const * const mailist,
-		uint32_t const mailist_size);
+      uint32_t const mailist_size);
 
 extern void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const payload, size_t const pay_size);
 

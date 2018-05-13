@@ -13,9 +13,9 @@ static bool_t conditional_signal(union Conditional * const this);
 
 struct Conditional_Class Conditional_Class =
     {
-	{conditional_delete, NULL},
-	conditional_wait,
-	conditional_signal
+   {conditional_delete, NULL},
+   conditional_wait,
+   conditional_signal
     };
 
 union Conditional Conditional = {NULL};

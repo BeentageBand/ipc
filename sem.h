@@ -15,12 +15,12 @@ typedef struct
 
 typedef union Semaphore
 {
-	struct Semaphore_Class _private * _private vtbl;
-	struct
-	{
-		struct Object Object;
-		IPC_SEM_T sem;
-	};
+   struct Semaphore_Class _private * _private vtbl;
+   struct
+   {
+      struct Object Object;
+      IPC_SEM_T sem;
+   };
 }Semaphore_T;
 
 typedef struct Semaphore_Class

@@ -14,12 +14,12 @@ static void mail_set_receiver(union Mail * const this,IPC_TID_T const);
 
 struct Mail_Class Mail_Class =
     {
-	{mail_delete, NULL},
-	mail_set_payload,
-	mail_dump,
-	mail_set_mid,
-	mail_set_sender,
-	mail_set_receiver,
+   {mail_delete, NULL},
+   mail_set_payload,
+   mail_dump,
+   mail_set_mid,
+   mail_set_sender,
+   mail_set_receiver,
     };
 
 static union Mail Mail = {NULL};
@@ -36,7 +36,7 @@ void mail_delete(struct Object * const object)
 }
 
 void Populate_Mail(union Mail * const this, IPC_MID_T const mid, IPC_TID_T const sender,
-		   IPC_TID_T const receiver, void const * const payload, size_t const pay_size)
+         IPC_TID_T const receiver, void const * const payload, size_t const pay_size)
 {
   if(NULL == Mail.vtbl)
     {
@@ -60,11 +60,11 @@ void mail_set_payload(union Mail * const this, void const * const payload, size_
   if(NULL != this->payload)
     {
       if(this->pay_size != pay_size)
-	{
-	  Mail_Payload_Free(this->payload);
-	  this->payload = NULL;
-	  this->pay_size = 0;
-	}
+   {
+     Mail_Payload_Free(this->payload);
+     this->payload = NULL;
+     this->pay_size = 0;
+   }
     }
 
   this->pay_size = pay_size;

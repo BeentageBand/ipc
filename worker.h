@@ -10,32 +10,32 @@ extern "C" {
 
 typedef union Worker
 {
-	union Worker_Class _private * _private vtbl;
-	struct Object Object;
-	struct
-	{
-		union Thread Thread;
-		union Mailbox _private mailbox;
-	};
+   union Worker_Class _private * _private vtbl;
+   struct Object Object;
+   struct
+   {
+      union Thread Thread;
+      union Mailbox _private mailbox;
+   };
 }Worker_T;
 
 typedef union Worker_Class
 {
-	struct
-	{
-		struct Thread_Class Thread;
-		void (* _private on_mail)(union Worker * const, union Mail * const);
-		void (* _private on_start)(union Worker * const);
-		void (* _private on_loop)(union Worker * const);
-		void (* _private on_stop)(union Worker * const);
-	};
-	struct Class Class;
+   struct
+   {
+      struct Thread_Class Thread;
+      void (* _private on_mail)(union Worker * const, union Mail * const);
+      void (* _private on_start)(union Worker * const);
+      void (* _private on_loop)(union Worker * const);
+      void (* _private on_stop)(union Worker * const);
+   };
+   struct Class Class;
 }Worker_Class_T;
 
 extern union Worker_Class _private Worker_Class;
  
 extern void Populate_Worker(union Worker * const worker, IPC_TID_T const tid, union Mail * const mail_buff,
-		size_t const mail_size);
+      size_t const mail_size);
  
 #ifdef __cplusplus
 }
