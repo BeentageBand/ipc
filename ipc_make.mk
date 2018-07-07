@@ -5,7 +5,6 @@ conditional.h \
 ipc.h \
 ipc_types.h \
 ipc_helper.h \
-ipc_posix.h \
 mail.h \
 mail_payload.h \
 mailbox.h \
@@ -20,7 +19,6 @@ $(_flavor_)_$(_feat_)_lib_objs=\
 conditional \
 ipc \
 ipc_helper \
-ipc_posix \
 mail \
 mail_payload \
 mailbox \
