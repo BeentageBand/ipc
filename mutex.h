@@ -8,10 +8,6 @@
 extern "C" {
 #endif
  
-typedef struct
-{
-        char _mux[40];
-}IPC_MUX_T;
 
 typedef union Mutex
 {
@@ -19,7 +15,7 @@ typedef union Mutex
    struct
    {
       struct Object Object;
-      IPC_MUX_T _private mux;
+      void _private * _private mux;
    };
 }Mutex_T;
 

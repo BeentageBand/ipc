@@ -29,7 +29,6 @@ void mutex_delete(struct Object * const obj)
   Isnt_Nullptr(ipc_helper, );
 
   ipc_helper->vtbl->free_mutex(ipc_helper, this);
-  memset(&this->mux, 0, sizeof(this->mux));
 }
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
@@ -53,7 +52,7 @@ void Populate_Mutex(union Mutex * const this)
   if(NULL == Mutex.vtbl)
     {
       Mutex.vtbl = &Mutex_Class;
-      memset(&Mutex.mux._mux, 0, sizeof(Mutex.mux._mux));
+      Mutex.mux = NULL;
     }
 
   union IPC_Helper * const ipc_helper = IPC_get_instance();

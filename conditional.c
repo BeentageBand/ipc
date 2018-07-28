@@ -51,7 +51,7 @@ void Populate_Conditional(union Conditional * const this, union Mutex * const mu
   if(NULL == Conditional.vtbl)
     {
       Conditional.vtbl = &Conditional_Class;
-      memset(Conditional.conditional._cond, 0, sizeof(Conditional.conditional._cond));
+      Conditional.conditional = NULL;
     }
 
   union IPC_Helper * const ipc_helper = IPC_get_instance();

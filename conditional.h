@@ -7,19 +7,14 @@
 extern "C" {
 #endif
 
-typedef struct IPC_COND
-{
-  char _cond[40];
-}IPC_COND_T;
-
 typedef union Conditional
 {
    struct Conditional_Class _private * _private vtbl;
    struct
    {
       struct Object Object;
-      IPC_COND_T _private conditional;
       union Mutex _private * _private mutex;
+      void _private * _private conditional;
    };
 }Conditional_T;
 
