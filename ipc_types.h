@@ -2,6 +2,7 @@
 #define IPC_TYPES_H_
 
 #include "ipc_mailist_ids.h"
+#include "ipc_set.h"
 #include "ipc_thread_ids.h"
 #include "std_reuse.h"
 
