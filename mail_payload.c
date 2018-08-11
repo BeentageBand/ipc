@@ -41,7 +41,6 @@ static uint8_t Lil_Pool_Buff[MAIL_PAYLOAD_SIZE * MAIL_PAYLOAD_LIL_BLOCK_SIZE];
 static union Payload Big_Pool =
 {{
         {&Payload_Class},
-        {payload_delete, NULL},
         Big_Pool_Buff,
         MAIL_PAYLOAD_BIG_BLOCK_SIZE,
         0,
