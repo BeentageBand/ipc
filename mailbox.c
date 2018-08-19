@@ -11,14 +11,21 @@
 #include "cqueue.c"
 #undef CQueue_Params
 
-#ifdef CAlgo_Find_Params
-static int calgo_mail_cmp(union Mail const * a, union Mail const * b);
-#endif
+static void mailbox_cbk_delete(struct Object * const obj);
+
 static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
 static void mailbox_dump_ipc(CQueue_Mail_T * const mailbox, Dbg_Lvl_T const dbg_lvl);
+
+
+struct Mailbox_Cbk_Class Mailbox_Cbk_Class =
+{
+    {mailbox_cbk_delete, NULL},
+    NULL,
+    NULL
+};
 
 struct Mailbox_Class Mailbox_Class =
 {
@@ -29,15 +36,11 @@ struct Mailbox_Class Mailbox_Class =
 };
 
 static union Mailbox Mailbox = {NULL};
+static union Mailbox_Cbk Mailbox_Cbk = {NULL};
 
-#ifdef CAlgo_Find_Params
-int calgo_mail_cmp(union Mail const * a, union Mail const * b)
+void mailbox_cbk_delete(struct Object * const obj){}
 {
-    if(a->mid < b->mid) return -1;
-    if(a->mid == b->mid) return 0;
-    if(a->mid > b->mid) return 1;
 }
-#endif
 
 void mailbox_delete(struct Object * const obj)
 {
@@ -50,6 +53,11 @@ void mailbox_delete(struct Object * const obj)
    {
        _delete(&this->picked_mail);
    }
+
+   this->cbk->vtbl->unregister_mbx(this->cbk, this);
+   _delete(this->cbk);
+   free(this->cbk);
+   this->cbk = NULL;
 }
 
 void mailbox_push_mail(union Mailbox * const this, union Mail * mail)
@@ -124,14 +132,6 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
             {
                 _delete(&this->picked_mail);
             }
-            //TODO use calgorithm find
-#ifdef CAlgo_find_Params
-            mail->mid = mid;
-            union Mail * found = CAlgo_Mail_find_first(mailbox->vtbl->begin(mailbox),
-                    mailbox->vtbl->end(mailbox),
-                    mail,
-                    (CAlgo_Find_Cmp_T)calgo_mail_cmp);
-#else
             union Mail * found;
 
             for(found = mailbox->vtbl->begin(mailbox); found != mailbox->vtbl->end(mailbox); ++found)
@@ -141,7 +141,6 @@ bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MI
                     break;
                 }
             }
-#endif
 
             if(found != mailbox->vtbl->end(mailbox))
             {
@@ -178,10 +177,19 @@ void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mai
    if(NULL == Mailbox.vtbl)
    {
       Mailbox.vtbl = &Mailbox_Class;
+      Mailbox.cond = {NULL};
+      Mailbox.mux = {NULL};
+      Mailbox.mailbox = {NULL};
+      Mailbox.cbk = NULL;
    }
    memcpy(this, &Mailbox, sizeof(Mailbox));
    this->tid = tid;
    Populate_CQueue_Mail(&this->mailbox, mailbox, mailbox_size);
    Populate_Mutex(&this->mux);
    Populate_Conditional(&this->cond, &this->mux);
+
+   union IPC_Helper * const ipc_helper = IPC_Get_instance();
+   Isnt_Nullptr(ipc_helper, );
+   ipc_helper->vtbl->alloc_mailbox(ipc_helper, this);
+   this->cbk->vtbl->register_mbx(this->cbk, this);
 }

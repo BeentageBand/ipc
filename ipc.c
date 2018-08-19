@@ -7,6 +7,7 @@
 #include "ipc.h"
 #include "ipc_helper.h"
 
+
 IPC_TID_T IPC_Self(void)
 {
   union IPC_Helper * ipc_help = IPC_get_instance();
@@ -20,7 +21,7 @@ void IPC_Ready(void)
   union Thread * found = IPC_Helper_find_thread(IPC_Self());
   if(NULL != found)
     {
-
+      found->vtbl->ready(found);
     }
 }
 
@@ -30,7 +31,6 @@ void IPC_Wait(IPC_TID_T const tid, IPC_Clock_T const wait_ms)
   if(NULL != found)
     {
       found->vtbl->wait(found, wait_ms);
-      _delete(found);
     }
 }
 
@@ -42,67 +42,6 @@ void IPC_Run(IPC_TID_T const tid)
       found->vtbl->run(found);
     }
 }
-
-bool IPC_Register_Mailbox(union Mailbox * const mbx)
-{
-  union IPC_Helper * ipc_help = IPC_get_instance();
-  union Mutex * const mux = ipc_help->single_mux;
-
-  if(mux->vtbl->lock(mux, 10000))
-    {
-      CSet_Mailbox_Ptr_T * const mailbox_stack = ipc_help->rmailboxes;
-      mailbox_stack->vtbl->insert(mailbox_stack, mbx);
-    }
-
-  mux->vtbl->unlock(mux);
-  return NULL != IPC_Helper_find_mailbox(mbx->tid);
-}
-
-bool IPC_Unregister_Mailbox(union Mailbox * const mbx)
-{
-  union IPC_Helper * ipc_help = IPC_get_instance();
-  union Mutex * mux = ipc_help->single_mux;
-
-  if(mux->vtbl->lock(mux, 10000))
-    {
-      CSet_Mailbox_Ptr_T * const mailbox_stack = ipc_help->rmailboxes;
-      mailbox_stack->vtbl->erase(mailbox_stack, mbx);
-    }
-
-  mux->vtbl->unlock(mux);
-  return NULL == IPC_Helper_find_mailbox(mbx->tid);
-}
-
-bool IPC_Register_Thread(union Thread * const thread)
-{
-  union IPC_Helper * ipc_help = IPC_get_instance();
-  union Mutex * const mux = ipc_help->single_mux;
-
-  if(mux->vtbl->lock(mux, 10000))
-    {
-      CSet_Thread_Ptr_T * const thread_stack = ipc_help->rthreads;
-      thread_stack->vtbl->insert(thread_stack, thread);
-    }
-
-  mux->vtbl->unlock(mux);
-  return NULL != IPC_Helper_find_thread(thread->tid);
-}
-
-bool IPC_Unregister_Thread(union Thread * const thread)
-{
-  union IPC_Helper * ipc_help = IPC_get_instance();
-  union Mutex * const mux = ipc_help->single_mux;
-
-  if(mux->vtbl->lock(mux, 10000))
-    {
-      CSet_Thread_Ptr_T * const thread_stack = ipc_help->rthreads;
-      thread_stack->vtbl->erase(thread_stack, thread);
-    }
-
-  mux->vtbl->unlock(mux);
-  return NULL == IPC_Helper_find_thread(thread->tid);
-}
-
 
 bool IPC_Subscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mailist_size)
 {

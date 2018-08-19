@@ -13,6 +13,18 @@
 extern "C" {
 #endif
 
+typedef union Mailbox_Cbk
+{
+      struct Mailbox_Cbk_Class _private * _private vtbl;
+      struct Object Object;
+}Mailbox_Cbk_T;
+
+typedef struct Mailbox_Cbk_Class 
+{
+      struct Class Class;
+      bool (*_private register_mbx)(union Mailbox_Cbk * const, union Mailbox * const);
+      bool (*_private unregister_mbx)(union Mailbox_Cbk * const, union Mailbox * const);
+}Mailbox_Cbk_Class_T;
 
 typedef union Mailbox
 {
@@ -22,9 +34,10 @@ typedef union Mailbox
       struct Object Object;
       IPC_TID_T _private tid;
       CQueue_Mail_T _private mailbox;
-      union Mail picked_mail;
-      union Mutex mux;
-      union Conditional cond;
+      union Mail _private picked_mail;
+      union Mutex _private mux;
+      union Conditional _private cond;
+      union Mailbox_Cbk _private * _private cbk;
    };
 }Mailbox_T;
 
@@ -37,6 +50,7 @@ typedef struct Mailbox_Class
 }Mailbox_Class_T;
 
 extern struct Mailbox_Class _private Mailbox_Class;
+extern struct Mailbox_Cbk_Class _private Mailbox_Cbk_Class;
 
 extern void Populate_Mailbox(union Mailbox * const mbx, IPC_TID_T const tid, union Mail * const mailbox, size_t const mailbox_size);
       

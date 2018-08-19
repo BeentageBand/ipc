@@ -7,9 +7,18 @@
 #include "mutex.h"
 #include "ipc_helper.h"
 
+static void mutex_cbk_delete(struct Object * const obj);
+
 static void mutex_delete(struct Object * const obj);
 static bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms);
 static bool_t mutex_unlock(union Mutex * const this);
+
+struct Mutex_Cbk_Class Mutex_Cbk_Class = 
+{
+  {mutex_cbk_delete, NULL},
+  NULL,
+  NULL
+};
 
 struct Mutex_Class Mutex_Class =
     {
@@ -19,32 +28,28 @@ struct Mutex_Class Mutex_Class =
     };
 
 static union Mutex Mutex = {NULL};
+static union Mutex_Cbk Mutex_Cbk = {NULL};
+
+void mutex_cbk_delete(struct Object * const obj)
+{}
 
 void mutex_delete(struct Object * const obj)
 {
   union Mutex * const this = (Mutex_T *)Object_Cast(&Mutex_Class.Class, obj);
   Isnt_Nullptr(this,);
-
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, );
-
-  ipc_helper->vtbl->free_mutex(ipc_helper, this);
+  _delete(this->cbk)
+  free(this->cbk);
+  this->cbk = NULL;
 }
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
 {
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, false);
-
-  return ipc_helper->vtbl->lock_mutex(ipc_helper, this, wait_ms);
+  return this->cbk->vtbl->lock_mutex(ipc_helper, this, wait_ms);
 }
 
 bool_t mutex_unlock(union Mutex * const this)
 {
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, false);
-
-  return ipc_helper->vtbl->unlock_mutex(ipc_helper, this);
+  return this->cbk->vtbl->unlock_mutex(ipc_helper, this);
 }
 
 void Populate_Mutex(union Mutex * const this)
@@ -52,12 +57,13 @@ void Populate_Mutex(union Mutex * const this)
   if(NULL == Mutex.vtbl)
     {
       Mutex.vtbl = &Mutex_Class;
-      Mutex.mux = NULL;
+      Mutex.cbk = NULL;
     }
+
+  _clone(this, Mutex);
 
   union IPC_Helper * const ipc_helper = IPC_get_instance();
   Isnt_Nullptr(ipc_helper, );
 
-  memcpy(this, &Mutex, sizeof(Mutex));
   ipc_helper->vtbl->alloc_mutex(ipc_helper, this);
 }

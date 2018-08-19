@@ -21,6 +21,12 @@ typedef struct Semaphore_Cbk_Class
       bool (* _private post)(union Semaphore_Cbk * const, union Semaphore * const);
 }Semaphore_Cbk_Class_T;
 
+typedef struct IPC_Semaphore_Cbk_Class
+{
+      struct Class Class;
+      bool (* _private wait)(union IPC_Helper * const, union Semaphore * const, IPC_Clock_T const wait_ms);
+      bool (* _private post)(union IPC_Helper * const, union Semaphore * const);
+}IPC_Semaphore_Cbk_Class;
 typedef union Semaphore
 {
    struct Semaphore_Class _private * _private vtbl;

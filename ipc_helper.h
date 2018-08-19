@@ -7,6 +7,7 @@
 #include "publisher.h"
 #include "sem.h"
 #include "thread.h"
+#include "tmr.h"
  
 #ifdef __cplusplus
 extern "C" {
@@ -24,6 +25,19 @@ typedef union Mailbox * Mailbox_Ptr_T;
 #include "cset.h"
 #undef CSet_Params
 
+typedef union IPC_Timer_Cbk
+{
+      struct IPC_Timer_Cbk_Class _private * _private vtbl;
+      struct Object Object;
+}IPC_Timer_Cbk_T;
+
+typedef struct IPC_Timer_Cbk_Class
+{
+      struct Class Class;
+      bool (* _private start)(union IPC_Helper * const, union Timer * const);
+      bool (* _private stop)(union IPC_Helper * const, union Timer * const);
+}IPC_Timer_Cbk_Class_T;
+
 typedef union IPC_Helper
 {
    union IPC_Helper_Class _private * _private vtbl;
@@ -37,6 +51,7 @@ typedef union IPC_Helper
    };
 }IPC_Helper_T;
 
+
 typedef union IPC_Helper_Class
 {
    struct
@@ -44,35 +59,17 @@ typedef union IPC_Helper_Class
       struct Class Class;
 
       IPC_Clock_T (* _private time)(union IPC_Helper * const);
-      void (* _private sleep)(union IPC_Helper * const, IPC_Clock_T const sleep_ms);
-      bool (* _private is_time_elapsed)(union IPC_Helper * const, IPC_Clock_T const time_ms);
+      void (* _private sleep)(union IPC_Helper * const, IPC_Clock_T const);
+      bool (* _private is_time_elapsed)(union IPC_Helper * const, IPC_Clock_T const);
       
       IPC_TID_T (* _private self_thread)(union IPC_Helper * const);
+
       bool (* _private alloc_thread)(union IPC_Helper * const, union Thread * const);
-      bool (* _private free_thread)(union IPC_Helper * const, union Thread * const);
-      bool (* _private run_thread)(union IPC_Helper * const, union Thread * const);
-      bool (* _private join_thread)(union IPC_Helper * const, union Thread * const);
-
+      bool (* _private alloc_mailbox)(union IPC_Helper * const, union Mailbox * const);
       bool (* _private alloc_mutex)(union IPC_Helper * const, union Mutex * const);
-      bool (* _private free_mutex)(union IPC_Helper * const, union Mutex * const);
-      bool (* _private lock_mutex)(union IPC_Helper * const, union Mutex * const, IPC_Clock_T const wait_ms);
-      bool (* _private unlock_mutex)(union IPC_Helper * const, union Mutex * const);
-
-      bool (* _private alloc_semaphore)(union IPC_Helper * const, union Semaphore * const, uint8_t const value);
-      bool (* _private free_semaphore)(union IPC_Helper * const, union Semaphore * const);
-      bool (* _private wait_semaphore)(union IPC_Helper * const, union Semaphore * const, IPC_Clock_T const wait_ms);
-      bool (* _private post_semaphore)(union IPC_Helper * const, union Semaphore * const);
-
+      bool (* _private alloc_semaphore)(union IPC_Helper * const, union Semaphore * const, uint8_t const);
       bool (* _private alloc_conditional)(union IPC_Helper * const, union Conditional * const);
-      bool (* _private free_conditional)(union IPC_Helper * const, union Conditional * const);
-      bool (* _private wait_conditional)(union IPC_Helper * const, union Conditional * const,
-            union Mutex * const, IPC_Clock_T const wait_ms);
-      bool (* _private post_conditional)(union IPC_Helper * const, union Conditional * const);
-
       bool (* _private alloc_timer)(union IPC_Helper * const, union Timer * const);
-      bool (* _private free_timer)(union IPC_Helper * const, union Timer * const);
-      bool (* _private start_timer)(union IPC_Helper * const, union Timer * const);
-      bool (* _private stop_timer)(union IPC_Helper * const, union Timer * const);
    };
 }IPC_Helper_Class_T;
 
