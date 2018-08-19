@@ -8,10 +8,18 @@
 extern "C" {
 #endif
 
-typedef struct
+typedef union Semaphore_Cbk
 {
-        char _mux[40];
-}IPC_SEM_T;
+      struct Semaphore_Cbk_Class _private * _private vtbl;
+      struct Object Object;
+}Semaphore_Cbk_T;
+
+typedef struct Semaphore_Cbk_Class
+{
+      struct Class Class;
+      bool (* _private wait)(union Semaphore_Cbk * const, union Semaphore * const, IPC_Clock_T const wait_ms);
+      bool (* _private post)(union Semaphore_Cbk * const, union Semaphore * const);
+}Semaphore_Cbk_Class_T;
 
 typedef union Semaphore
 {
@@ -19,7 +27,7 @@ typedef union Semaphore
    struct
    {
       struct Object Object;
-      IPC_SEM_T sem;
+      Semaphore_Cbk _private * _private cbk;
    };
 }Semaphore_T;
 

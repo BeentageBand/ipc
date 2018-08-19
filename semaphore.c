@@ -7,9 +7,18 @@
 #include "ipc_helper.h"
 
 
+static void semaphore_cbk_delete(struct Object * obj);
+
 static void semaphore_delete(struct Object * obj);
 static bool semaphore_wait(union Semaphore * const this, IPC_Clock_T const wait_ms);
 static bool semaphore_post(union Semaphore * const this);
+
+struct Semaphore_Cbk_Class  Semaphore_Cbk_Class =
+{
+    {semaphore_cbk_delete, NULL},
+    NULL,
+    NULL
+};
 
 struct Semaphore_Class Semaphore_Class =
 {
@@ -19,6 +28,9 @@ struct Semaphore_Class Semaphore_Class =
 };
 
 static union Semaphore Semaphore = {NULL};
+static union Semaphore_Cbk Semaphore_Cbk = {NULL};
+
+void semaphore_cbk_delete(struct Object * obj){}
 
 void semaphore_delete(struct Object * obj)
 {
@@ -46,6 +58,7 @@ void Populate_Semaphore(union Semaphore * const this, uint32_t value)
     if(NULL == Semaphore.vtbl)
     {
         Semaphore.vtbl = &Semaphore_Class;
+        Semaphore.cbk = NULL;
     }
 
     memcpy(this, &Semaphore, sizeof(Semaphore));

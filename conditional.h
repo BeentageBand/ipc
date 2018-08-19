@@ -7,6 +7,20 @@
 extern "C" {
 #endif
 
+typedef union Conditional_Cbk
+{
+      struct Conditional_Cbk_Class _private * _private vtbl;
+      struct Object Object;
+}Conditional_Cbk_T;
+
+typedef struct Conditional_Cbk_Class
+{
+      struct Class Class;
+      bool (* _private wait)(union Conditional_Cbk * const, union Conditional * const,
+            union Conditional * const, IPC_Clock_T const wait_ms);
+      bool (* _private post)(union Conditional_Cbk * const, union Conditional * const);
+}Conditional_Cbk_Class;
+
 typedef union Conditional
 {
    struct Conditional_Class _private * _private vtbl;
@@ -26,6 +40,7 @@ typedef struct Conditional_Class
 }Conditional_Class_T;
 
 extern Conditional_Class_T _private Conditional_Class;
+extern struct Conditional_Cbk_Class _private Conditional_Cbk_Class;
 
 extern void Populate_Conditional(union Conditional * const conditional, union Mutex * const mux);
 
