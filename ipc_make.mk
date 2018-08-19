@@ -12,6 +12,7 @@ mutex.h \
 publisher.h \
 sem.h \
 thread.h \
+tmr.h \
 worker.h \
 worker_evs.h \
 
@@ -26,6 +27,7 @@ mutex \
 publisher \
 semaphore \
 thread \
+tmr \
 worker \
 
 $(_flavor_)_$(_feat_)_lib=ipc

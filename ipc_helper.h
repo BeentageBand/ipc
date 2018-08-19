@@ -68,6 +68,11 @@ typedef union IPC_Helper_Class
       bool (* _private wait_conditional)(union IPC_Helper * const, union Conditional * const,
             union Mutex * const, IPC_Clock_T const wait_ms);
       bool (* _private post_conditional)(union IPC_Helper * const, union Conditional * const);
+
+      bool (* _private alloc_timer)(union IPC_Helper * const, union Timer * const);
+      bool (* _private free_timer)(union IPC_Helper * const, union Timer * const);
+      bool (* _private start_timer)(union IPC_Helper * const, union Timer * const);
+      bool (* _private stop_timer)(union IPC_Helper * const, union Timer * const);
    };
 }IPC_Helper_Class_T;
 

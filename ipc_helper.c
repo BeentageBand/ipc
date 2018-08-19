@@ -48,6 +48,11 @@ static bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union C
                union Mutex * const mutex, IPC_Clock_T const wait_ms);
 static bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
 
+static bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr);
+static bool ipc_helper_free_timer(union ipc_helper * const helper, union timer * const tmr);
+static bool ipc_helper_start_timer(union ipc_helper * const helper, union timer * const tmr);
+static bool ipc_helper_stop_timer(union ipc_helper * const helper, union timer * const tmr);
+
 static int ipc_helper_thread_cmp(Thread_Ptr_T const * a, Thread_Ptr_T const *b);
 static int ipc_helper_mailbox_cmp(Mailbox_Ptr_T const * a,Mailbox_Ptr_T const *b);
 
@@ -77,7 +82,12 @@ IPC_Helper_Class_T IPC_Helper_Class =
    ipc_helper_alloc_conditional,
    ipc_helper_free_conditional,
    ipc_helper_wait_conditional,
-   ipc_helper_post_conditional
+   ipc_helper_post_conditional,
+
+   ipc_helper_alloc_timer,
+   ipc_helper_free_timer,
+   ipc_helper_start_timer,
+   ipc_helper_stop_timer
     }};
 
 static union IPC_Helper IPC_Helper = {NULL};
@@ -422,6 +432,72 @@ bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditio
       this = this->next;
     }
   return rc;
+}
+
+
+bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr)
+{
+  bool rc = false;
+  union IPC_Helper * this = helper;
+  while(this)
+    {
+      if(ipc_helper_alloc_timer != this->vtbl->alloc_timer)
+   {
+     rc = this->vtbl->alloc_timer(this, tmr);
+   }
+
+      this = this->next;
+    }
+  return rc;
+}
+
+bool ipc_helper_free_timer(union ipc_helper * const helper, union timer * const tmr)
+{
+  bool rc = false;
+  union IPC_Helper * this = helper;
+  while(this)
+    {
+      if(ipc_helper_free_timer != this->vtbl->free_timer)
+   {
+     rc = this->vtbl->free_timer(this, tmr);
+   }
+
+      this = this->next;
+    }
+  return rc;
+}
+
+bool ipc_helper_start_timer(union ipc_helper * const helper, union timer * const tmr)
+{
+  bool rc = false;
+  union IPC_Helper * this = helper;
+  while(this)
+    {
+      if(ipc_helper_start_timer != this->vtbl->start_timer))
+   {
+     rc = this->vtbl->start_timer(this, tmr);
+   }
+
+      this = this->next;
+    }
+  return rc;
+}
+
+bool ipc_helper_stop_timer(union ipc_helper * const helper, union timer * const tmr)
+{
+  bool rc = false;
+  union IPC_Helper * this = helper;
+  while(this)
+    {
+      if(ipc_helper_stop_timer != this->vtbl->stop_timer))
+   {
+     rc = this->vtbl->stop_timer(this, tmr);
+   }
+
+      this = this->next;
+    }
+  return rc;
+
 }
 
 union IPC_Helper * IPC_get_instance(void)
