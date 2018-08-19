@@ -25,51 +25,6 @@ typedef union Mailbox * Mailbox_Ptr_T;
 #include "cset.h"
 #undef CSet_Params
 
-<<<<<<< Updated upstream
-=======
-
-
-typedef union IPC_Semaphore_Cbk
-{
-      struct IPC_Semaphore_Cbk_Class _private * _private vtbl;
-      struct Object Object;
-}IPC_Semaphore_Cbk_T;
-
-typedef struct IPC_Semaphore_Cbk_Class
-{
-      struct Class Class;
-      bool (* _private wait)(union IPC_Helper * const, union Semaphore * const, IPC_Clock_T const wait_ms);
-      bool (* _private post)(union IPC_Helper * const, union Semaphore * const);
-}IPC_Semaphore_Cbk_Class;
-
-typedef union IPC_Conditional_Cbk
-{
-      struct IPC_Conditional_Cbk_Class _private * _private vtbl;
-      struct Object Object;
-}IPC_Conditional_Cbk_T;
-
-typedef struct IPC_Conditional_Cbk_Class
-{
-      struct Class Class;
-      bool (* _private wait)(union IPC_Helper * const, union Conditional * const,
-            union Conditional * const, IPC_Clock_T const wait_ms);
-      bool (* _private post)(union IPC_Helper * const, union Conditional * const);
-}IPC_Conditional_Cbk_Class;
-
->>>>>>> Stashed changes
-typedef union IPC_Timer_Cbk
-{
-      struct IPC_Timer_Cbk_Class _private * _private vtbl;
-      struct Object Object;
-}IPC_Timer_Cbk_T;
-
-typedef struct IPC_Timer_Cbk_Class
-{
-      struct Class Class;
-      bool (* _private start)(union IPC_Helper * const, union Timer * const);
-      bool (* _private stop)(union IPC_Helper * const, union Timer * const);
-}IPC_Timer_Cbk_Class_T;
-
 typedef union IPC_Helper
 {
    union IPC_Helper_Class _private * _private vtbl;

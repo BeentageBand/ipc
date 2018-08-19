@@ -25,25 +25,20 @@ void conditional_delete(struct Object * const obj)
   union Conditional * const this = (Conditional_T *)Object_Cast(&Conditional_Class.Class, obj);
   Isnt_Nullptr(this, );
 
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, );
-
-  ipc_helper->vtbl->free_conditional(ipc_helper, this);
+  _delete(this->cbk);
+  free(this->cbk);
   this->mutex = NULL;
+  this->cbk = NULL;
 }
 
 bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms)
 {
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, false);
-  return ipc_helper->vtbl->wait_conditional(ipc_helper, this, &this->mutex, wait_ms);
+  return this->cbk->vtbl->wait(this->cbk, this, &this->mutex, wait_ms);
 }
 
 bool_t conditional_signal(union Conditional * const this)
 {
-  union IPC_Helper * const ipc_helper = IPC_get_instance();
-  Isnt_Nullptr(ipc_helper, false);
-  return ipc_helper->vtbl->post_conditional(ipc_helper, this);
+  return this->cbk->vtbl->post(this->cbk, this);
 }
 
 void Populate_Conditional(union Conditional * const this, union Mutex * const mutex)
@@ -51,7 +46,8 @@ void Populate_Conditional(union Conditional * const this, union Mutex * const mu
   if(NULL == Conditional.vtbl)
     {
       Conditional.vtbl = &Conditional_Class;
-      Conditional.conditional = NULL;
+      Conditional.cbk = NULL;
+      Conditional.mutex = NULL;
     }
 
   union IPC_Helper * const ipc_helper = IPC_get_instance();

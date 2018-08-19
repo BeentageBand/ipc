@@ -44,12 +44,12 @@ void mutex_delete(struct Object * const obj)
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
 {
-  return this->cbk->vtbl->lock_mutex(ipc_helper, this, wait_ms);
+  return this->cbk->vtbl->lock_mutex(this->cbk, this, wait_ms);
 }
 
 bool_t mutex_unlock(union Mutex * const this)
 {
-  return this->cbk->vtbl->unlock_mutex(ipc_helper, this);
+  return this->cbk->vtbl->unlock(this->cbk, this);
 }
 
 void Populate_Mutex(union Mutex * const this)

@@ -25,33 +25,12 @@ static bool ipc_helper_is_time_elapsed(union IPC_Helper * const helper, IPC_Cloc
 
 static IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper);
 static bool ipc_helper_alloc_thread(union IPC_Helper * const helper, union Thread * const thread);
-static bool ipc_helper_free_thread(union IPC_Helper * const helper, union Thread * const thread);
-static bool ipc_helper_run_thread(union IPC_Helper * const helper, union Thread * const thread);
-static bool ipc_helper_join_thread(union IPC_Helper * const helper, union Thread * const thread);
-
+static bool ipc_helper_alloc_mailbox(union IPC_Helper * const helper, union Mailbox * const mailbox);
 static bool ipc_helper_alloc_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
-static bool ipc_helper_free_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
-static bool ipc_helper_lock_mutex(union IPC_Helper * const helper, union Mutex * const mutex,
-              IPC_Clock_T const wait_ms);
-static bool ipc_helper_unlock_mutex(union IPC_Helper * const helper, union Mutex * const mutex);
-
 static bool ipc_helper_alloc_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
                    uint8_t const value);
-static bool ipc_helper_free_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore);
-static bool ipc_helper_wait_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore, 
-                  IPC_Clock_T const wait_ms);
-static bool ipc_helper_post_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore);
-
 static bool ipc_helper_alloc_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
-static bool ipc_helper_free_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
-static bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union Conditional * const conditional,
-               union Mutex * const mutex, IPC_Clock_T const wait_ms);
-static bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
-
 static bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr);
-static bool ipc_helper_free_timer(union ipc_helper * const helper, union timer * const tmr);
-static bool ipc_helper_start_timer(union ipc_helper * const helper, union timer * const tmr);
-static bool ipc_helper_stop_timer(union ipc_helper * const helper, union timer * const tmr);
 
 static int ipc_helper_thread_cmp(Thread_Ptr_T const * a, Thread_Ptr_T const *b);
 static int ipc_helper_mailbox_cmp(Mailbox_Ptr_T const * a,Mailbox_Ptr_T const *b);
@@ -62,32 +41,14 @@ IPC_Helper_Class_T IPC_Helper_Class =
    ipc_helper_time,
    ipc_helper_sleep,
    ipc_helper_is_time_elapsed,
-
    ipc_helper_self_thread,
+   
    ipc_helper_alloc_thread,
-   ipc_helper_free_thread,
-   ipc_helper_run_thread,
-   ipc_helper_join_thread,
-
+   ipc_helper_alloc_mailbox,
    ipc_helper_alloc_mutex,
-   ipc_helper_free_mutex,
-   ipc_helper_lock_mutex,
-   ipc_helper_unlock_mutex,
-
    ipc_helper_alloc_semaphore,
-   ipc_helper_free_semaphore,
-   ipc_helper_wait_semaphore,
-   ipc_helper_post_semaphore,
-
    ipc_helper_alloc_conditional,
-   ipc_helper_free_conditional,
-   ipc_helper_wait_conditional,
-   ipc_helper_post_conditional,
-
    ipc_helper_alloc_timer,
-   ipc_helper_free_timer,
-   ipc_helper_start_timer,
-   ipc_helper_stop_timer
     }};
 
 static union IPC_Helper IPC_Helper = {NULL};
@@ -114,323 +75,62 @@ void ipc_helper_delete(struct Object * const obj)
 
 IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper)
 {
-  union IPC_Helper * this = helper;
   IPC_Clock_T clock = 0;
-  while(this)
-    {
-      if(ipc_helper_time != this->vtbl->time)
-   {
-     clock = this->vtbl->time(this);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return clock;
 }
 
 void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_ms)
 {
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_sleep != this->vtbl->sleep)
-   {
-     this->vtbl->sleep(this, sleep_ms);
-   }
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
 }
 
 bool ipc_helper_is_time_elapsed(union IPC_Helper * const helper, IPC_Clock_T const time_ms)
 {
-  union IPC_Helper * this = helper;
   bool  rc = true;
-  while(this)
-    {
-      if(ipc_helper_is_time_elapsed!= this->vtbl->is_time_elapsed)
-   {
-     rc = this->vtbl->is_time_elapsed(this, time_ms);
-   }
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
 }
 
 IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper)
 {
   IPC_TID_T tid = IPC_MAX_TID;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_self_thread != this->vtbl->self_thread)
-   {
-     tid = this->vtbl->self_thread(this);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return tid;
 }
 
 bool ipc_helper_alloc_thread(union IPC_Helper * const helper, union Thread * const thread)
 {
   bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_alloc_thread != this->vtbl->alloc_thread)
-   {
-     rc = this->vtbl->alloc_thread(this, thread);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
 }
 
-
-bool ipc_helper_free_thread(union IPC_Helper * const helper, union Thread * const thread)
+bool ipc_helper_alloc_mailbox(union IPC_Helper * const helper, union Mailbox * const mailbox)
 {
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_free_thread != this->vtbl->free_thread)
-   {
-     rc = this->vtbl->free_thread(this, thread);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_run_thread(union IPC_Helper * const helper, union Thread * const thread)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_run_thread != this->vtbl->run_thread)
-   {
-     rc = this->vtbl->run_thread(this, thread);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_join_thread(union IPC_Helper * const helper, union Thread * const thread)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_join_thread != this->vtbl->join_thread)
-   {
-     rc = this->vtbl->join_thread(this, thread);
-   }
-
-      this = this->next;
-    }
-  return rc;
+  Dbg_Warn("%s is not implemented", __func__);
+  return false;
 }
 
 bool ipc_helper_alloc_mutex(union IPC_Helper * const helper, union Mutex * const mutex)
 {
   bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_alloc_mutex != this->vtbl->alloc_mutex)
-   {
-     rc = this->vtbl->alloc_mutex(this, mutex);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
 }
-
-bool ipc_helper_free_mutex(union IPC_Helper * const helper, union Mutex * const mutex)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_free_mutex != this->vtbl->free_mutex)
-   {
-     rc = this->vtbl->free_mutex(this, mutex);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_lock_mutex(union IPC_Helper * const helper, union Mutex * const mutex,
-            IPC_Clock_T const wait_ms)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_lock_mutex != this->vtbl->lock_mutex)
-   {
-     rc = this->vtbl->lock_mutex(this, mutex, wait_ms);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_unlock_mutex(union IPC_Helper * const helper, union Mutex * const mutex)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_unlock_mutex != this->vtbl->unlock_mutex)
-   {
-     rc = this->vtbl->unlock_mutex(this, mutex);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
 
 bool ipc_helper_alloc_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
             uint8_t const value)
 {
   bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_alloc_semaphore!= this->vtbl->alloc_semaphore)
-   {
-     rc = this->vtbl->alloc_semaphore(this, semaphore, value);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
 }
-
-bool ipc_helper_free_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_free_semaphore != this->vtbl->free_semaphore)
-   {
-     rc = this->vtbl->free_semaphore(this, semaphore);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_wait_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore, 
-                IPC_Clock_T const wait_ms)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_wait_semaphore != this->vtbl->wait_semaphore)
-   {
-     rc = this->vtbl->wait_semaphore(this, semaphore, wait_ms);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_post_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_post_semaphore != this->vtbl->post_semaphore)
-   {
-     rc = this->vtbl->post_semaphore(this, semaphore);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
 
 bool ipc_helper_alloc_conditional(union IPC_Helper * const helper, union Conditional * const conditional)
 {
   bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_alloc_conditional != this->vtbl->alloc_conditional)
-   {
-     rc = this->vtbl->alloc_conditional(this, conditional);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_free_conditional(union IPC_Helper * const helper, union Conditional * const conditional)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_free_conditional != this->vtbl->free_conditional)
-   {
-     rc = this->vtbl->free_conditional(this, conditional);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_wait_conditional(union IPC_Helper * const helper, union Conditional * const conditional,
-             union Mutex * const mutex, IPC_Clock_T const wait_ms)
-{
-  bool rc = false;
-  union IPC_Helper* this = helper;
-  while(this)
-    {
-      if(ipc_helper_wait_conditional != this->vtbl->wait_conditional)
-   {
-     rc = this->vtbl->wait_conditional(this, conditional, mutex, wait_ms);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditional * const conditional)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_wait_conditional != this->vtbl->wait_conditional)
-   {
-     rc = this->vtbl->post_conditional(this, conditional);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
 }
 
@@ -438,66 +138,8 @@ bool ipc_helper_post_conditional(union IPC_Helper * const helper, union Conditio
 bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr)
 {
   bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_alloc_timer != this->vtbl->alloc_timer)
-   {
-     rc = this->vtbl->alloc_timer(this, tmr);
-   }
-
-      this = this->next;
-    }
+  Dbg_Warn("%s is not implemented", __func__);
   return rc;
-}
-
-bool ipc_helper_free_timer(union ipc_helper * const helper, union timer * const tmr)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_free_timer != this->vtbl->free_timer)
-   {
-     rc = this->vtbl->free_timer(this, tmr);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_start_timer(union ipc_helper * const helper, union timer * const tmr)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_start_timer != this->vtbl->start_timer))
-   {
-     rc = this->vtbl->start_timer(this, tmr);
-   }
-
-      this = this->next;
-    }
-  return rc;
-}
-
-bool ipc_helper_stop_timer(union ipc_helper * const helper, union timer * const tmr)
-{
-  bool rc = false;
-  union IPC_Helper * this = helper;
-  while(this)
-    {
-      if(ipc_helper_stop_timer != this->vtbl->stop_timer))
-   {
-     rc = this->vtbl->stop_timer(this, tmr);
-   }
-
-      this = this->next;
-    }
-  return rc;
-
 }
 
 union IPC_Helper * IPC_get_instance(void)
@@ -608,17 +250,8 @@ union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox)
 
 void IPC_Helper_Append(union IPC_Helper * appendable)
 {
-  union IPC_Helper * this = IPC_get_instance();
-
-  if(this == appendable) return;
-  while(this->next)
+  if(NULL == IPC_Helper_Singleton)
   {
-      if(this == appendable)
-  {
-     return;
+    IPC_Helper_Singleton = appendable;
   }
-      this = this->next;
-  }
-
-  this->next = appendable;
 }

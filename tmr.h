@@ -4,6 +4,19 @@
 #include "ipc_types.h"
 #include "cobject.h"
 
+typedef union Timer_Cbk
+{
+      struct Timer_Cbk_Class _private * _private vtbl;
+      struct Object Object;
+}Timer_Cbk_T;
+
+typedef struct Timer_Cbk_Class
+{
+      struct Class Class;
+      bool (* _private start)(union Helper * const, union Timer * const);
+      bool (* _private stop)(union Helper * const, union Timer * const);
+}Timer_Cbk_Class_T;
+
 typedef union Timer
 {
     struct Timer_Class _private * _private vtbl;
@@ -12,7 +25,7 @@ typedef union Timer
         struct Object Object;
         IPC_MID_T _private mid;
         IPC_TID_T _private tid;
-        void _private * _private tmr;
+        union Timer_Cbk _private * _private cbk;
         bool _private is_periodic;
         bool _private is_active;
         IPC_Clock_T _private tout_ms;
@@ -30,6 +43,7 @@ typedef struct Timer_Class
 }Timer_Class_T;
 
 extern struct Timer_Class _private Timer_Class;
+extern struct Timer_Cbk_Class _private Timer_Cbk_Class;
 extern void Populate_Timer(union Timer * const tmr, IPD_MID_T const mid);
 
 #endif /*TMR_H_*/

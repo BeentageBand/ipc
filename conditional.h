@@ -28,7 +28,7 @@ typedef union Conditional
    {
       struct Object Object;
       union Mutex _private * _private mutex;
-      void _private * _private conditional;
+      union Conditional_Cbk _private * _private cbk;
    };
 }Conditional_T;
 
