@@ -27,7 +27,7 @@ typedef union Semaphore
    struct
    {
       struct Object Object;
-      Semaphore_Cbk _private * _private cbk;
+      union Semaphore_Cbk _private * _private cbk;
    };
 }Semaphore_T;
 

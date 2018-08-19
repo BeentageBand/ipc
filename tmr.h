@@ -44,6 +44,6 @@ typedef struct Timer_Class
 
 extern struct Timer_Class _private Timer_Class;
 extern struct Timer_Cbk_Class _private Timer_Cbk_Class;
-extern void Populate_Timer(union Timer * const tmr, IPD_MID_T const mid);
+extern void Populate_Timer(union Timer * const tmr, IPC_MID_T const mid);
 
 #endif /*TMR_H_*/

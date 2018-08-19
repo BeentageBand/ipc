@@ -28,7 +28,7 @@ typedef union Mutex
    struct
    {
       struct Object Object;
-      Mutex_Cbk _private * _private cbk;
+      union Mutex_Cbk _private * _private cbk;
    };
 }Mutex_T;
 

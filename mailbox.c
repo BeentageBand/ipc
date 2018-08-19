@@ -12,6 +12,8 @@
 #undef CQueue_Params
 
 static void mailbox_cbk_delete(struct Object * const obj);
+static bool mailbox_cbk_register_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox);
+static bool mailbox_cbk_unregister_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox);
 
 static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
@@ -23,8 +25,8 @@ static void mailbox_dump_ipc(CQueue_Mail_T * const mailbox, Dbg_Lvl_T const dbg_
 struct Mailbox_Cbk_Class Mailbox_Cbk_Class =
 {
     {mailbox_cbk_delete, NULL},
-    NULL,
-    NULL
+    mailbox_cbk_register_mbx,
+    mailbox_cbk_unregister_mbx
 };
 
 struct Mailbox_Class Mailbox_Class =
@@ -40,6 +42,35 @@ static union Mailbox_Cbk Mailbox_Cbk = {NULL};
 
 void mailbox_cbk_delete(struct Object * const obj){}
 {
+}
+
+bool mailbox_cbk_register_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox)
+{
+    Isnt_Nullptr(this, false);
+    IPC_Helper * const ipc_helper = IPC_get_instance();
+    Isnt_Nullptr(ipc_helper, false);
+    union Mutex * mux = ipc_helper->single_mux;
+    Isnt_Nullptr(mux, false);
+    if(!mux->vtbl->lock(200)) return false;
+    CSet_Mailbox_Ptr_T * mbx = ipc_helper->rmailboxes;
+    mbx->vtbl->insert(mbx, mailbox)
+    mux->vtbl->unlock(mux);
+    return NULL != IPC_Helper_find_mailbox(mailbox->tid);
+}
+
+bool mailbox_cbk_unregister_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox)
+{
+    Isnt_Nullptr(this, false);
+    IPC_Helper * const ipc_helper = IPC_get_instance();
+    Isnt_Nullptr(ipc_helper, false);
+    union Mutex * mux = ipc_helper->single_mux;
+    Isnt_Nullptr(mux, false);
+
+    if(!mux->vtbl->lock(200)) return false;
+    CSet_Mailbox_Ptr_T * mbx = ipc_helper->rmailboxes;
+    mbx->vtbl->erase(mbx, mailbox)
+    mux->vtbl->unlock(mux);
+    return NULL == IPC_Helper_find_mailbox(mailbox->tid);
 }
 
 void mailbox_delete(struct Object * const obj)

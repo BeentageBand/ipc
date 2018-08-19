@@ -21,7 +21,7 @@ typedef struct Thread_Cbk_Class
       bool (* _private run_thread)(union Thread_Cbk * const, union Thread * const);
       bool (* _private join_thread)(union Thread_Cbk * const, union Thread * const);
       bool (* _private unregister_thread)(union Thread_Cbk * const, union Thread * const);
-}Thread_Cbk_Class;
+}Thread_Cbk_Class_T;
 
 typedef union Thread
 {

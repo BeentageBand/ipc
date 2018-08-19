@@ -19,7 +19,7 @@ typedef struct Conditional_Cbk_Class
       bool (* _private wait)(union Conditional_Cbk * const, union Conditional * const,
             union Conditional * const, IPC_Clock_T const wait_ms);
       bool (* _private post)(union Conditional_Cbk * const, union Conditional * const);
-}Conditional_Cbk_Class;
+}Conditional_Cbk_Class_T;
 
 typedef union Conditional
 {
