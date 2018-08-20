@@ -216,7 +216,7 @@ void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mai
    Populate_Mutex(&this->mux);
    Populate_Conditional(&this->cond, &this->mux);
 
-   union IPC_Helper * const ipc_helper = IPC_Get_instance();
+   union IPC_Helper * const ipc_helper = IPC_get_instance();
    Isnt_Nullptr(ipc_helper, );
    ipc_helper->vtbl->alloc_mailbox(ipc_helper, this);
    this->cbk->vtbl->register_mbx(this->cbk, this);
