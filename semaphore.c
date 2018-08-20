@@ -36,8 +36,8 @@ void semaphore_delete(struct Object * obj)
 {
     union Semaphore * const this = (Semaphore_T *)Object_Cast(&Semaphore_Class.Class, obj);
     Isnt_Nullptr(this, );
-    _delete(this->cbk)
-    free(this->cbk)
+    _delete(this->cbk);
+    free(this->cbk);
     this->cbk = NULL;
 }
 

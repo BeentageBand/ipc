@@ -37,14 +37,14 @@ void mutex_delete(struct Object * const obj)
 {
   union Mutex * const this = (Mutex_T *)Object_Cast(&Mutex_Class.Class, obj);
   Isnt_Nullptr(this,);
-  _delete(this->cbk)
+  _delete(this->cbk);
   free(this->cbk);
   this->cbk = NULL;
 }
 
 bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms)
 {
-  return this->cbk->vtbl->lock_mutex(this->cbk, this, wait_ms);
+  return this->cbk->vtbl->lock(this->cbk, this, wait_ms);
 }
 
 bool_t mutex_unlock(union Mutex * const this)

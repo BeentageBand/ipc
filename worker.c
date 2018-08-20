@@ -54,7 +54,6 @@ void worker_runnable(union Thread * const super)
    Isnt_Nullptr(this,);
 
    union Mailbox * const mailbox = &this->mailbox;
-   IPC_Register_Mailbox(mailbox);
 
    this->vtbl->on_start(this);
 

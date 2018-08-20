@@ -1,3 +1,4 @@
+#define COBJECT_IMPLEMENTATION
 #include "tmr.h"
 #include "ipc.h"
 #include "ipc_helper.h"
@@ -12,7 +13,7 @@ static void timer_on_tout(union Timer * const);
 
 struct Timer_Cbk_Class Timer_Cbk_Class = 
 {
-    {timer_cbk_delete, NULL}
+    {timer_cbk_delete, NULL},
     NULL,
     NULL
 };
@@ -37,8 +38,8 @@ void timer_delete(struct Object * const obj)
     union Timer * const this = (union Timer *)Object_Cast(&Timer_Class, obj);
     Isnt_Nullptr(this,);
     this->vtbl->stop(this);
-    _delete(this->cbk)
-    free(this->cbk)
+    _delete(this->cbk);
+    free(this->cbk);
     this->cbk = NULL;
 }
 
@@ -46,7 +47,7 @@ void timer_start(union Timer * const this)
 {
   if(this->is_active)
   {
-    this->cbk->vtbl->run_timer(this->cbk, this);
+    this->cbk->vtbl->start(this->cbk, this);
     this->is_active = true;
   }
 }
@@ -59,12 +60,12 @@ void timer_set_time(union Timer * const this, IPC_Clock_T const tout_ms, bool co
 
 void timer_reset(union Timer * const this)
 {
-  this->cbk->vtbl->run_timer(this->cbk, this);
+  this->cbk->vtbl->start(this->cbk, this);
 }
 
 void timer_stop(union Timer * const this)
 {
-  this->cbk->vtbl->stop_timer(this->cbk, this);
+  this->cbk->vtbl->stop(this->cbk, this);
   this->is_active = false;
 }
 

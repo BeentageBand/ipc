@@ -30,7 +30,7 @@ static bool ipc_helper_alloc_mutex(union IPC_Helper * const helper, union Mutex 
 static bool ipc_helper_alloc_semaphore(union IPC_Helper * const helper, union Semaphore * const semaphore,
                    uint8_t const value);
 static bool ipc_helper_alloc_conditional(union IPC_Helper * const helper, union Conditional * const conditional);
-static bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr);
+static bool ipc_helper_alloc_timer(union IPC_Helper * const helper, union Timer * const tmr);
 
 static int ipc_helper_thread_cmp(Thread_Ptr_T const * a, Thread_Ptr_T const *b);
 static int ipc_helper_mailbox_cmp(Mailbox_Ptr_T const * a,Mailbox_Ptr_T const *b);
@@ -135,7 +135,7 @@ bool ipc_helper_alloc_conditional(union IPC_Helper * const helper, union Conditi
 }
 
 
-bool ipc_helper_alloc_timer(union ipc_helper * const helper, union timer * const tmr)
+bool ipc_helper_alloc_timer(union IPC_Helper * const helper, union Timer * const tmr)
 {
   bool rc = false;
   Dbg_Warn("%s is not implemented", __func__);

@@ -42,6 +42,7 @@ typedef struct Thread_Class
    struct Class Class;
    void (* _private run)(union Thread * const);
    void (* _private wait)(union Thread * const, IPC_Clock_T const);
+   void (* _private ready)(union Thread * const);
    void (* _private join)(union Thread * const, IPC_Clock_T const);
    void (* _private runnable)(union Thread * const);
 }Thread_Class_T;

@@ -5,6 +5,7 @@
 #define IPC_MAILBOX_LOCK_MS (200)
 
 #include "dbg_log.h"
+#include "ipc_helper.h"
 #include "mailbox.h"
 
 #define CQueue_Params Mail
@@ -12,8 +13,8 @@
 #undef CQueue_Params
 
 static void mailbox_cbk_delete(struct Object * const obj);
-static bool mailbox_cbk_register_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox);
-static bool mailbox_cbk_unregister_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox);
+static bool mailbox_cbk_register_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox);
+static bool mailbox_cbk_unregister_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox);
 
 static void mailbox_delete(struct Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
@@ -40,35 +41,35 @@ struct Mailbox_Class Mailbox_Class =
 static union Mailbox Mailbox = {NULL};
 static union Mailbox_Cbk Mailbox_Cbk = {NULL};
 
-void mailbox_cbk_delete(struct Object * const obj){}
+void mailbox_cbk_delete(struct Object * const obj)
 {
 }
 
-bool mailbox_cbk_register_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox)
+bool mailbox_cbk_register_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox)
 {
     Isnt_Nullptr(this, false);
-    IPC_Helper * const ipc_helper = IPC_get_instance();
+    union IPC_Helper * const ipc_helper = IPC_get_instance();
     Isnt_Nullptr(ipc_helper, false);
     union Mutex * mux = ipc_helper->single_mux;
     Isnt_Nullptr(mux, false);
-    if(!mux->vtbl->lock(200)) return false;
+    if(!mux->vtbl->lock(mux, 200)) return false;
     CSet_Mailbox_Ptr_T * mbx = ipc_helper->rmailboxes;
-    mbx->vtbl->insert(mbx, mailbox)
+    mbx->vtbl->insert(mbx, mailbox);
     mux->vtbl->unlock(mux);
     return NULL != IPC_Helper_find_mailbox(mailbox->tid);
 }
 
-bool mailbox_cbk_unregister_mbx(union POSIX_Mailbox * const this, union Mailbox * const mailbox)
+bool mailbox_cbk_unregister_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox)
 {
     Isnt_Nullptr(this, false);
-    IPC_Helper * const ipc_helper = IPC_get_instance();
+    union IPC_Helper * const ipc_helper = IPC_get_instance();
     Isnt_Nullptr(ipc_helper, false);
     union Mutex * mux = ipc_helper->single_mux;
     Isnt_Nullptr(mux, false);
 
-    if(!mux->vtbl->lock(200)) return false;
+    if(!mux->vtbl->lock(mux, 200)) return false;
     CSet_Mailbox_Ptr_T * mbx = ipc_helper->rmailboxes;
-    mbx->vtbl->erase(mbx, mailbox)
+    mbx->vtbl->erase(mbx, mailbox);
     mux->vtbl->unlock(mux);
     return NULL == IPC_Helper_find_mailbox(mailbox->tid);
 }
@@ -208,10 +209,6 @@ void Populate_Mailbox(union Mailbox * const this, IPC_TID_T const tid, union Mai
    if(NULL == Mailbox.vtbl)
    {
       Mailbox.vtbl = &Mailbox_Class;
-      Mailbox.cond = {NULL};
-      Mailbox.mux = {NULL};
-      Mailbox.mailbox = {NULL};
-      Mailbox.cbk = NULL;
    }
    memcpy(this, &Mailbox, sizeof(Mailbox));
    this->tid = tid;
