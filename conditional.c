@@ -6,11 +6,17 @@
 #include "conditional.h"
 #include "ipc_helper.h"
 
-
+static void conditional_cbk_delete(struct Object * const obj);
 static void conditional_delete(struct Object * const obj);
 static bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms);
 static bool_t conditional_signal(union Conditional * const this);
 
+struct Conditional_Cbk_Class Conditional_Cbk_Class = 
+{
+  {conditional_cbk_delete, NULL},
+  NULL,
+  NULL
+};
 struct Conditional_Class Conditional_Class =
     {
    {conditional_delete, NULL},
@@ -18,7 +24,11 @@ struct Conditional_Class Conditional_Class =
    conditional_signal
     };
 
+static union Conditional_Cbk Conditional_Cbk = {NULL};
 union Conditional Conditional = {NULL};
+
+void conditional_cbk_delete(struct Object * const obj)
+{}
 
 void conditional_delete(struct Object * const obj)
 {

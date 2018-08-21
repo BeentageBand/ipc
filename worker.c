@@ -79,8 +79,6 @@ void worker_runnable(union Thread * const super)
    
 
    this->vtbl->on_stop(this);
-
-   IPC_Unregister_Mailbox(&this->mailbox);
 }
 
 void worker_on_start(union Worker * const this){}

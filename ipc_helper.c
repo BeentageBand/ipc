@@ -178,7 +178,10 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
       IPC_Helper.rmailboxes = &Rmailboxes;
       IPC_Helper.single_mux = &Singleton_Mux;
     }
-  memcpy(this, &IPC_Helper, sizeof(IPC_Helper));
+    if(NULL == this->vtbl)
+    {
+      memcpy(this, &IPC_Helper, sizeof(IPC_Helper));
+    }
 }
 
 union Thread * IPC_Helper_find_thread(IPC_TID_T const thread)
