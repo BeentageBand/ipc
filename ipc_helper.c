@@ -21,7 +21,6 @@ static void ipc_helper_delete(struct Object * const obj);
 
 static IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper);
 static void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_ms);
-static bool ipc_helper_is_time_elapsed(union IPC_Helper * const helper, IPC_Clock_T const time_ms);
 
 static IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper);
 static bool ipc_helper_alloc_thread(union IPC_Helper * const helper, union Thread * const thread);
@@ -40,7 +39,6 @@ IPC_Helper_Class_T IPC_Helper_Class =
    { ipc_helper_delete, NULL},
    ipc_helper_time,
    ipc_helper_sleep,
-   ipc_helper_is_time_elapsed,
    ipc_helper_self_thread,
    
    ipc_helper_alloc_thread,
@@ -83,13 +81,6 @@ IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper)
 void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_ms)
 {
   Dbg_Warn("%s is not implemented", __func__);
-}
-
-bool ipc_helper_is_time_elapsed(union IPC_Helper * const helper, IPC_Clock_T const time_ms)
-{
-  bool  rc = true;
-  Dbg_Warn("%s is not implemented", __func__);
-  return rc;
 }
 
 IPC_TID_T ipc_helper_self_thread(union IPC_Helper * const helper)

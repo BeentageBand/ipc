@@ -47,7 +47,6 @@ typedef union IPC_Helper_Class
 
       IPC_Clock_T (* _private time)(union IPC_Helper * const);
       void (* _private sleep)(union IPC_Helper * const, IPC_Clock_T const);
-      bool (* _private is_time_elapsed)(union IPC_Helper * const, IPC_Clock_T const);
       
       IPC_TID_T (* _private self_thread)(union IPC_Helper * const);
 
