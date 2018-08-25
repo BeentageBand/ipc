@@ -2,6 +2,8 @@
 #define THREAD_H_
  
 #include "ipc_types.h"
+#include "conditional.h"
+#include "mutex.h"
 #include "sem.h"
 
 #ifdef __cplusplus
