@@ -135,9 +135,6 @@ bool ipc_helper_alloc_timer(union IPC_Helper * const helper, union Timer * const
 
 union IPC_Helper * IPC_get_instance(void)
 {
-  union IPC_Helper this;
-  Populate_IPC_Helper(&this);
-  IPC_Helper_Singleton = &IPC_Helper;
   return IPC_Helper_Singleton;
 }
 
@@ -168,9 +165,7 @@ void Populate_IPC_Helper(union IPC_Helper * const this)
 
       IPC_Helper.vtbl = &IPC_Helper_Class;
 
-      Populate_Mutex(&Singleton_Mux);
-
-      Populate_CSet_Cmp_Thread_Ptr(&Rthreads, Thread_Set, Num_Elems(Thread_Set),
+     Populate_CSet_Cmp_Thread_Ptr(&Rthreads, Thread_Set, Num_Elems(Thread_Set),
                (CSet_Cmp_T) ipc_helper_thread_cmp);
       Populate_CSet_Cmp_Mailbox_Ptr(&Rmailboxes, Mailbox_Set, Num_Elems(Mailbox_Set),
                 (CSet_Cmp_T) ipc_helper_mailbox_cmp);

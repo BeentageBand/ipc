@@ -44,6 +44,7 @@ void thread_delete(struct Object * const obj)
 
   if(this->cbk->vtbl->join_thread(this->cbk, this))
     {
+      this->cbk->vtbl->unregister_thread(this->cbk, this);
       _delete(this->cbk);
       free(this->cbk);
       this->cbk = NULL;
@@ -100,5 +101,6 @@ void Populate_Thread(union Thread * const this, IPC_TID_T const tid)
     {
       Populate_Mutex(&this->mux);
       Populate_Conditional(&this->cv, &this->mux);
+      this->cbk->vtbl->register_thread(this->cbk, this);
     }
 }
