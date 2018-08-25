@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+union Conditional;
 
 typedef union Conditional_Cbk
 {

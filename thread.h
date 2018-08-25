@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+union Thread;
 
 typedef union Thread_Cbk
 {

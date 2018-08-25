@@ -37,7 +37,7 @@ void timer_cbk_delete(struct Object * const obj){}
 
 void timer_delete(struct Object * const obj)
 {
-    union Timer * const this = (union Timer *)Object_Cast(&Timer_Class, obj);
+    union Timer * const this = (union Timer *)Object_Cast(&Timer_Class.Class, obj);
     Isnt_Nullptr(this,);
     this->vtbl->stop(this);
     _delete(this->cbk);

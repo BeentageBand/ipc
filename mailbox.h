@@ -13,6 +13,8 @@
 extern "C" {
 #endif
 
+union Mailbox;
+
 typedef union Mailbox_Cbk
 {
       struct Mailbox_Cbk_Class _private * _private vtbl;

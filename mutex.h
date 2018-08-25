@@ -7,7 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+union Mutex; 
 
 typedef union Mutex_Cbk
 {

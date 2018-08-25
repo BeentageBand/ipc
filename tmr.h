@@ -4,6 +4,8 @@
 #include "ipc_types.h"
 #include "cobject.h"
 
+union Timer;
+
 typedef union Timer_Cbk
 {
       struct Timer_Cbk_Class _private * _private vtbl;
@@ -13,8 +15,8 @@ typedef union Timer_Cbk
 typedef struct Timer_Cbk_Class
 {
       struct Class Class;
-      bool (* _private start)(union Helper * const, union Timer * const);
-      bool (* _private stop)(union Helper * const, union Timer * const);
+      bool (* _private start)(union Timer_Cbk * const, union Timer * const);
+      bool (* _private stop)(union Timer_Cbk * const, union Timer * const);
 }Timer_Cbk_Class_T;
 
 typedef union Timer
