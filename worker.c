@@ -65,17 +65,15 @@ void worker_runnable(union Thread * const super)
 
       if(IPC_Retrieve_Mail(&mail, 500))
       {
-      this->vtbl->on_mail(this, &mail);
-      if(WORKER_INT_SHUTDOWN_MID == mail.mid)
-      {
-         break;
-      }
-
-      IPC_Sleep(200);
+          this->vtbl->on_mail(this, &mail);
+          if(WORKER_INT_SHUTDOWN_MID == mail.mid)
+          {
+              break;
+          }
       }
    }
 
-   Dbg_Info("shutdown %d\n", super->tid);
+   Dbg_Warn("shutdown %d\n", super->tid);
    
 
    this->vtbl->on_stop(this);
