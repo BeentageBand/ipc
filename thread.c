@@ -32,7 +32,6 @@ struct Thread_Class Thread_Class =
    thread_runnable
 };
 
-static union Thread_Cbk Thread_Cbk = {NULL};
 static union Thread Thread = {NULL};
 
 void thread_cbk_delete(struct Object * const obj){}

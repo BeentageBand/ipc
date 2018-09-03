@@ -28,7 +28,6 @@ struct Mutex_Class Mutex_Class =
     };
 
 static union Mutex Mutex = {NULL};
-static union Mutex_Cbk Mutex_Cbk = {NULL};
 
 void mutex_cbk_delete(struct Object * const obj)
 {}
