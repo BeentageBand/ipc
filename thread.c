@@ -11,7 +11,8 @@ static void thread_cbk_delete(struct Object * const obj);
 static void thread_delete(struct Object * const obj);
 static void thread_run(union Thread * const this);
 static void thread_wait(union Thread * const this, IPC_Clock_T const wait_ms);
-static void thread_ready(union Thread * const);
+static void thread_ready(union Thread * const this);
+static void thread_join(union Thread * const this, IPC_Clock_T const wait_ms);
 static void thread_runnable(union Thread * const this);
 
 struct Thread_Cbk_Class Thread_Cbk_Class =
@@ -29,6 +30,7 @@ struct Thread_Class Thread_Class =
    thread_run,
    thread_wait,
    thread_ready,
+   thread_join,
    thread_runnable
 };
 
@@ -49,6 +51,12 @@ void thread_delete(struct Object * const obj)
       this->cbk = NULL;
     }
 }
+
+void thread_join(union Thread * const this, IPC_Clock_T const wait_ms)
+{
+    //TODO
+}
+
 
 void thread_run(union Thread * const this)
 {
