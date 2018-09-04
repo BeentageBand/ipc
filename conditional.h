@@ -17,7 +17,7 @@ typedef union Conditional_Cbk
 typedef struct Conditional_Cbk_Class
 {
       struct Class Class;
-      bool (* _private wait)(union Conditional_Cbk * const, union Conditional * const,
+      bool (* _private wait)(union Conditional_Cbk * const,
             union Conditional * const, IPC_Clock_T const wait_ms);
       bool (* _private post)(union Conditional_Cbk * const, union Conditional * const);
 }Conditional_Cbk_Class_T;

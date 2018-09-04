@@ -14,7 +14,7 @@ sem.h \
 thread.h \
 tmr.h \
 worker.h \
-worker_evs.h \
+worker_mailist.h \
 
 $(_flavor_)_$(_feat_)_lib_objs=\
 conditional \

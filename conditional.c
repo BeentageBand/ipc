@@ -24,7 +24,6 @@ struct Conditional_Class Conditional_Class =
    conditional_signal
     };
 
-static union Conditional_Cbk Conditional_Cbk = {NULL};
 union Conditional Conditional = {NULL};
 
 void conditional_cbk_delete(struct Object * const obj)
@@ -43,7 +42,7 @@ void conditional_delete(struct Object * const obj)
 
 bool_t conditional_wait(union Conditional * const this, IPC_Clock_T const wait_ms)
 {
-  return this->cbk->vtbl->wait(this->cbk, this, &this->mutex, wait_ms);
+  return this->cbk->vtbl->wait(this->cbk, this, wait_ms);
 }
 
 bool_t conditional_signal(union Conditional * const this)
