@@ -3,7 +3,6 @@ define $(_flavor_)_$(_feat_)_MAKE
 $(_flavor_)_$(_feat_)_inc=\
 conditional.h \
 ipc.h \
-ipc_types.h \
 ipc_helper.h \
 mail.h \
 mail_payload.h \
