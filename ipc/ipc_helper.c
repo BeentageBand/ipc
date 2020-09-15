@@ -1,7 +1,7 @@
 #define COBJECT_IMPLEMENTATION
 #define Dbg_FID DBG_FID_DEF(IPC_FID, 0)
 
-#include "dbg_log.h"
+#include "logger/logger.h.h"
 #include "ipc_helper.h"
 #include "ipc.h"
 

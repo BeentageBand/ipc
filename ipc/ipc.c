@@ -2,7 +2,7 @@
 #undef Dbg_FID
 #define Dbg_FID DBG_FID_DEF(IPC_FID,0)
 
-#include "dbg_log.h"
+#include "logger/logger.h"
 #include "ipc_set.h"
 #include "ipc.h"
 #include "ipc_helper.h"

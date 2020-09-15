@@ -4,7 +4,7 @@
 
 #define IPC_MAILBOX_LOCK_MS (200)
 
-#include "dbg_log.h"
+#include "logger/logger.h.h"
 #include "ipc_helper.h"
 #include "mailbox.h"
 

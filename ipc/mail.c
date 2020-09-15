@@ -1,7 +1,7 @@
 #define COBJECT_IMPLEMENTATION
 #define Dbg_FID DBG_FID_DEF(IPC_FID, 4)
 
-#include "dbg_log.h"
+#include "logger/logger.h.h"
 #include "mail.h"
 #include "mail_payload.h"
 

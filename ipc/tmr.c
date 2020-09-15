@@ -1,6 +1,6 @@
 #define COBJECT_IMPLEMENTATION
 #define Dbg_FID IPC_FID, 4
-#include "dbg_log.h"
+#include "logger/logger.h.h"
 #include "tmr.h"
 #include "ipc.h"
 #include "ipc_helper.h"
