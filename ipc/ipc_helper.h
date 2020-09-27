@@ -2,7 +2,7 @@
 #define IPC_HELPER_H_
  
 #include "conditional/conditional.h"
-#include "mailbox.h"
+#include "mailbox/mailbox.h"
 #include "mutex/mutex.h"
 #include "publisher.h"
 #include "semaphore/semaphore.h"

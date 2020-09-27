@@ -2,6 +2,8 @@
 <domain xmlns:xi="http://www.w3.org/2001/XInclude">
     <xi:include href="conditional/conditional.xml"/> 
     <xi:include href="mail/mail.xml"/> 
+    <xi:include href="mailbox/cbk.xml"/> 
+    <xi:include href="mailbox/mailbox.xml"/> 
     <xi:include href="mutex/mutex.xml"/> 
     <xi:include href="semaphore/semaphore.xml"/> 
     <xi:include href="timer/timer.xml"/> 

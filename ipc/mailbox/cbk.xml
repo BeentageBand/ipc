@@ -1,0 +1,8 @@
+<class name="MailboxCbk">
+    <method name="register_mbx" return_t="bool">
+        <param name="mailbox" type_t="union Mailbox *"/>
+    </method>
+    <method name="unregister_mbx" return_t="bool">
+        <param name="mailbox" type_t="union Mailbox *"/>
+    </method>
+</class>

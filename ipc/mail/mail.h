@@ -4,9 +4,9 @@
 #include "ipc/common/ipc_types.h"
 
 #ifdef MAIL_IMPLEMENTATION 
-#define _private
+#define mail_private
 #else
-#define _private const
+#define mail_private const
 #endif 
 
 #ifdef __cplusplus
@@ -20,11 +20,11 @@ union Mail_Class
     struct
     {
     struct Class Class;
-    void (* _private dump)(union Mail * const mail);
-void (* _private set_payload)(union Mail * const mail, void * const data, size_t const data_size);
-void (* _private set_mid)(union Mail * const mail, IPC_MID_T const mid);
-void (* _private set_sender)(union Mail * const mail, IPC_TID_T const sender);
-void (* _private set_receiver)(union Mail * const mail, IPC_TID_T const receiver);
+    void (* mail_private dump)(union Mail * const mail);
+void (* mail_private set_payload)(union Mail * const mail, void * const data, size_t const data_size);
+void (* mail_private set_mid)(union Mail * const mail, IPC_MID_T const mid);
+void (* mail_private set_sender)(union Mail * const mail, IPC_TID_T const sender);
+void (* mail_private set_receiver)(union Mail * const mail, IPC_TID_T const receiver);
 
     };
 };
@@ -35,11 +35,11 @@ union Mail
         struct
     {
       union Object Object;
-      IPC_MID_T _private mid;
-IPC_TID_T _private sender;
-IPC_TID_T _private receiver;
-void * _private payload;
-size_t _private pay_size;
+      IPC_MID_T mail_private mid;
+IPC_TID_T mail_private sender;
+IPC_TID_T mail_private receiver;
+void * mail_private payload;
+size_t mail_private pay_size;
 
     };
 };
@@ -61,5 +61,5 @@ extern void Mail_set_receiver(union Mail * const mail, IPC_TID_T const receiver)
 #ifdef __cplusplus
 }
 #endif
-#undef _private
+#undef mail_private
 #endif /*MAIL_H*/

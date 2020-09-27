@@ -5,9 +5,9 @@
 #include "ipc/common/ipc_types.h"
 
 #ifdef TIMER_IMPLEMENTATION 
-#define _private
+#define timer_private
 #else
-#define _private const
+#define timer_private const
 #endif 
 
 #ifdef __cplusplus
@@ -21,11 +21,11 @@ union Timer_Class
     struct
     {
     struct Class Class;
-    bool (* _private start)(union Timer * const timer);
-bool (* _private reset)(union Timer * const timer);
-bool (* _private stop)(union Timer * const timer);
-void (* _private on_timeout)(union Timer * const timer);
-bool (* _private set_time)(union Timer * const timer, IPC_Clock_T const ms);
+    bool (* timer_private start)(union Timer * const timer);
+bool (* timer_private reset)(union Timer * const timer);
+bool (* timer_private stop)(union Timer * const timer);
+void (* timer_private on_timeout)(union Timer * const timer);
+bool (* timer_private set_time)(union Timer * const timer, IPC_Clock_T const ms);
 
     };
 };
@@ -57,5 +57,5 @@ extern bool Timer_set_time(union Timer * const timer, IPC_Clock_T const ms);
 #ifdef __cplusplus
 }
 #endif
-#undef _private
+#undef timer_private
 #endif /*TIMER_H*/

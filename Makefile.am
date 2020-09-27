@@ -10,6 +10,12 @@ ipc/conditional/conditional-internal.h \
 ipc/mail/mail.c                        \
 ipc/mail/mail.h                        \
 ipc/mail/mail-internal.h               \
+ipc/mailbox/mailbox.c                  \
+ipc/mailbox/mailbox.h                  \
+ipc/mailbox/mailbox-internal.h         \
+ipc/mailbox/mailboxcbk.c               \
+ipc/mailbox/mailboxcbk.h               \
+ipc/mailbox/mailboxcbk-internal.h      \
 ipc/mutex/mutex.c                      \
 ipc/mutex/mutex.h                      \
 ipc/mutex/mutex-internal.h             \

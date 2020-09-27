@@ -4,9 +4,9 @@
 #include "ipc/common/ipc_types.h"
 
 #ifdef MUTEX_IMPLEMENTATION 
-#define _private
+#define mutex_private
 #else
-#define _private const
+#define mutex_private const
 #endif 
 
 #ifdef __cplusplus
@@ -20,8 +20,8 @@ union Mutex_Class
     struct
     {
     struct Class Class;
-    bool (* _private unlock)(union Mutex * const mutex);
-bool (* _private lock)(union Mutex * const mutex, IPC_Clock_T const ms);
+    bool (* mutex_private unlock)(union Mutex * const mutex);
+bool (* mutex_private lock)(union Mutex * const mutex, IPC_Clock_T const ms);
 
     };
 };
@@ -47,5 +47,5 @@ extern bool Mutex_lock(union Mutex * const mutex, IPC_Clock_T const ms);
 #ifdef __cplusplus
 }
 #endif
-#undef _private
+#undef mutex_private
 #endif /*MUTEX_H*/

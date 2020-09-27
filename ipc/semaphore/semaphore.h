@@ -5,9 +5,9 @@
 #include "ipc/common/ipc_types.h"
 
 #ifdef SEMAPHORE_IMPLEMENTATION 
-#define _private
+#define semaphore_private
 #else
-#define _private const
+#define semaphore_private const
 #endif 
 
 #ifdef __cplusplus
@@ -21,8 +21,8 @@ union Semaphore_Class
     struct
     {
       struct Class Class;
-      bool (* _private wait)(union Semaphore * const semaphore, IPC_Clock_T const ms);
-      bool (* _private post)(union Semaphore * const semaphore);
+      bool (* semaphore_private wait)(union Semaphore * const semaphore, IPC_Clock_T const ms);
+      bool (* semaphore_private post)(union Semaphore * const semaphore);
 
     };
 };
@@ -48,5 +48,5 @@ extern bool Semaphore_post(union Semaphore * const semaphore);
 #ifdef __cplusplus
 }
 #endif
-#undef _private
+#undef semaphore_private
 #endif /*SEMAPHORE_H*/

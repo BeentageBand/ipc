@@ -4,9 +4,9 @@
 #include "ipc/common/ipc_types.h"
 
 #ifdef CONDITIONAL_IMPLEMENTATION 
-#define _private
+#define conditional_private
 #else
-#define _private const
+#define conditional_private const
 #endif 
 
 #ifdef __cplusplus
@@ -20,8 +20,8 @@ union Conditional_Class
     struct
     {
     struct Class Class;
-    bool (* _private signal)(union Conditional * const conditional);
-bool (* _private wait)(union Conditional * const conditional, IPC_Clock_T const ms);
+    bool (* conditional_private signal)(union Conditional * const conditional);
+bool (* conditional_private wait)(union Conditional * const conditional, IPC_Clock_T const ms);
 
     };
 };
@@ -32,7 +32,7 @@ union Conditional
         struct
     {
       union Object Object;
-      union Mutex * _private mutex;
+      union Mutex * conditional_private mutex;
 
     };
 };
@@ -48,5 +48,5 @@ extern bool Conditional_wait(union Conditional * const conditional, IPC_Clock_T 
 #ifdef __cplusplus
 }
 #endif
-#undef _private
+#undef conditional_private
 #endif /*CONDITIONAL_H*/

@@ -90,7 +90,7 @@ bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
     bool rc = false;
     do
     {
-        rc = mbx->vtbl->retrieve(mbx, mail);
+        rc = Mailbox_retrieve(mbx, mail);
         IPC_Sleep(50);// do something else
     } while( !rc && !IPC_Clock_Elapsed(timestamp));
 
@@ -132,7 +132,7 @@ void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const p
         Dbg_Info("%s: thread %d send mail %d to thread %d", __func__, IPC_Self(), mid, rcv_tid);
         union Mail mail;
         Mail_populate(&mail, mid, IPC_Self(), rcv_tid, payload, pay_size);
-        mbx->vtbl->push_mail(mbx, &mail);
+        Mailbox_push_mail(mbx, &mail);
     }
 }
 

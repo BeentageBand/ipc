@@ -1,0 +1,17 @@
+<class name="Mailbox">
+    <member name="tid" type_t="IPC_TID_T"/>
+    <member name="mailbox" type_t="union CQueue_Mail_T"/>
+    <member name="mutex" type_t="union Mutex *"/>
+    <member name="conditional" type_t="union Conditional *"/>
+    <member name="cbk" type_t="union MailboxCbk *"/>
+    <method name="push_mail" return_t="bool">
+        <param name="mail" type_t="union Mail *"/>
+    </method>
+    <method name="retrieve" return_t="bool">
+        <param name="mail" type_t="union Mail *"/>
+    </method>
+    <method name="retrieve_only" return_t="bool">
+        <param name="mail" type_t="union Mail *"/>
+        <param name="mid" type_t="IPC_MID_T"/>
+    </method>
+</class>
