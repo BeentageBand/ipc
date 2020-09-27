@@ -1,9 +1,21 @@
  ACLOCAL_AMFLAGS = -I m4 --install
 # Libraries
 lib_LTLIBRARIES = libipc-1.0.la
-libipc_1_0_la_SOURCES = ipc/ipc.c  ipc/ipc.h 
+libipc_1_0_la_SOURCES = \
+ipc/ipc.c                          \
+ipc/ipc.h                          \
+ipc/semaphore/semaphore.c          \
+ipc/semaphore/semaphore.h          \
+ipc/semaphore/semaphore-internal.h \
+ipc/timer/timer.c                  \
+ipc/timer/timer.h                  \
+ipc/timer/timer-internal.h
+
 libipc_1_0_la_LDFLAGS = -version-info 0:0:0
-nobase_include_HEADERS = ipc/ipc.h 
+nobase_include_HEADERS = \
+ipc/ipc.h                 \
+ipc/semaphore/semaphore.h \
+ipc/timer/timer.h
 
 # Unit Tests
 check_PROGRAMS = unittest

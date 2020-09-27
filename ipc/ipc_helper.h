@@ -5,10 +5,16 @@
 #include "mailbox.h"
 #include "mutex.h"
 #include "publisher.h"
-#include "sem.h"
+#include "semaphore/semaphore.h"
 #include "thread.h"
-#include "tmr.h"
+#include "timer/timer.h"
  
+#ifdef COBJECT_IMPLEMENTATION
+#define _private 
+#else
+#define _private  const
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -75,3 +81,4 @@ extern union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox);
 }
 #endif
 #endif /*IPC_HELPER_H_*/
+#undef _private

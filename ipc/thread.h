@@ -4,8 +4,13 @@
 #include "common/ipc_types.h"
 #include "conditional.h"
 #include "mutex.h"
-#include "sem.h"
+#include "semaphore/semaphore.h"
 
+#ifdef COBJECT_IMPLEMENTATION
+#define _private 
+#else
+#define _private  const
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -61,3 +66,4 @@ extern IPC_TID_T Thread_self(void);
 }
 #endif
 #endif /*THREAD_H_*/
+#undef _private
