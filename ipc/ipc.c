@@ -23,7 +23,7 @@ IPC_TID_T IPC_Self(void)
     union IPC_Helper * ipc_help = IPC_get_instance();
     IPC_TID_T self_id  = ipc_help->vtbl->self_thread(ipc_help);
     union Thread * found = IPC_Helper_find_thread(self_id);
-    return (NULL != found)? found->tid : IPC_MAX_TID;
+    return (NULL != found)? found->id : IPC_MAX_TID;
 }
 
 void IPC_Ready(void)
@@ -35,18 +35,18 @@ void IPC_Ready(void)
     }
 }
 
-void IPC_Wait(IPC_TID_T const tid, IPC_Clock_T const wait_ms)
+void IPC_Wait(IPC_TID_T const id, IPC_Clock_T const wait_ms)
 {
-    union Thread * found = IPC_Helper_find_thread(tid);
+    union Thread * found = IPC_Helper_find_thread(id);
     if(NULL != found)
     {
         found->vtbl->wait(found, wait_ms);
     }
 }
 
-void IPC_Run(IPC_TID_T const tid)
+void IPC_Run(IPC_TID_T const id)
 {
-    union Thread * found = IPC_Helper_find_thread(tid);
+    union Thread * found = IPC_Helper_find_thread(id);
     if(NULL != found)
     {
         found->vtbl->run(found);

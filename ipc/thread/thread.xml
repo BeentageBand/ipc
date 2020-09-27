@@ -1,0 +1,17 @@
+<class name="Thread">
+    <member name="cbk" type_t="union ThreadCbk * "/>
+    <member name="ready" type_t="bool"/>
+    <member name="id" type_t="IPC_TID_T"/>
+    <member name="mux" type_t="union Mutex *"/>
+    <member name="cv" type_t="union Conditional *"/>
+    <method name="run"/>
+    <method name="ready"/>
+    <method name="wait">
+      <param name="wait_ms" type_t="IPC_Clock_T"/>
+    </method>
+    <method name="joinable" return_t="bool"/>
+    <method name="join">
+      <param name="wait_ms" type_t="IPC_Clock_T"/>
+    </method>
+    <method name="runnable"/>
+</class>

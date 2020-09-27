@@ -3,7 +3,7 @@
 
 #include "common/ipc_types.h"
 #include "mailbox/mailbox.h"
-#include "thread.h"
+#include "thread/thread.h"
 
 #define IPC_Send_Self(mid, payload, pay_size) IPC_Send(IPC_Self(), mid, payload, pay_size)
 

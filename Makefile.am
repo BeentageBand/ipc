@@ -22,6 +22,12 @@ ipc/mutex/mutex-internal.h             \
 ipc/semaphore/semaphore.c              \
 ipc/semaphore/semaphore.h              \
 ipc/semaphore/semaphore-internal.h     \
+ipc/thread/thread.c                    \
+ipc/thread/thread.h                    \
+ipc/thread/thread-internal.h           \
+ipc/thread/threadcbk.c                 \
+ipc/thread/threadcbk.h                 \
+ipc/thread/threadcbk-internal.h        \
 ipc/timer/timer.c                      \
 ipc/timer/timer.h                      \
 ipc/timer/timer-internal.h
@@ -30,9 +36,13 @@ libipc_1_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
 ipc/conditional/conditional.h \
-ipc/mutex/mutex.h             \
 ipc/mail/mail.h               \
+ipc/mailbox/mailbox.h         \
+ipc/mailbox/mailboxcbk.h      \
+ipc/mutex/mutex.h             \
 ipc/semaphore/semaphore.h     \
+ipc/thread/thread.h           \
+ipc/thread/threadcbk.h        \
 ipc/timer/timer.h
 
 # Unit Tests

@@ -46,7 +46,9 @@ size_t mail_private pay_size;
 
 extern union Mail_Class * Get_Mail_Class(void);
 
-extern void Mail_populate(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const sender, IPC_TID_T const receiver, void * const payload, size_t const pay_size);
+extern void Mail_populate(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const sender, IPC_TID_T const receiver, 
+                          void * const payload, 
+                          size_t const pay_size);
 
 extern void Mail_dump(union Mail * const mail);
 

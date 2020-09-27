@@ -6,13 +6,13 @@
 #include "mutex/mutex.h"
 #include "publisher.h"
 #include "semaphore/semaphore.h"
-#include "thread.h"
+#include "ipc/thread/thread.h"
 #include "timer/timer.h"
  
 #ifdef COBJECT_IMPLEMENTATION
-#define _private 
+#define ipc_helper_private 
 #else
-#define _private  const
+#define ipc_helper_private  const
 #endif
 
 #ifdef __cplusplus
@@ -33,14 +33,14 @@ typedef union Mailbox * Mailbox_Ptr_T;
 
 typedef union IPC_Helper
 {
-   union IPC_Helper_Class _private * _private vtbl;
+   union IPC_Helper_Class ipc_helper_private * ipc_helper_private vtbl;
    struct
    {
       union Object Object;
-      union IPC_Helper _private * _private next;
-      union CSet_Thread_Ptr_T _private *  _private rthreads;
-      union CSet_Mailbox_Ptr_T _private * _private rmailboxes;
-      union Mutex _private * _private single_mux;
+      union IPC_Helper ipc_helper_private * ipc_helper_private next;
+      union CSet_Thread_Ptr_T ipc_helper_private *  ipc_helper_private rthreads;
+      union CSet_Mailbox_Ptr_T ipc_helper_private * ipc_helper_private rmailboxes;
+      union Mutex ipc_helper_private * ipc_helper_private single_mux;
    };
 }IPC_Helper_T;
 
@@ -51,21 +51,21 @@ typedef union IPC_Helper_Class
    {
       struct Class Class;
 
-      IPC_Clock_T (* _private time)(union IPC_Helper * const);
-      void (* _private sleep)(union IPC_Helper * const, IPC_Clock_T const);
+      IPC_Clock_T (* ipc_helper_private time)(union IPC_Helper * const);
+      void (* ipc_helper_private sleep)(union IPC_Helper * const, IPC_Clock_T const);
       
-      IPC_TID_T (* _private self_thread)(union IPC_Helper * const);
+      IPC_TID_T (* ipc_helper_private self_thread)(union IPC_Helper * const);
 
-      bool (* _private alloc_thread)(union IPC_Helper * const, union Thread * const);
-      bool (* _private alloc_mailbox)(union IPC_Helper * const, union Mailbox * const);
-      bool (* _private alloc_mutex)(union IPC_Helper * const, union Mutex * const);
-      bool (* _private alloc_semaphore)(union IPC_Helper * const, union Semaphore * const, uint8_t const);
-      bool (* _private alloc_conditional)(union IPC_Helper * const, union Conditional * const);
-      bool (* _private alloc_timer)(union IPC_Helper * const, union Timer * const);
+      bool (* ipc_helper_private alloc_thread)(union IPC_Helper * const, union Thread * const);
+      bool (* ipc_helper_private alloc_mailbox)(union IPC_Helper * const, union Mailbox * const);
+      bool (* ipc_helper_private alloc_mutex)(union IPC_Helper * const, union Mutex * const);
+      bool (* ipc_helper_private alloc_semaphore)(union IPC_Helper * const, union Semaphore * const, uint8_t const);
+      bool (* ipc_helper_private alloc_conditional)(union IPC_Helper * const, union Conditional * const);
+      bool (* ipc_helper_private alloc_timer)(union IPC_Helper * const, union Timer * const);
    };
 }IPC_Helper_Class_T;
 
-extern IPC_Helper_Class_T _private IPC_Helper_Class;
+extern IPC_Helper_Class_T ipc_helper_private IPC_Helper_Class;
 
 extern union IPC_Helper * IPC_get_instance(void);
 
@@ -81,4 +81,4 @@ extern union Mailbox * IPC_Helper_find_mailbox(IPC_TID_T const mailbox);
 }
 #endif
 #endif /*IPC_HELPER_H_*/
-#undef _private
+#undef ipc_helper_private

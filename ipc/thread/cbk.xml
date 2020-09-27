@@ -1,0 +1,14 @@
+<class name="ThreadCbk">
+    <method name="register_thread" return_t="bool">
+        <param name="thread" type_t="union Thread *"/>
+    </method>
+    <method name="run_thread" return_t="bool">
+        <param name="thread" type_t="union Thread *"/>
+    </method>
+    <method name="join_thread" return_t="bool">
+        <param name="thread" type_t="union Thread *"/>
+    </method>
+    <method name="unregister_thread" return_t="bool">
+        <param name="thread" type_t="union Thread *"/>
+    </method>
+</class>
