@@ -9,13 +9,17 @@ ipc/semaphore/semaphore.h          \
 ipc/semaphore/semaphore-internal.h \
 ipc/timer/timer.c                  \
 ipc/timer/timer.h                  \
-ipc/timer/timer-internal.h
+ipc/timer/timer-internal.h         \
+ipc/mail/mail.c                    \
+ipc/mail/mail.h                    \
+ipc/mail/mail-internal.h
 
 libipc_1_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                 \
 ipc/semaphore/semaphore.h \
-ipc/timer/timer.h
+ipc/timer/timer.h         \
+ipc/mail/mail.h
 
 # Unit Tests
 check_PROGRAMS = unittest

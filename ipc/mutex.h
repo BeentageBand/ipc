@@ -3,6 +3,12 @@
 
 #include "common/ipc_types.h"
 #include "cobject/cobject.h"
+
+#ifdef COBJECT_IMPLEMENTATION
+#define _private
+#else
+#define _private const
+#endif
  
 #ifdef __cplusplus
 extern "C" {
@@ -47,4 +53,5 @@ extern void Populate_Mutex(union Mutex * const mux);
 #ifdef __cplusplus
 }
 #endif
+#undef _private
 #endif /*MUTEX_H_*/

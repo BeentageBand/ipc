@@ -65,5 +65,5 @@ extern IPC_TID_T Thread_self(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /*THREAD_H_*/
 #undef _private
+#endif /*THREAD_H_*/

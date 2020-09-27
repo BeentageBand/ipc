@@ -2,6 +2,12 @@
 #define CONDITIONAL_H_
  
 #include "mutex.h"
+
+#ifdef COBJECT_IMPLEMENTATION
+#define _private
+#else
+#define _private const
+#endif
  
 #ifdef __cplusplus
 extern "C" {
@@ -48,4 +54,5 @@ extern void Populate_Conditional(union Conditional * const conditional, union Mu
 #ifdef __cplusplus
 }
 #endif
+#undef _private
 #endif /*CONDITIONAL_H_*/

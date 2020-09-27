@@ -2,20 +2,26 @@
 #define MAILBOX_H_
  
 #include "conditional.h"
-#include "mail.h"
+#include "ipc/mail/mail.h"
 #include "mutex.h"
 
+#ifdef COBJECT_IMPLEMENTATION
+#define _private
+#else
+#define _private const
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef union Mail Mail_T;
 
 #define CQueue_Params Mail_T
 #include "ctemplate-lib/queue/cqueue-template.h"
 #undef CQueue_Params
 
 union Mailbox;
-
 typedef union Mailbox_Cbk
 {
       struct Mailbox_Cbk_Class _private * _private vtbl;
@@ -60,5 +66,5 @@ extern void Populate_Mailbox(union Mailbox * const mbx, IPC_TID_T const tid, uni
 #ifdef __cplusplus
 }
 #endif
- 
+#undef _private 
 #endif /*MAILBOX_H_*/

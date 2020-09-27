@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <domain xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="mail/mail.xml"/> 
     <xi:include href="semaphore/semaphore.xml"/> 
     <xi:include href="timer/timer.xml"/> 
 </domain>

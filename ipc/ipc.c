@@ -131,7 +131,7 @@ void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const p
     {
         Dbg_Info("%s: thread %d send mail %d to thread %d", __func__, IPC_Self(), mid, rcv_tid);
         union Mail mail;
-        Populate_Mail(&mail, mid, IPC_Self(), rcv_tid, payload, pay_size);
+        Mail_populate(&mail, mid, IPC_Self(), rcv_tid, payload, pay_size);
         mbx->vtbl->push_mail(mbx, &mail);
     }
 }
