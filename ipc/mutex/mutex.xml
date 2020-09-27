@@ -1,0 +1,6 @@
+<class name="Mutex">
+    <method name="unlock" return_t="bool"/>
+    <method name="lock" return_t="bool">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+</class>

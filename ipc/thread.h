@@ -2,8 +2,8 @@
 #define THREAD_H_
  
 #include "common/ipc_types.h"
-#include "conditional.h"
-#include "mutex.h"
+#include "conditional/conditional.h"
+#include "mutex/mutex.h"
 #include "semaphore/semaphore.h"
 
 #ifdef COBJECT_IMPLEMENTATION

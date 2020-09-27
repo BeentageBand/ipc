@@ -1,9 +1,9 @@
 #ifndef MAILBOX_H_
 #define MAILBOX_H_
  
-#include "conditional.h"
+#include "conditional/conditional.h"
 #include "ipc/mail/mail.h"
-#include "mutex.h"
+#include "mutex/mutex.h"
 
 #ifdef COBJECT_IMPLEMENTATION
 #define _private

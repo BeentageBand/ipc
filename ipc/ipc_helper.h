@@ -1,9 +1,9 @@
 #ifndef IPC_HELPER_H_
 #define IPC_HELPER_H_
  
-#include "conditional.h"
+#include "conditional/conditional.h"
 #include "mailbox.h"
-#include "mutex.h"
+#include "mutex/mutex.h"
 #include "publisher.h"
 #include "semaphore/semaphore.h"
 #include "thread.h"
