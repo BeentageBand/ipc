@@ -1,7 +1,7 @@
 #ifndef THREAD_H_
 #define THREAD_H_
  
-#include "ipc_types.h"
+#include "common/ipc_types.h"
 #include "conditional.h"
 #include "mutex.h"
 #include "sem.h"
@@ -14,7 +14,7 @@ union Thread;
 typedef union Thread_Cbk
 {
       struct Thread_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Thread_Cbk_T;
 
 typedef struct Thread_Cbk_Class
@@ -31,7 +31,7 @@ typedef union Thread
    struct Thread_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       IPC_TID_T _private tid;
       bool _private ready;
       union Conditional _private cv;

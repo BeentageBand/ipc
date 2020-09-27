@@ -4,19 +4,19 @@
 
 #define IPC_MAILBOX_LOCK_MS (200)
 
-#include "logger/logger.h.h"
+#include "logger/logger.h"
 #include "ipc_helper.h"
 #include "mailbox.h"
 
 #define CQueue_Params Mail
-#include "cqueue.c"
+#include "ctemplate-lib/queue/cqueue-int-template.h"
 #undef CQueue_Params
 
-static void mailbox_cbk_delete(struct Object * const obj);
+static void mailbox_cbk_delete(union Object * const obj);
 static bool mailbox_cbk_register_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox);
 static bool mailbox_cbk_unregister_mbx(union Mailbox_Cbk * const this, union Mailbox * const mailbox);
 
-static void mailbox_delete(struct Object * const obj);
+static void mailbox_delete(union Object * const obj);
 static void mailbox_push_mail(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve(union Mailbox * const this, union Mail * mail);
 static bool mailbox_retrieve_only(union Mailbox * const this, union Mail * mail, IPC_MID_T const mid);
@@ -40,7 +40,7 @@ struct Mailbox_Class Mailbox_Class =
 
 static union Mailbox Mailbox = {NULL};
 
-void mailbox_cbk_delete(struct Object * const obj)
+void mailbox_cbk_delete(union Object * const obj)
 {
 }
 
@@ -73,7 +73,7 @@ bool mailbox_cbk_unregister_mbx(union Mailbox_Cbk * const this, union Mailbox * 
     return NULL == IPC_Helper_find_mailbox(mailbox->tid);
 }
 
-void mailbox_delete(struct Object * const obj)
+void mailbox_delete(union Object * const obj)
 {
     union  Mailbox * const this = (Mailbox_T *) Object_Cast(&Mailbox_Class.Class, obj);
     Isnt_Nullptr(this,);

@@ -15,14 +15,14 @@ extern "C" {
 
 typedef union Thread * Thread_Ptr_T;
 
-#define CSet_Params Thread_Ptr
-#include "cset.h"
+#define CSet_Params Thread_Ptr_T
+#include "ctemplate-lib/set/cset-template.h"
 #undef CSet_Params
  
 typedef union Mailbox * Mailbox_Ptr_T;
 
-#define CSet_Params Mailbox_Ptr
-#include "cset.h"
+#define CSet_Params Mailbox_Ptr_T
+#include "ctemplate-lib/set/cset-template.h"
 #undef CSet_Params
 
 typedef union IPC_Helper
@@ -30,10 +30,10 @@ typedef union IPC_Helper
    union IPC_Helper_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       union IPC_Helper _private * _private next;
-      CSet_Thread_Ptr_T _private *  _private rthreads;
-      CSet_Mailbox_Ptr_T _private * _private rmailboxes;
+      union CSet_Thread_Ptr_T _private *  _private rthreads;
+      union CSet_Mailbox_Ptr_T _private * _private rmailboxes;
       union Mutex _private * _private single_mux;
    };
 }IPC_Helper_T;

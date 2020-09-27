@@ -1,7 +1,7 @@
 #ifndef IPC_H_
 #define IPC_H_
 
-#include "ipc_types.h"
+#include "common/ipc_types.h"
 #include "mailbox.h"
 #include "thread.h"
 

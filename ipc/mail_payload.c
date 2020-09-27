@@ -15,7 +15,7 @@ union Payload
 {
         struct
         {
-                struct Object Object;
+                union Object Object;
                 uint8_t * ptr;
                 size_t block_size;
                 size_t i;
@@ -25,7 +25,7 @@ union Payload
 };
 
 
-static void payload_delete(struct Object * const obj);
+static void payload_delete(union Object * const obj);
 static size_t payload_alloc(union Payload * const this, void ** const payload);
 static size_t payload_free(union Payload * const this, void ** const payload);
 
@@ -65,7 +65,7 @@ static union Payload Lil_Pool =
 }};
 
 
-void payload_delete(struct Object * const obj)
+void payload_delete(union Object * const obj)
 {
 
 }

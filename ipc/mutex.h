@@ -1,8 +1,8 @@
 #ifndef MUTEX_H_
 #define MUTEX_H_
 
-#include "ipc_types.h"
-#include "cobject.h"
+#include "common/ipc_types.h"
+#include "cobject/cobject.h"
  
 #ifdef __cplusplus
 extern "C" {
@@ -12,7 +12,7 @@ union Mutex;
 typedef union Mutex_Cbk
 {
       struct Mutex_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Mutex_Cbk_T;
 
 typedef struct Mutex_Cbk_Class
@@ -27,7 +27,7 @@ typedef union Mutex
    struct Mutex_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       union Mutex_Cbk _private * _private cbk;
    };
 }Mutex_T;
@@ -35,8 +35,8 @@ typedef union Mutex
 typedef struct Mutex_Class
 {
       struct Class Class;
-      bool_t (* _private lock)(union Mutex * const, IPC_Clock_T const);
-      bool_t (* _private unlock)(union Mutex * const);
+      bool (* _private lock)(union Mutex * const, IPC_Clock_T const);
+      bool (* _private unlock)(union Mutex * const);
 }Mutex_Class_T;
 
 extern Mutex_Class_T _private Mutex_Class;

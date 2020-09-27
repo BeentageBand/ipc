@@ -1,8 +1,8 @@
 #ifndef SEMAPHORE_H_
 #define SEMAPHORE_H_
 
-#include "ipc_types.h"
-#include "cobject.h"
+#include "common/ipc_types.h"
+#include "cobject/cobject.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,7 +12,7 @@ union Semaphore;
 typedef union Semaphore_Cbk
 {
       struct Semaphore_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Semaphore_Cbk_T;
 
 typedef struct Semaphore_Cbk_Class
@@ -27,7 +27,7 @@ typedef union Semaphore
    struct Semaphore_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       union Semaphore_Cbk _private * _private cbk;
    };
 }Semaphore_T;

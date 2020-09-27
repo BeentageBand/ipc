@@ -5,20 +5,21 @@
 #include "mail.h"
 #include "mutex.h"
 
-#define CQueue_Params Mail
-#include "cqueue.h"
-#undef CQueue_Params
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define CQueue_Params Mail_T
+#include "ctemplate-lib/queue/cqueue-template.h"
+#undef CQueue_Params
 
 union Mailbox;
 
 typedef union Mailbox_Cbk
 {
       struct Mailbox_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Mailbox_Cbk_T;
 
 typedef struct Mailbox_Cbk_Class 
@@ -33,9 +34,9 @@ typedef union Mailbox
    struct Mailbox_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       IPC_TID_T _private tid;
-      CQueue_Mail_T _private mailbox;
+      union CQueue_Mail_T _private mailbox;
       union Mail _private picked_mail;
       union Mutex _private mux;
       union Conditional _private cond;

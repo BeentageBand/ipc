@@ -1,12 +1,22 @@
 #define COBJECT_IMPLEMENTATION
-#undef Dbg_FID
-#define Dbg_FID DBG_FID_DEF(IPC_FID,0)
 
 #include "logger/logger.h"
-#include "ipc_set.h"
 #include "ipc.h"
 #include "ipc_helper.h"
 
+#define Dbg_Fault(...) Logger_error(get_logger(), __VA_ARGS__)
+#define Dbg_Info(...)  Logger_info(get_logger(), __VA_ARGS__)
+
+static union Logger * get_logger(void);
+
+union Logger * get_logger(void)
+{
+    static union Logger log = {NULL};
+    if (NULL == log.vtbl) {
+        Logger_populate(&log, NULL, NULL);
+    }
+    return &log;
+}
 
 IPC_TID_T IPC_Self(void)
 {

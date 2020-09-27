@@ -1,23 +1,23 @@
 #define COBJECT_IMPLEMENTATION
 #define Dbg_FID DBG_FID_DEF(IPC_FID, 0)
 
-#include "logger/logger.h.h"
+#include "logger/logger.h"
 #include "ipc_helper.h"
 #include "ipc.h"
 
 typedef union Thread * Thread_Ptr_T;
 
 #define CSet_Params Thread_Ptr
-#include "cset.c"
+#include "ctemplate-lib/set/cset-int-template.h"
 #undef CSet_Params
 
 typedef union Mailbox * Mailbox_Ptr_T;
 
 #define CSet_Params Mailbox_Ptr
-#include "cset.c"
+#include "ctemplate-lib/set/cset-int-template.h"
 #undef CSet_Params
 
-static void ipc_helper_delete(struct Object * const obj);
+static void ipc_helper_delete(union Object * const obj);
 
 static IPC_Clock_T ipc_helper_time(union IPC_Helper * const helper);
 static void ipc_helper_sleep(union IPC_Helper * const helper, IPC_Clock_T const sleep_ms);
@@ -57,7 +57,7 @@ static Thread_Ptr_T Thread_Set[IPC_MAX_TID] = {0};
 static Mailbox_Ptr_T Mailbox_Set[IPC_MAX_TID] = {0};
 static union Mutex Singleton_Mux = {NULL};
 
-void ipc_helper_delete(struct Object * const obj)
+void ipc_helper_delete(union Object * const obj)
 {
   IPC_Helper_T * this = (IPC_Helper_T *) Object_Cast(&IPC_Helper_Class.Class, obj);
 

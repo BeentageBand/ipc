@@ -1,8 +1,8 @@
 #ifndef MAIL_H_
 #define MAIL_H_
  
-#include "ipc_types.h"
-#include "cobject.h"
+#include "common/ipc_types.h"
+#include "cobject/cobject.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,7 +13,7 @@ typedef union Mail
    struct Mail_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       IPC_TID_T _private sender;
       IPC_TID_T _private receiver;
       IPC_MID_T _private mid;

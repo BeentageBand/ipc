@@ -7,9 +7,9 @@
 #include "ipc_helper.h"
 
 
-static void semaphore_cbk_delete(struct Object * obj);
+static void semaphore_cbk_delete(union Object * obj);
 
-static void semaphore_delete(struct Object * obj);
+static void semaphore_delete(union Object * obj);
 static bool semaphore_wait(union Semaphore * const this, IPC_Clock_T const wait_ms);
 static bool semaphore_post(union Semaphore * const this);
 
@@ -30,9 +30,9 @@ struct Semaphore_Class Semaphore_Class =
 static union Semaphore Semaphore = {NULL};
 static union Semaphore_Cbk Semaphore_Cbk = {NULL};
 
-void semaphore_cbk_delete(struct Object * obj){}
+void semaphore_cbk_delete(union Object * obj){}
 
-void semaphore_delete(struct Object * obj)
+void semaphore_delete(union Object * obj)
 {
     union Semaphore * const this = (Semaphore_T *)Object_Cast(&Semaphore_Class.Class, obj);
     Isnt_Nullptr(this, );

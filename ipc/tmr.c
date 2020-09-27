@@ -5,8 +5,8 @@
 #include "ipc.h"
 #include "ipc_helper.h"
 
-static void timer_cbk_delete(struct Object * const obj);
-static void timer_delete(struct Object * const obj);
+static void timer_cbk_delete(union Object * const obj);
+static void timer_delete(union Object * const obj);
 static void timer_start(union Timer * const);
 static void timer_set_time(union Timer * const, IPC_Clock_T const, bool const);
 static void timer_reset(union Timer * const);
@@ -33,9 +33,9 @@ struct Timer_Class Timer_Class =
 static union Timer Timer = {NULL};
 static union Timer_Cbk Timer_Cbk = {NULL};
 
-void timer_cbk_delete(struct Object * const obj){}
+void timer_cbk_delete(union Object * const obj){}
 
-void timer_delete(struct Object * const obj)
+void timer_delete(union Object * const obj)
 {
     union Timer * const this = (union Timer *)Object_Cast(&Timer_Class.Class, obj);
     Isnt_Nullptr(this,);

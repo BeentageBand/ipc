@@ -1,7 +1,7 @@
 #ifndef MAIL_PAYLOAD_H_
 #define MAIL_PAYLOAD_H_
 
-#include "ipc_types.h"
+#include "common/ipc_types.h"
 
 #ifdef __cplusplus
 extern "C" {

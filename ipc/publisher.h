@@ -1,7 +1,7 @@
 #ifndef PUBLISHER_H_
 #define PUBLISHER_H_
 
-#include "ipc_types.h"
+#include "common/ipc_types.h"
 
 #ifdef __cplusplus
 extern "C" {

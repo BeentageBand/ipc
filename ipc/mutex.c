@@ -7,9 +7,9 @@
 #include "mutex.h"
 #include "ipc_helper.h"
 
-static void mutex_cbk_delete(struct Object * const obj);
+static void mutex_cbk_delete(union Object * const obj);
 
-static void mutex_delete(struct Object * const obj);
+static void mutex_delete(union Object * const obj);
 static bool_t mutex_lock(union Mutex * const this, IPC_Clock_T const wait_ms);
 static bool_t mutex_unlock(union Mutex * const this);
 
@@ -29,10 +29,10 @@ struct Mutex_Class Mutex_Class =
 
 static union Mutex Mutex = {NULL};
 
-void mutex_cbk_delete(struct Object * const obj)
+void mutex_cbk_delete(union Object * const obj)
 {}
 
-void mutex_delete(struct Object * const obj)
+void mutex_delete(union Object * const obj)
 {
   union Mutex * const this = (Mutex_T *)Object_Cast(&Mutex_Class.Class, obj);
   Isnt_Nullptr(this,);

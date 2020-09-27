@@ -1,15 +1,15 @@
 #ifndef TMR_H_
 #define TMR_H_
 
-#include "ipc_types.h"
-#include "cobject.h"
+#include "common/ipc_types.h"
+#include "cobject/cobject.h"
 
 union Timer;
 
 typedef union Timer_Cbk
 {
       struct Timer_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Timer_Cbk_T;
 
 typedef struct Timer_Cbk_Class
@@ -24,7 +24,7 @@ typedef union Timer
     struct Timer_Class _private * _private vtbl;
     struct
     {
-        struct Object Object;
+        union Object Object;
         IPC_MID_T _private mid;
         IPC_TID_T _private tid;
         union Timer_Cbk _private * _private cbk;

@@ -6,9 +6,9 @@
 #include "thread.h"
 #include "sem.h"
 
-static void thread_cbk_delete(struct Object * const obj);
+static void thread_cbk_delete(union Object * const obj);
 
-static void thread_delete(struct Object * const obj);
+static void thread_delete(union Object * const obj);
 static void thread_run(union Thread * const this);
 static void thread_wait(union Thread * const this, IPC_Clock_T const wait_ms);
 static void thread_ready(union Thread * const this);
@@ -36,9 +36,9 @@ struct Thread_Class Thread_Class =
 
 static union Thread Thread = {NULL};
 
-void thread_cbk_delete(struct Object * const obj){}
+void thread_cbk_delete(union Object * const obj){}
 
-void thread_delete(struct Object * const obj)
+void thread_delete(union Object * const obj)
 {
   Thread_T * const this = (Thread_T *)Object_Cast(&Thread_Class.Class, obj);
   Isnt_Nullptr(this,);

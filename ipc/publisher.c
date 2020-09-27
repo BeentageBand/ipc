@@ -6,8 +6,8 @@
 #include "ipc.h"
 
 #define CSet_Params IPC_TID
-#include "cset.h"
-#include "cset.c"
+#include "ctemplate-lib/set/cset-template.h"
+#include "ctemplate-lib/set/cset-int-template.h"
 #undef CSet_Params
 
 typedef CSet_IPC_TID_T Subscription_List_T;

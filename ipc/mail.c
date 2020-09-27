@@ -5,7 +5,7 @@
 #include "mail.h"
 #include "mail_payload.h"
 
-static void mail_delete(struct Object * const obj);
+static void mail_delete(union Object * const obj);
 static void mail_set_payload(union Mail * const this, void const * const payload, size_t const pay_size);
 static void mail_dump(union Mail * const this);
 static void mail_set_mid(union Mail * const this,IPC_MID_T const);
@@ -24,7 +24,7 @@ struct Mail_Class Mail_Class =
 
 static union Mail Mail = {NULL};
 
-void mail_delete(struct Object * const object)
+void mail_delete(union Object * const object)
 {
   union Mail * const this = (union Mail * ) Object_Cast(&Mail_Class.Class, object);
 

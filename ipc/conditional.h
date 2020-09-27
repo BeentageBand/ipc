@@ -11,7 +11,7 @@ union Conditional;
 typedef union Conditional_Cbk
 {
       struct Conditional_Cbk_Class _private * _private vtbl;
-      struct Object Object;
+      union Object Object;
 }Conditional_Cbk_T;
 
 typedef struct Conditional_Cbk_Class
@@ -27,7 +27,7 @@ typedef union Conditional
    struct Conditional_Class _private * _private vtbl;
    struct
    {
-      struct Object Object;
+      union Object Object;
       union Mutex _private * _private mutex;
       union Conditional_Cbk _private * _private cbk;
    };
@@ -36,8 +36,8 @@ typedef union Conditional
 typedef struct Conditional_Class
 {
       struct Class Class;
-      bool_t (* _private wait)(union Conditional * const, IPC_Clock_T const);
-      bool_t (* _private signal)(union Conditional * const);
+      bool (* _private wait)(union Conditional * const, IPC_Clock_T const);
+      bool (* _private signal)(union Conditional * const);
 }Conditional_Class_T;
 
 extern Conditional_Class_T _private Conditional_Class;

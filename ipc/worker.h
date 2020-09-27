@@ -11,7 +11,7 @@ extern "C" {
 typedef union Worker
 {
    union Worker_Class _private * _private vtbl;
-   struct Object Object;
+   union Object Object;
    struct
    {
       union Thread Thread;

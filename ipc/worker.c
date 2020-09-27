@@ -7,7 +7,7 @@
 #include "worker.h"
 
 #define WORKER_SHUTDOWN_TOUT_MS (5000U)
-static void worker_delete(struct Object * const obj);
+static void worker_delete(union Object * const obj);
 static void worker_runnable(union Thread * const super);
 static void worker_on_start(union Worker * const this);
 static void worker_on_mail(union Worker * const this, union Mail * const mail);
@@ -32,7 +32,7 @@ union Worker_Class Worker_Class =
 static union Worker Worker = {NULL};
 
 
-void worker_delete(struct Object * const obj)
+void worker_delete(union Object * const obj)
 {
    union Worker * const this = (union Worker *) Object_Cast(&Worker_Class.Class, obj);
    Isnt_Nullptr(this,);
