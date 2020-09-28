@@ -7,6 +7,9 @@ ipc/ipc.h                                       \
 ipc/conditional/conditional.c                   \
 ipc/conditional/conditional.h                   \
 ipc/conditional/conditional-internal.h          \
+ipc/factory/ipcfactory.c                        \
+ipc/factory/ipcfactory.h                        \
+ipc/factory/ipcfactory-internal.h               \
 ipc/mail/mail.c                                 \
 ipc/mail/mail.h                                 \
 ipc/mail/mail-internal.h                        \
@@ -44,6 +47,7 @@ libipc_1_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
 ipc/conditional/conditional.h \
+ipc/factory/ipcfactory.h      \
 ipc/mail/mail.h               \
 ipc/mailbox/mailbox.h         \
 ipc/mailbox/mailboxcbk.h      \

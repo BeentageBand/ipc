@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <domain xmlns:xi="http://www.w3.org/2001/XInclude">
     <xi:include href="conditional/conditional.xml"/> 
+    <xi:include href="factory/ipcfactory.xml"/> 
     <xi:include href="mail/mail.xml"/> 
     <xi:include href="mailbox/cbk.xml"/> 
     <xi:include href="mailbox/mailbox.xml"/> 
