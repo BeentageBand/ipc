@@ -15,17 +15,28 @@
 #include "ctemplate-lib/hashmap/chashmap-int-template.h"
 #undef CHashMap_Params 
 
-#define Dbg_Info(...) Log_info(get_log(), __VA_ARGS__)
+#define Dbg_Info(...) Logger_info(get_log(), __VA_ARGS__)
 
+static union Logger * get_log(void);
 static void publishersingleton_delete(union PublisherSingleton * const publishersingleton);
 static bool publishersingleton_subscribe(union PublisherSingleton * const publishersingleton, IPC_TID_T const mbx, IPC_MID_T const mid);
 static bool publishersingleton_unsubscribe(union PublisherSingleton * const publishersingleton, IPC_TID_T const mbx, IPC_MID_T const mid);
 static void publishersingleton_publish(union PublisherSingleton * const publishersingleton, IPC_MID_T const mid, void * const payload, size_t const pay_size);
 static void publisher_dump_subscription(Subscription_List_T * const subscription, IPC_TID_T const tid);
 
+union Logger * get_log(void)
+{
+    static union Logger log = {NULL};
+    if (NULL == log.vtbl)
+    {
+        Logger_populate(&log, NULL, NULL);
+    }
+    return &log;
+}
+
 void publishersingleton_override(union PublisherSingleton_Class * const clazz)
 {
-    clazz->Class.destroy = publishersingleton_delete;
+    clazz->Class.destroy = (Class_Delete_T) publishersingleton_delete;
     clazz->publish = publishersingleton_publish;
     clazz->subscribe = publishersingleton_subscribe;
     clazz->unsubscribe = publishersingleton_unsubscribe;

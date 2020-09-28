@@ -10,7 +10,7 @@ typedef union CHashSet_IPC_TID_T * Subscription_T;
 
 #define CHashMap_Params IPC_MID_T, Subscription_T
 #include "ctemplate-lib/hashmap/chashmap-template.h"
-#define CHashMap_Params
+#undef CHashMap_Params
 
 typedef union CHashMap_IPC_MID_T_Subscription_T Subscription_List_T;
 

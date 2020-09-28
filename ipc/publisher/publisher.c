@@ -3,7 +3,7 @@
 #include "logger/logger.h"
 #include "ipc/ipc.h"
 
-#define Dbg_Warn(...) Log_warn(get_log(), __VA_ARGS__)
+#define Dbg_Warn(...) Logger_warn(get_log(), __VA_ARGS__)
 
 static union Logger * get_log(void);
 static union PublisherSingleton * get_publisher(void);
