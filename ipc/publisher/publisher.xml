@@ -1,0 +1,17 @@
+<class name="PublisherSingleton">
+  <member name="subscription_list" type_t="Subscription_List_T"/>
+  <method name="subscribe" return_t="bool">
+    <param name="mbx" type_t="IPC_TID_T"/>
+    <param name="mid" type_t="IPC_MID_T"/>
+  </method>
+  <method name="unsubscribe" return_t="bool">
+    <param name="mbx" type_t="IPC_TID_T"/>
+    <param name="mid" type_t="IPC_MID_T"/>
+  </method>
+  <method name="publish">
+    <param name="mid" type_t="IPC_MID_T"/>
+    <param name="payload" type_t="void *"/>
+    <param name="pay_size" type_t="size_t"/>
+  </method>
+
+</class>

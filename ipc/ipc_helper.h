@@ -4,7 +4,7 @@
 #include "conditional/conditional.h"
 #include "mailbox/mailbox.h"
 #include "mutex/mutex.h"
-#include "publisher.h"
+#include "publisher/publisher.h"
 #include "semaphore/semaphore.h"
 #include "ipc/thread/thread.h"
 #include "timer/timer.h"

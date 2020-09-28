@@ -2,34 +2,39 @@
 # Libraries
 lib_LTLIBRARIES = libipc-1.0.la
 libipc_1_0_la_SOURCES = \
-ipc/ipc.c                              \
-ipc/ipc.h                              \
-ipc/conditional/conditional.c          \
-ipc/conditional/conditional.h          \
-ipc/conditional/conditional-internal.h \
-ipc/mail/mail.c                        \
-ipc/mail/mail.h                        \
-ipc/mail/mail-internal.h               \
-ipc/mailbox/mailbox.c                  \
-ipc/mailbox/mailbox.h                  \
-ipc/mailbox/mailbox-internal.h         \
-ipc/mailbox/mailboxcbk.c               \
-ipc/mailbox/mailboxcbk.h               \
-ipc/mailbox/mailboxcbk-internal.h      \
-ipc/mutex/mutex.c                      \
-ipc/mutex/mutex.h                      \
-ipc/mutex/mutex-internal.h             \
-ipc/semaphore/semaphore.c              \
-ipc/semaphore/semaphore.h              \
-ipc/semaphore/semaphore-internal.h     \
-ipc/thread/thread.c                    \
-ipc/thread/thread.h                    \
-ipc/thread/thread-internal.h           \
-ipc/thread/threadcbk.c                 \
-ipc/thread/threadcbk.h                 \
-ipc/thread/threadcbk-internal.h        \
-ipc/timer/timer.c                      \
-ipc/timer/timer.h                      \
+ipc/ipc.c                                       \
+ipc/ipc.h                                       \
+ipc/conditional/conditional.c                   \
+ipc/conditional/conditional.h                   \
+ipc/conditional/conditional-internal.h          \
+ipc/mail/mail.c                                 \
+ipc/mail/mail.h                                 \
+ipc/mail/mail-internal.h                        \
+ipc/mailbox/mailbox.c                           \
+ipc/mailbox/mailbox.h                           \
+ipc/mailbox/mailbox-internal.h                  \
+ipc/mailbox/mailboxcbk.c                        \
+ipc/mailbox/mailboxcbk.h                        \
+ipc/mailbox/mailboxcbk-internal.h               \
+ipc/mutex/mutex.c                               \
+ipc/mutex/mutex.h                               \
+ipc/mutex/mutex-internal.h                      \
+ipc/publisher/publisher.c                       \
+ipc/publisher/publisher.h                       \
+ipc/publisher/publishersingleton.c              \
+ipc/publisher/publishersingleton.h              \
+ipc/publisher/publishersingleton-internal.h     \
+ipc/semaphore/semaphore.c                       \
+ipc/semaphore/semaphore.h                       \
+ipc/semaphore/semaphore-internal.h              \
+ipc/thread/thread.c                             \
+ipc/thread/thread.h                             \
+ipc/thread/thread-internal.h                    \
+ipc/thread/threadcbk.c                          \
+ipc/thread/threadcbk.h                          \
+ipc/thread/threadcbk-internal.h                 \
+ipc/timer/timer.c                               \
+ipc/timer/timer.h                               \
 ipc/timer/timer-internal.h
 
 libipc_1_0_la_LDFLAGS = -version-info 0:0:0
@@ -40,6 +45,7 @@ ipc/mail/mail.h               \
 ipc/mailbox/mailbox.h         \
 ipc/mailbox/mailboxcbk.h      \
 ipc/mutex/mutex.h             \
+ipc/publisher/publisher.h     \
 ipc/semaphore/semaphore.h     \
 ipc/thread/thread.h           \
 ipc/thread/threadcbk.h        \
