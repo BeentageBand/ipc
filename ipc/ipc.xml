@@ -10,4 +10,5 @@
     <xi:include href="timer/timer.xml"/> 
     <xi:include href="thread/thread.xml"/>
     <xi:include href="thread/cbk.xml"/>
+    <xi:include href="worker/worker.xml"/>
 </domain>

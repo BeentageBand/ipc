@@ -35,7 +35,10 @@ ipc/thread/threadcbk.h                          \
 ipc/thread/threadcbk-internal.h                 \
 ipc/timer/timer.c                               \
 ipc/timer/timer.h                               \
-ipc/timer/timer-internal.h
+ipc/timer/timer-internal.h                      \
+ipc/worker/worker.c                             \
+ipc/worker/worker.h                             \
+ipc/worker/worker-internal.h
 
 libipc_1_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
@@ -49,7 +52,8 @@ ipc/publisher/publisher.h     \
 ipc/semaphore/semaphore.h     \
 ipc/thread/thread.h           \
 ipc/thread/threadcbk.h        \
-ipc/timer/timer.h
+ipc/timer/timer.h             \
+ipc/worker/worker.h
 
 # Unit Tests
 check_PROGRAMS = unittest
