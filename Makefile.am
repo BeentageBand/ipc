@@ -4,12 +4,18 @@ lib_LTLIBRARIES = libipc-1.0.la
 libipc_1_0_la_SOURCES = \
 ipc/ipc.c                                       \
 ipc/ipc.h                                       \
+ipc/clock/clock.c                               \
+ipc/clock/clock.h                               \
+ipc/clock/clock-internal.h                      \
 ipc/conditional/conditional.c                   \
 ipc/conditional/conditional.h                   \
 ipc/conditional/conditional-internal.h          \
 ipc/factory/ipcfactory.c                        \
 ipc/factory/ipcfactory.h                        \
 ipc/factory/ipcfactory-internal.h               \
+ipc/helper/ipchelper.c                          \
+ipc/helper/ipchelper.h                          \
+ipc/helper/ipchelper-internal.h                 \
 ipc/mail/mail.c                                 \
 ipc/mail/mail.h                                 \
 ipc/mail/mail-internal.h                        \
@@ -47,7 +53,9 @@ libipc_1_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
 ipc/conditional/conditional.h \
+ipc/clock/clock.h             \
 ipc/factory/ipcfactory.h      \
+ipc/helper/ipchelper.h        \
 ipc/mail/mail.h               \
 ipc/mailbox/mailbox.h         \
 ipc/mailbox/mailboxcbk.h      \

@@ -1,0 +1,10 @@
+<class name="Clock">
+    <member name="factory" type_t="union IPCFactory *"/>
+    <method name="clock" return_t="IPC_Clock_T"/>
+    <method name="is_clock_elapsed" return_t="bool">
+        <param name="clock_ms" type_t="IPC_Clock_T"/>
+    </method>
+    <method name="sleep">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+</class>

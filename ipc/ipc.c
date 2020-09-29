@@ -1,13 +1,14 @@
-#define COBJECT_IMPLEMENTATION
-
-#include "logger/logger.h"
 #include "ipc.h"
-#include "ipc_helper.h"
+#include "logger/logger.h"
+#include "helper/ipchelper.h"
+#include "publisher/publisher.h"
 
 #define Dbg_Fault(...) Logger_error(get_logger(), __VA_ARGS__)
 #define Dbg_Info(...)  Logger_info(get_logger(), __VA_ARGS__)
 
 static union Logger * get_logger(void);
+static union IPCHelper * get_helper(void);
+static union IPCClock * get_clock(void);
 
 union Logger * get_logger(void)
 {
@@ -18,38 +19,52 @@ union Logger * get_logger(void)
     return &log;
 }
 
+union IPCHelper * get_helper(void)
+{
+    static union IPCHelper helper = {NULL};
+
+    if (NULL == helper.vtbl)
+    {
+        IPCHelper_populate(&helper, NULL);
+    }
+    return &helper;
+}
+
 IPC_TID_T IPC_Self(void)
 {
-    union IPC_Helper * ipc_help = IPC_get_instance();
-    IPC_TID_T self_id  = ipc_help->vtbl->self_thread(ipc_help);
-    union Thread * found = IPC_Helper_find_thread(self_id);
-    return (NULL != found)? found->id : IPC_MAX_TID;
+    union IPCHelper * helper = get_helper();
+    IPC_TID_T self_id  = 0; // Implement self id
+    union Thread * found = IPCHelper_find_thread(helper, self_id);
+    return (NULL != found)? found->id : -1;
 }
 
 void IPC_Ready(void)
 {
-    union Thread * found = IPC_Helper_find_thread(IPC_Self());
+    union IPCHelper * helper = get_helper();
+    union Thread * found = IPCHelper_find_thread(get_helper(), IPC_Self());
     if(NULL != found)
     {
-        found->vtbl->ready(found);
+        Thread_ready(found);
     }
 }
 
 void IPC_Wait(IPC_TID_T const id, IPC_Clock_T const wait_ms)
 {
-    union Thread * found = IPC_Helper_find_thread(id);
+    union IPCHelper * helper = get_helper();
+    union Thread * found = IPCHelper_find_thread(helper, id);
     if(NULL != found)
     {
-        found->vtbl->wait(found, wait_ms);
+        Thread_wait(found, wait_ms);
     }
 }
 
 void IPC_Run(IPC_TID_T const id)
 {
-    union Thread * found = IPC_Helper_find_thread(id);
+    union IPCHelper * helper = get_helper();
+    union Thread * found = IPCHelper_find_thread(helper, id);
     if(NULL != found)
     {
-        found->vtbl->run(found);
+        Thread_run(found);
     }
 }
 
@@ -77,8 +92,9 @@ bool IPC_Unsubscribe_Mailist(IPC_MID_T const * const mailist, uint32_t const mai
 
 bool IPC_Retrieve_Mail(union Mail * const mail, IPC_Clock_T const wait_ms)
 {
+    union IPCHelper * helper = get_helper();
     IPC_TID_T const self = IPC_Self();
-    union Mailbox * const mbx = IPC_Helper_find_mailbox(self);
+    union Mailbox * const mbx = IPCHelper_find_mailbox(helper, self);
     IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
 
     if(!mbx)
@@ -101,7 +117,8 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
         uint32_t const mailist_size)
 {
     IPC_TID_T const self = IPC_Self();
-    union Mailbox * const mbx = IPC_Helper_find_mailbox(self);
+    union IPCHelper * helper = get_helper();
+    union Mailbox * const mbx = IPCHelper_find_mailbox(helper, self);
     IPC_Clock_T timestamp = IPC_Clock() + wait_ms;
 
     if(!mbx)
@@ -116,7 +133,7 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
     {
         for(; i < mailist_size && !rc; ++i)
         {
-            rc = mbx->vtbl->retrieve_only(mbx, mail, mailist[i]);
+            rc = Mailbox_retrieve_only(mbx, mail, mailist[i]);
         }
         IPC_Sleep(50);// do something else
     } while( !rc && !IPC_Clock_Elapsed(timestamp));
@@ -126,7 +143,8 @@ bool IPC_Retrieve_From_Mailist(union Mail * const mail, IPC_Clock_T const wait_m
 
 void IPC_Send(IPC_TID_T const rcv_tid, IPC_MID_T const mid, void const * const payload, size_t const pay_size)
 {
-    union Mailbox * const mbx = IPC_Helper_find_mailbox(rcv_tid);
+    union IPCHelper * helper = get_helper();
+    union Mailbox * const mbx = IPCHelper_find_mailbox(helper, rcv_tid);
     if(NULL != mbx)
     {
         Dbg_Info("%s: thread %d send mail %d to thread %d", __func__, IPC_Self(), mid, rcv_tid);
@@ -143,8 +161,8 @@ void IPC_Publish(IPC_MID_T const mid, void const * const payload, size_t const p
 
 IPC_Clock_T IPC_Clock(void)
 {
-    union IPC_Helper * ipc_help = IPC_get_instance();
-    return ipc_help->vtbl->time(ipc_help);
+    union IPCHelper * helper= get_helper();
+    return Clock_clock(helper->clock);
 }
 
 
@@ -155,6 +173,6 @@ bool IPC_Clock_Elapsed(IPC_Clock_T const clock_ms)
 
 void IPC_Sleep(IPC_Clock_T const ms)
 {
-    union IPC_Helper * ipc_help = IPC_get_instance();
-    ipc_help->vtbl->sleep(ipc_help, ms);
+    union IPCHelper * helper = get_helper();
+    Clock_sleep(helper->clock, ms);
 }

@@ -14,34 +14,39 @@ union IPCFactory_Class * Get_IPCFactory_Class(void)
   ipcfactory_override(&clazz);
   return &clazz;
 }
-void IPCFactory_alloc_conditional(union IPCFactory * const ipcfactory)
+union Conditional* IPCFactory_alloc_conditional(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_conditional(ipcfactory);
 }
 
-void IPCFactory_alloc_mailboxcbk(union IPCFactory * const ipcfactory)
+union MailboxCbk * IPCFactory_alloc_mailboxcbk(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_mailboxcbk(ipcfactory);
 }
 
-void IPCFactory_alloc_mutex(union IPCFactory * const ipcfactory)
+union Mutex * IPCFactory_alloc_mutex(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_mutex(ipcfactory);
 }
 
-void IPCFactory_alloc_semaphore(union IPCFactory * const ipcfactory)
+union Semaphore * IPCFactory_alloc_semaphore(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_semaphore(ipcfactory);
 }
 
-void IPCFactory_alloc_threadcbk(union IPCFactory * const ipcfactory)
+union ThreadCbk * IPCFactory_alloc_threadcbk(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_threadcbk(ipcfactory);
 }
 
-void IPCFactory_alloc_timer(union IPCFactory * const ipcfactory)
+union Timer * IPCFactory_alloc_timer(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_timer(ipcfactory);
+}
+
+union Clock * IPCFactory_alloc_clock(union IPCFactory * const ipcfactory)
+{
+  return ipcfactory->vtbl->alloc_clock(ipcfactory);
 }
 
 

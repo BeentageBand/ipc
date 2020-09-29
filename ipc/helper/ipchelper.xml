@@ -1,0 +1,30 @@
+<class name="IPCHelper">
+  <member name="next" type_t="union IPCHelper *"/>
+  <member name="factory" type_t="union IPCFactory *"/>
+  <member name="threadpool" type_t="ThreadPool_T"/>
+  <member name="mailboxpool" type_t="MailboxPool_T"/>
+  <member name="mux" type_t="union Mutex *"/>
+  <member name="clock" type_t="union Clock *"/>
+  <method name="get_factory" return_t="union IPCFactory *"/>
+  <method name="append">
+    <param name="helper" type_t="union IPCHelper *"/>
+  </method>
+  <method name="register_mbx" return_t="bool">
+    <param name="mbx" type_t="union Mailbox *"/>
+  </method>
+  <method name="register_thread" return_t="bool">
+    <param name="thread" type_t="union Thread *"/>
+  </method>
+  <method name="unregister_mbx" return_t="bool">
+    <param name="mbx" type_t="union Mailbox *"/>
+  </method>
+  <method name="unregister_thread" return_t="bool">
+    <param name="thread" type_t="union Thread *"/>
+  </method>
+  <method name="find_thread" return_t="union Thread *">
+    <param name="tid" type_t="IPC_TID_T"/>
+  </method>
+  <method name="find_mailbox" return_t="union Mailbox *">
+    <param name="tid" type_t="IPC_MID_T"/>
+  </method>
+</class>
