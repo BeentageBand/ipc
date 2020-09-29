@@ -1,0 +1,7 @@
+<class name="Conditional">
+    <member name="mutex" type_t="union Mutex *"/>
+    <method name="signal" return_t="bool"/>
+    <method name="wait" return_t="bool">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+</class>

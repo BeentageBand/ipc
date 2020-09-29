@@ -1,0 +1,21 @@
+<class name="Mail">
+    <member name="mid" type_t="IPC_MID_T"/>
+    <member name="sender" type_t="IPC_TID_T"/>
+    <member name="receiver" type_t="IPC_TID_T"/>
+    <member name="payload" type_t="void *"/>
+    <member name="pay_size" type_t="size_t"/>
+    <method name="dump"/>
+    <method name="set_payload">
+        <param name="data" type_t="void *"/>
+        <param name="data_size" type_t="size_t"/>
+    </method>
+    <method name="set_mid">
+        <param name="mid" type_t="IPC_MID_T"/>
+    </method>
+    <method name="set_sender">
+        <param name="sender" type_t="IPC_TID_T"/>
+    </method>
+    <method name="set_receiver">
+        <param name="receiver" type_t="IPC_TID_T"/>
+    </method>
+</class>

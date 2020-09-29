@@ -1,0 +1,10 @@
+<class name="Worker" isa="Thread">
+    <member name="mailbox" type_t="union Mailbox *"/>
+    <member name="shutdown_mid" type_t="IPC_MID_T"/>
+    <method name="on_loop"/>
+    <method name="on_start"/>
+    <method name="on_stop"/>
+    <method name="on_mail">
+      <param name="mail" type_t="union Mail *"/>
+    </method>
+</class>

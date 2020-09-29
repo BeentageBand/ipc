@@ -1,0 +1,9 @@
+<class name="Timer">
+    <method name="start" return_t="bool"/>
+    <method name="reset" return_t="bool"/>
+    <method name="stop" return_t="bool"/>
+    <method name="on_timeout"/>
+    <method name="set_time" return_t="bool">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+</class>

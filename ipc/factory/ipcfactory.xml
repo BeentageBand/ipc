@@ -1,0 +1,9 @@
+<class name="IPCFactory">
+  <method name="alloc_conditional" return_t="union Conditional*"/>
+  <method name="alloc_mailboxcbk" return_t="union MailboxCbk *"/>
+  <method name="alloc_mutex" return_t="union Mutex *"/>
+  <method name="alloc_semaphore" return_t="union Semaphore *"/>
+  <method name="alloc_threadcbk" return_t="union ThreadCbk *"/>
+  <method name="alloc_timer" return_t="union Timer *"/>
+  <method name="alloc_clock" return_t="union Clock *"/>
+</class>

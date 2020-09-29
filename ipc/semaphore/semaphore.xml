@@ -1,0 +1,6 @@
+<class name="Semaphore">
+    <method name="wait" return_t="bool">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+    <method name="post" return_t="bool"/>
+</class>

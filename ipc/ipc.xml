@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<domain xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="conditional/conditional.xml"/> 
+    <xi:include href="clock/clock.xml"/> 
+    <xi:include href="factory/ipcfactory.xml"/> 
+    <xi:include href="helper/ipchelper.xml"/> 
+    <xi:include href="mail/mail.xml"/> 
+    <xi:include href="mailbox/cbk.xml"/> 
+    <xi:include href="mailbox/mailbox.xml"/> 
+    <xi:include href="mutex/mutex.xml"/> 
+    <xi:include href="publisher/publisher.xml"/> 
+    <xi:include href="semaphore/semaphore.xml"/> 
+    <xi:include href="timer/timer.xml"/> 
+    <xi:include href="thread/thread.xml"/>
+    <xi:include href="thread/cbk.xml"/>
+    <xi:include href="worker/worker.xml"/>
+</domain>
