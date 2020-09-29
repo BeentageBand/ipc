@@ -65,7 +65,7 @@ void worker_runnable(union Worker * const worker)
    Worker_on_stop(worker);
 }
 
-void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk, bool const ready, 
+void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk,
     IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv, 
     union Mailbox * const mailbox, IPC_MID_T const shutdown_mid)
 {

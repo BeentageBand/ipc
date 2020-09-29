@@ -69,7 +69,12 @@ ipc/worker/worker.h
 
 # Unit Tests
 check_PROGRAMS = unittest
-unittest_SOURCES = 
+unittest_SOURCES = \
+tst/mailist.h                                \
+tst/ipcgtestworker/ipcgtestworker.c          \
+tst/ipcgtestworker/ipcgtestworker.h          \
+tst/ipcgtestworker/ipcgtestworker-internal.h \
+tst/ipcgtestworker/ipcgtestworker_mailist.h
 
 unittest_CPPFLAGS = $(libgmock_main_CFLAGS)
 unittest_LDADD = $(lib_LTLIBRARIES) $(libgmock_main_LIBS)

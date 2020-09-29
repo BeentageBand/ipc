@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+/**
 enum IPC_MID
 {
    IPC_PBC_BEGIN_MID = 0,
@@ -22,15 +23,18 @@ enum IPC_MID
    IPC_INT_END_MID,
    IPC_MAX_MID = IPC_INT_END_MID
 };
+**/
 
 typedef uint32_t IPC_MID_T;
 
+/**
 enum IPC_TID
 {
    IPC_MAIN_TID = 0,
    //IPC_THREAD_LIST(IPC_ENUM)
    IPC_MAX_TID
 };
+**/
 
 typedef uint32_t IPC_TID_T;
 
