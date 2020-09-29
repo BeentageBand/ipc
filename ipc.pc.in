@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: interprocess communication wrapper.
+URL: https://github.com/BeentageBand/ipc.git
+Version: @PACKAGE_VERSION@
+Requires: @IPC_PKG_REQ@
+
+Cflags: -I${includedir}
+Libs: -L${libdir} -lipc-@PACKAGE_VERSION_MAJOR@.@PACKAGE_VERSION_MINOR@.@PACKAGE_VERSION_MICRO@

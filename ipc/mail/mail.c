@@ -25,8 +25,9 @@ void mail_delete(union Mail * const mail)
   mail->pay_size = 0;
 }
 
-void Populate_Mail(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const sender,
-         IPC_TID_T const receiver, void const * const payload, size_t const pay_size)
+void Mail_populate(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const sender, IPC_TID_T const receiver, 
+                          void * const payload, 
+                          size_t const pay_size)
 {
   Object_populate(&mail->Object, &Get_Formatter_Class()->Class);
   mail->sender = sender;

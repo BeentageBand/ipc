@@ -60,6 +60,7 @@ dkms.conf
 .deps
 .libs
 *.m4
+*.pc
 autom4te.cache
 build-aux
 config.*

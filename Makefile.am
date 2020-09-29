@@ -1,7 +1,7 @@
  ACLOCAL_AMFLAGS = -I m4 --install
 # Libraries
-lib_LTLIBRARIES = libipc-1.0.la
-libipc_1_0_la_SOURCES = \
+lib_LTLIBRARIES = libipc-1.0.0.la
+libipc_1_0_0_la_SOURCES = \
 ipc/ipc.c                                       \
 ipc/ipc.h                                       \
 ipc/clock/clock.c                               \
@@ -49,7 +49,7 @@ ipc/worker/worker.c                             \
 ipc/worker/worker.h                             \
 ipc/worker/worker-internal.h
 
-libipc_1_0_la_LDFLAGS = -version-info 0:0:0
+libipc_1_0_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
 ipc/conditional/conditional.h \
@@ -67,6 +67,8 @@ ipc/thread/threadcbk.h        \
 ipc/timer/timer.h             \
 ipc/worker/worker.h
 
+pkgconfig_DATA = ipc.pc
+
 # Unit Tests
 check_PROGRAMS = unittest
 unittest_SOURCES = \
@@ -74,10 +76,11 @@ tst/mailist.h                                \
 tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
-tst/ipcgtestworker/ipcgtestworker_mailist.h
+tst/ipcgtestworker/ipcgtestworker_mailist.h  \
+tst/ipcgtestworker/ipcgtestworker-test.cc    
 
-unittest_CPPFLAGS = $(libgmock_main_CFLAGS)
-unittest_LDADD = $(lib_LTLIBRARIES) $(libgmock_main_LIBS)
+unittest_CPPFLAGS = $(GMOCK_CFLAGS) $(IPC_CFLAGS)
+unittest_LDADD = $(lib_LTLIBRARIES) $(GMOCK_LIBS) $(IPC_LIBS)
 unittest_LDFLAGS = -no-install
 
 EXTRA_DIST = m4/NOTES

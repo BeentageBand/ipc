@@ -23,7 +23,7 @@ union PublisherSingleton * get_publisher(void)
     static union PublisherSingleton singleton = {NULL};
     if (NULL == singleton.vtbl)
     {
-        Publisher_populate(&singleton);
+        PublisherSingleton_populate(&singleton);
     }
     return &singleton;
 }
