@@ -2,8 +2,7 @@
     <member name="cbk" type_t="union ThreadCbk * "/>
     <member name="ready" type_t="bool"/>
     <member name="id" type_t="IPC_TID_T"/>
-    <member name="mux" type_t="union Mutex *"/>
-    <member name="cv" type_t="union Conditional *"/>
+    <member name="barrier" type_t="union Barrier *"/>
     <method name="run"/>
     <method name="ready"/>
     <method name="wait">

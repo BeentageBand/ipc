@@ -45,8 +45,7 @@ union Worker
       union ThreadCbk *  _private cbk;
 bool _private ready;
 IPC_TID_T _private id;
-union Mutex * _private mux;
-union Conditional * _private cv;
+union Barrier * _private barrier;
 union Mailbox * _private mailbox;
 IPC_MID_T _private shutdown_mid;
 
@@ -55,7 +54,8 @@ IPC_MID_T _private shutdown_mid;
 
 extern union Worker_Class * Get_Worker_Class(void);
 
-extern void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk, IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv, union Mailbox * const mailbox, IPC_MID_T const shutdown_mid);
+extern void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk,
+    IPC_TID_T const id, union Barrier * const barrier, union Mailbox * const mailbox, IPC_MID_T const shutdown_mid);
 
 extern void Worker_run(union Worker * const worker);
 

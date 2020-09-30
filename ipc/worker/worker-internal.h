@@ -4,11 +4,15 @@
 
 #include "worker.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void worker_override(union Worker_Class * const worker);
 
 union Worker_Class * Get_Worker_Class(void)
 {
-  static union Worker_Class clazz;
+  static union Worker_Class clazz = {};
   if (0 != clazz.Class.offset) return &clazz;
   Class_populate(&clazz.Class, sizeof(clazz), &Get_Thread_Class()->Class);
   worker_override(&clazz);
@@ -65,4 +69,7 @@ void Worker_on_mail(union Worker * const worker, union Mail * const mail)
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 #endif /*WORKER_INT_H*/

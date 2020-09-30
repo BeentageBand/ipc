@@ -82,7 +82,13 @@ tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
 tst/ipcgtestworker/ipcgtestworker_mailist.h  \
-tst/ipcgtestworker/ipcgtestworker-test.cc    
+tst/ipcgtestworker/ipcgtestworker-test.cc    \
+tst/ipcmock/ipcfactorymock.cc                \
+tst/ipcmock/ipcfactorymock.h                 \
+tst/ipcmock/ipcfactorymock-internal.h        \
+tst/ipcmock/threadmock.cc                    \
+tst/ipcmock/threadmock.h                     \
+tst/ipcmock/threadmock-internal.h
 
 unittest_CPPFLAGS = $(GMOCK_CFLAGS) $(IPC_CFLAGS)
 unittest_LDADD = $(lib_LTLIBRARIES) $(GMOCK_LIBS) $(IPC_LIBS)

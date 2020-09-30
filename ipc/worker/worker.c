@@ -66,10 +66,10 @@ void worker_runnable(union Worker * const worker)
 }
 
 void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk,
-    IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv, 
+    IPC_TID_T const id, union Barrier * const barrier, 
     union Mailbox * const mailbox, IPC_MID_T const shutdown_mid)
 {
-  Thread_populate(&worker->Thread, cbk, id, mux, cv);
+  Thread_populate(&worker->Thread, cbk, id, barrier);
   worker->mailbox = mailbox;
   worker->shutdown_mid = shutdown_mid;
 }
