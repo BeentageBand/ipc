@@ -4,16 +4,25 @@
 
 #include "ipcfactory.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void ipcfactory_override(union IPCFactory_Class * const ipcfactory);
 
 union IPCFactory_Class * Get_IPCFactory_Class(void)
 {
-  static union IPCFactory_Class clazz;
+  static union IPCFactory_Class clazz = {};
   if (0 != clazz.Class.offset) return &clazz;
   Class_populate(&clazz.Class, sizeof(clazz), NULL);
   ipcfactory_override(&clazz);
   return &clazz;
 }
+union Barrier * IPCFactory_alloc_barrier(union IPCFactory * const ipcfactory)
+{
+  return ipcfactory->vtbl->alloc_barrier(ipcfactory);
+}
+
 union Conditional* IPCFactory_alloc_conditional(union IPCFactory * const ipcfactory)
 {
   return ipcfactory->vtbl->alloc_conditional(ipcfactory);
@@ -50,4 +59,7 @@ union Clock * IPCFactory_alloc_clock(union IPCFactory * const ipcfactory)
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 #endif /*IPCFACTORY_INT_H*/

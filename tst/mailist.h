@@ -20,6 +20,7 @@ enum IPC_TID
 {
     IPC_MAIN_TID = 0,
     GTEST_FWK_WORKER_TID,
+    IPC_GTEST_1_WORKER_TID,
     IPC_TID_MAX
 };
 

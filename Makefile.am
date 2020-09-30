@@ -4,6 +4,9 @@ lib_LTLIBRARIES = libipc-1.0.0.la
 libipc_1_0_0_la_SOURCES = \
 ipc/ipc.c                                       \
 ipc/ipc.h                                       \
+ipc/barrier/barrier.c                           \
+ipc/barrier/barrier.h                           \
+ipc/barrier/barrier-internal.h                  \
 ipc/clock/clock.c                               \
 ipc/clock/clock.h                               \
 ipc/clock/clock-internal.h                      \
@@ -52,6 +55,7 @@ ipc/worker/worker-internal.h
 libipc_1_0_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
+ipc/barrier/barrier.h         \
 ipc/conditional/conditional.h \
 ipc/clock/clock.h             \
 ipc/factory/ipcfactory.h      \
@@ -73,6 +77,7 @@ pkgconfig_DATA = ipc.pc
 check_PROGRAMS = unittest
 unittest_SOURCES = \
 tst/mailist.h                                \
+tst/ipc_gtests/ipc_thread_gtest.cc           \
 tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
