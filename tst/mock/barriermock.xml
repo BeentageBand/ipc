@@ -1,0 +1,3 @@
+<class name="BarrierMock" isa="Barrier">
+    <member name="mock" type_t="mock::GBarrier *"/>
+</class>

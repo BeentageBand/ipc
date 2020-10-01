@@ -60,6 +60,7 @@ void Thread_populate(union Thread * const thread, union ThreadCbk * const cbk, I
 {
   Object_populate(&thread->Object, &Get_Thread_Class()->Class);
   thread->id = id;
+  thread->cbk = cbk;
   thread->barrier = barrier;
   thread->ready = false;
   ThreadCbk_register_thread(thread->cbk, thread);

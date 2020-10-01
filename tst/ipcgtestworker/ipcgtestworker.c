@@ -38,14 +38,13 @@ void ipcgtestworker_delete(union IPCGTestWorker * const ipcgtestworker)
 {
 }
  
-void IPCGTestWorker_populate(union IPCGTestWorker * const ipcgtestworker, union ThreadCbk *  const cbk, bool const ready, 
+void IPCGTestWorker_populate(union IPCGTestWorker * const ipcgtestworker, union ThreadCbk *  const cbk, 
 		IPC_TID_T const id, 
-		union Mutex * const mux, 
-		union Conditional * const cv, 
+		union Barrier * const barrier, 
 		union Mailbox * const mailbox, 
 		IPC_MID_T const shutdown_mid)
 {
-	Worker_populate(&ipcgtestworker->Worker, cbk, id, mux, cv, mailbox, shutdown_mid);
+	Worker_populate(&ipcgtestworker->Worker, cbk, id, barrier, mailbox, shutdown_mid);
 }
 
 void ipcgtestworker_on_start(union IPCGTestWorker * const ipcgtestworker)

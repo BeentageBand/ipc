@@ -1,0 +1,3 @@
+<class name="ThreadMock" isa="ThreadCbk">
+    <member name="mock" type_t="mock::GThread *"/>
+</class>
