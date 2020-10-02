@@ -42,6 +42,8 @@ class Gtest_Thread : public Test
 
     void TearDown(void)
     {
+        EXPECT_CALL(this->mock_cbk, join_thread()).WillOnce(Return(0));
+        EXPECT_CALL(this->mock_cbk, cancel_thread(_));
         _delete(this->thread);
         free(this->thread);
         _delete(this->barrier);
@@ -82,9 +84,11 @@ TEST_F(Gtest_Thread, ready)
 TEST_F(Gtest_Thread, delete)
 {
     using ::testing::_;
+    EXPECT_CALL(this->mock_cbk, join_thread()).WillOnce(Return(0));
     EXPECT_CALL(this->mock_cbk, cancel_thread(_));
     _delete(this->thread);
 
+    EXPECT_CALL(this->mock_cbk, register_thread(_)).WillOnce(Return(0));
     this->thread = _new(union Thread);
     Thread_populate(this->thread, &this->cbk->ThreadCbk, this->tid, &this->barrier->Barrier);
 }
