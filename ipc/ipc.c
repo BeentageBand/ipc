@@ -1,5 +1,6 @@
 #include "ipc.h"
 #include "logger/logger.h"
+
 #include "helper/ipchelper.h"
 #include "publisher/publisher.h"
 
@@ -13,8 +14,12 @@ static union IPCClock * get_clock(void);
 union Logger * get_logger(void)
 {
     static union Logger log = {NULL};
+    static union Formatter fmt = {NULL};
+    static union LoggerHandler handler = {NULL};
     if (NULL == log.vtbl) {
-        Logger_populate(&log, NULL, NULL);
+        LoggerHandler_populate(&handler);
+        Formatter_populate(&fmt, __FILE__, LOG_DEBUG_LEVEL, " ");
+        Logger_populate(&log, &fmt, &handler);
     }
     return &log;
 }

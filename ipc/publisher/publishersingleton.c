@@ -27,9 +27,12 @@ static void publisher_dump_subscription(Subscription_List_T * const subscription
 union Logger * get_log(void)
 {
     static union Logger log = {NULL};
-    if (NULL == log.vtbl)
-    {
-        Logger_populate(&log, NULL, NULL);
+    static union Formatter fmt = {NULL};
+    static union LoggerHandler handler = {NULL};
+    if (NULL == log.vtbl) {
+        LoggerHandler_populate(&handler);
+        Formatter_populate(&fmt, __FILE__, LOG_DEBUG_LEVEL, " ");
+        Logger_populate(&log, &fmt, &handler);
     }
     return &log;
 }

@@ -16,12 +16,15 @@ static void ipcgtestworker_on_stop(union IPCGTestWorker * const ipcgtestworker);
  
 union Logger * get_log(void)
 {
-	static union Logger log = {NULL};
-	if (NULL == log.vtbl)
-	{
-		Logger_populate(&log, NULL, NULL);
-	}
-	return &log;
+  static union Logger log = {NULL};
+  static union Formatter fmt = {NULL};
+  static union LoggerHandler handler = {NULL};
+  if (NULL == log.vtbl) {
+      LoggerHandler_populate(&handler);
+      Formatter_populate(&fmt, __FILE__, LOG_DEBUG_LEVEL, " ");
+      Logger_populate(&log, &fmt, &handler);
+  }
+  return &log;
 }
 
 void ipcgtestworker_override(union IPCGTestWorker_Class * const clazz)
