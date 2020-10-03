@@ -44,8 +44,7 @@ union IPCGTestWorker
       union ThreadCbk *  _private cbk;
 bool _private ready;
 IPC_TID_T _private id;
-union Mutex * _private mux;
-union Conditional * _private cv;
+union Barrier * _private barrier;
 union Mailbox * _private mailbox;
 IPC_MID_T _private shutdown_mid;
 
@@ -54,7 +53,7 @@ IPC_MID_T _private shutdown_mid;
 
 extern union IPCGTestWorker_Class * Get_IPCGTestWorker_Class(void);
 
-extern void IPCGTestWorker_populate(union IPCGTestWorker * const ipcgtestworker, union ThreadCbk *  const cbk, bool const ready, IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv, union Mailbox * const mailbox, IPC_MID_T const shutdown_mid);
+extern void IPCGTestWorker_populate(union IPCGTestWorker * const ipcgtestworker, union ThreadCbk *  const cbk, IPC_TID_T const id, union Barrier * const barrier, union Mailbox * const mailbox, IPC_MID_T const shutdown_mid);
 
 extern void IPCGTestWorker_run(union IPCGTestWorker * const ipcgtestworker);
 

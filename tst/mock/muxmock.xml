@@ -1,0 +1,3 @@
+<class name="MuxMock" isa="Mutex">
+    <member name="mock" type_t="mock::GMux *"/>
+</class>

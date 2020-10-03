@@ -1,0 +1,6 @@
+<class name="Barrier">
+    <method name="wait">
+        <param name="ms" type_t="IPC_Clock_T"/>
+    </method>
+    <method name="ready"/>
+</class>

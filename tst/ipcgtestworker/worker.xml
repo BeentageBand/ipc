@@ -1,17 +1,1 @@
-<domain xmlns:xi="http://www.w3.org/2001/XInclude">
-    <xi:include href="../../ipc/conditional/conditional.xml"/> 
-    <xi:include href="../../ipc/clock/clock.xml"/> 
-    <xi:include href="../../ipc/factory/ipcfactory.xml"/> 
-    <xi:include href="../../ipc/helper/ipchelper.xml"/> 
-    <xi:include href="../../ipc/mail/mail.xml"/> 
-    <xi:include href="../../ipc/mailbox/cbk.xml"/> 
-    <xi:include href="../../ipc/mailbox/mailbox.xml"/> 
-    <xi:include href="../../ipc/mutex/mutex.xml"/> 
-    <xi:include href="../../ipc/publisher/publisher.xml"/> 
-    <xi:include href="../../ipc/semaphore/semaphore.xml"/> 
-    <xi:include href="../../ipc/timer/timer.xml"/> 
-    <xi:include href="../../ipc/thread/thread.xml"/>
-    <xi:include href="../../ipc/thread/cbk.xml"/>
-    <xi:include href="../../ipc/worker/worker.xml"/>
-    <class name="IPCGTestWorker" isa="Worker"/>
-</domain>
+<class name="IPCGTestWorker" isa="Worker"/>

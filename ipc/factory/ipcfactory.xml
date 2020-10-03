@@ -1,4 +1,5 @@
 <class name="IPCFactory">
+  <method name="alloc_barrier" return_t="union Barrier *"/>
   <method name="alloc_conditional" return_t="union Conditional*"/>
   <method name="alloc_mailboxcbk" return_t="union MailboxCbk *"/>
   <method name="alloc_mutex" return_t="union Mutex *"/>

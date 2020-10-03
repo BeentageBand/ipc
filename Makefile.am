@@ -4,6 +4,9 @@ lib_LTLIBRARIES = libipc-1.0.0.la
 libipc_1_0_0_la_SOURCES = \
 ipc/ipc.c                                       \
 ipc/ipc.h                                       \
+ipc/barrier/barrier.c                           \
+ipc/barrier/barrier.h                           \
+ipc/barrier/barrier-internal.h                  \
 ipc/clock/clock.c                               \
 ipc/clock/clock.h                               \
 ipc/clock/clock-internal.h                      \
@@ -52,6 +55,7 @@ ipc/worker/worker-internal.h
 libipc_1_0_0_la_LDFLAGS = -version-info 0:0:0
 nobase_include_HEADERS = \
 ipc/ipc.h                     \
+ipc/barrier/barrier.h         \
 ipc/conditional/conditional.h \
 ipc/clock/clock.h             \
 ipc/factory/ipcfactory.h      \
@@ -73,11 +77,32 @@ pkgconfig_DATA = ipc.pc
 check_PROGRAMS = unittest
 unittest_SOURCES = \
 tst/mailist.h                                \
+tst/ipc_gtests/ipc_thread_gtest.cc           \
+tst/ipc_gtests/ipc_mail_gtest.cc             \
+tst/ipc_gtests/ipc_mailbox_gtest.cc          \
 tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
 tst/ipcgtestworker/ipcgtestworker_mailist.h  \
-tst/ipcgtestworker/ipcgtestworker-test.cc    
+tst/ipcgtestworker/ipcgtestworker-test.cc    \
+tst/mock/ipcfactorymock.cc                   \
+tst/mock/ipcfactorymock.h                    \
+tst/mock/ipcfactorymock-internal.h           \
+tst/mock/barriermock.cc                      \
+tst/mock/barriermock.h                       \
+tst/mock/barriermock-internal.h              \
+tst/mock/cvmock.cc                          \
+tst/mock/cvmock.h                           \
+tst/mock/cvmock-internal.h                  \
+tst/mock/mailboxmock.cc                      \
+tst/mock/mailboxmock.h                       \
+tst/mock/mailboxmock-internal.h              \
+tst/mock/muxmock.cc                          \
+tst/mock/muxmock.h                           \
+tst/mock/muxmock-internal.h                  \
+tst/mock/threadmock.cc                       \
+tst/mock/threadmock.h                        \
+tst/mock/threadmock-internal.h
 
 unittest_CPPFLAGS = $(GMOCK_CFLAGS) $(IPC_CFLAGS)
 unittest_LDADD = $(lib_LTLIBRARIES) $(GMOCK_LIBS) $(IPC_LIBS)

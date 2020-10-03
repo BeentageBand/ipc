@@ -1,9 +1,8 @@
 #ifndef THREAD_H
 #define THREAD_H
 #include "threadcbk.h"
-#include "ipc/conditional/conditional.h"
+#include "ipc/barrier/barrier.h"
 #include "ipc/common/ipc_types.h"
-#include "ipc/mutex/mutex.h"
 
 #ifdef THREAD_IMPLEMENTATION 
 #define _private
@@ -39,17 +38,16 @@ union Thread
     {
       union Object Object;
       union ThreadCbk *  _private cbk;
-IPC_TID_T _private id;
 bool _private ready;
-union Mutex * _private mux;
-union Conditional * _private cv;
+IPC_TID_T _private id;
+union Barrier * _private barrier;
 
     };
 };
 
 extern union Thread_Class * Get_Thread_Class(void);
 
-extern void Thread_populate(union Thread * const thread, union ThreadCbk *  const cbk, IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv);
+extern void Thread_populate(union Thread * const thread, union ThreadCbk *  const cbk, IPC_TID_T const id, union Barrier * const barrier);
 
 extern void Thread_run(union Thread * const thread);
 

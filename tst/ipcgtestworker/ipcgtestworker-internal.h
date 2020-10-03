@@ -4,11 +4,15 @@
 
 #include "ipcgtestworker.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void ipcgtestworker_override(union IPCGTestWorker_Class * const ipcgtestworker);
 
 union IPCGTestWorker_Class * Get_IPCGTestWorker_Class(void)
 {
-  static union IPCGTestWorker_Class clazz;
+  static union IPCGTestWorker_Class clazz = {};
   if (0 != clazz.Class.offset) return &clazz;
   Class_populate(&clazz.Class, sizeof(clazz), &Get_Worker_Class()->Class);
   ipcgtestworker_override(&clazz);
@@ -65,4 +69,7 @@ void IPCGTestWorker_on_mail(union IPCGTestWorker * const ipcgtestworker, union M
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 #endif /*IPCGTESTWORKER_INT_H*/

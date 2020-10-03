@@ -1,6 +1,5 @@
 #ifndef IPCFACTORY_H
 #define IPCFACTORY_H
-
 #include "ipc/clock/clock.h"
 #include "ipc/mailbox/mailboxcbk.h"
 #include "ipc/mailbox/mailbox.h"
@@ -27,7 +26,8 @@ union IPCFactory_Class
     struct
     {
     struct Class Class;
-    union Conditional* (* _private alloc_conditional)(union IPCFactory * const ipcfactory);
+    union Barrier * (* _private alloc_barrier)(union IPCFactory * const ipcfactory);
+union Conditional* (* _private alloc_conditional)(union IPCFactory * const ipcfactory);
 union MailboxCbk * (* _private alloc_mailboxcbk)(union IPCFactory * const ipcfactory);
 union Mutex * (* _private alloc_mutex)(union IPCFactory * const ipcfactory);
 union Semaphore * (* _private alloc_semaphore)(union IPCFactory * const ipcfactory);
@@ -51,6 +51,8 @@ union IPCFactory
 extern union IPCFactory_Class * Get_IPCFactory_Class(void);
 
 extern void IPCFactory_populate(union IPCFactory * const ipcfactory);
+
+extern union Barrier * IPCFactory_alloc_barrier(union IPCFactory * const ipcfactory);
 
 extern union Conditional* IPCFactory_alloc_conditional(union IPCFactory * const ipcfactory);
 

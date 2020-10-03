@@ -32,47 +32,36 @@ void thread_delete(union Thread * const thread)
 
 void thread_join(union Thread * const thread, IPC_Clock_T const wait_ms)
 {
-    //TODO
+  ThreadCbk_join_thread(thread->cbk, thread);
 }
 
 
 void thread_run(union Thread * const thread)
 {
   if(ThreadCbk_run_thread(thread->cbk, thread))
-    {
-      if(!Mutex_lock(thread->mux, 200)) return;
+  {
       thread->ready = true;
-      Conditional_signal(thread->cv);
-      Mutex_unlock(thread->mux);
-    }
+  }
 }
 
 void thread_runnable(union Thread * const thread){}//Implements!
 
 void thread_wait(union Thread * const thread, uint32_t const wait_ms)
 {
-  if(!Mutex_lock(thread->mux, wait_ms)) return;
-  while(!thread->ready)
-  {
-    Conditional_wait(thread->cv, wait_ms);
-  }
-  Mutex_unlock(thread->mux);
+  Barrier_wait(thread->barrier, wait_ms);
 }
 
 void thread_ready(union Thread * const thread)
 {
-  if(!Mutex_lock(thread->mux, 200)) return;
-  Conditional_signal(thread->cv);
-  Mutex_unlock(thread->mux);
+  Barrier_ready(thread->barrier);
 }
 
-void Thread_populate(union Thread * const thread, union ThreadCbk *  const cbk, IPC_TID_T const id, union Mutex * const mux, 
-                     union Conditional * const cv)
+void Thread_populate(union Thread * const thread, union ThreadCbk * const cbk, IPC_TID_T const id, union Barrier * const barrier)
 {
   Object_populate(&thread->Object, &Get_Thread_Class()->Class);
   thread->id = id;
-  thread->mux = mux;
-  thread->cv = cv;
+  thread->cbk = cbk;
+  thread->barrier = barrier;
   thread->ready = false;
   ThreadCbk_register_thread(thread->cbk, thread);
 }

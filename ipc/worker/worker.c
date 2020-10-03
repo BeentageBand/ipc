@@ -13,9 +13,12 @@ static void worker_runnable(union Worker * const worker);
 union Logger * get_log(void)
 {
   static union Logger log = {NULL};
-  if (NULL == log.vtbl)
-  {
-    Logger_populate(&log, NULL, NULL);
+  static union Formatter fmt = {NULL};
+  static union LoggerHandler handler = {NULL};
+  if (NULL == log.vtbl) {
+      LoggerHandler_populate(&handler);
+      Formatter_populate(&fmt, __FILE__, LOG_DEBUG_LEVEL, " ");
+      Logger_populate(&log, &fmt, &handler);
   }
   return &log;
 }
@@ -66,10 +69,10 @@ void worker_runnable(union Worker * const worker)
 }
 
 void Worker_populate(union Worker * const worker, union ThreadCbk *  const cbk,
-    IPC_TID_T const id, union Mutex * const mux, union Conditional * const cv, 
+    IPC_TID_T const id, union Barrier * const barrier, 
     union Mailbox * const mailbox, IPC_MID_T const shutdown_mid)
 {
-  Thread_populate(&worker->Thread, cbk, id, mux, cv);
+  Thread_populate(&worker->Thread, cbk, id, barrier);
   worker->mailbox = mailbox;
   worker->shutdown_mid = shutdown_mid;
 }

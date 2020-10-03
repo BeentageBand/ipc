@@ -4,11 +4,15 @@
 
 #include "thread.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void thread_override(union Thread_Class * const thread);
 
 union Thread_Class * Get_Thread_Class(void)
 {
-  static union Thread_Class clazz;
+  static union Thread_Class clazz = {};
   if (0 != clazz.Class.offset) return &clazz;
   Class_populate(&clazz.Class, sizeof(clazz), NULL);
   thread_override(&clazz);
@@ -45,4 +49,7 @@ void Thread_runnable(union Thread * const thread)
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 #endif /*THREAD_INT_H*/

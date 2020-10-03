@@ -16,6 +16,7 @@ void mail_override(union Mail_Class * const clazz)
   clazz->set_mid = mail_set_mid;
   clazz->set_sender = mail_set_sender;
   clazz->set_receiver = mail_set_receiver;
+  clazz->set_payload = mail_set_payload;
 }
 
 void mail_delete(union Mail * const mail)
@@ -29,7 +30,7 @@ void Mail_populate(union Mail * const mail, IPC_MID_T const mid, IPC_TID_T const
                           void * const payload, 
                           size_t const pay_size)
 {
-  Object_populate(&mail->Object, &Get_Formatter_Class()->Class);
+  Object_populate(&mail->Object, &Get_Mail_Class()->Class);
   mail->sender = sender;
   mail->receiver = receiver;
   mail->mid = mid;
