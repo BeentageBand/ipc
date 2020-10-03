@@ -1,10 +1,10 @@
 #ifndef MAILIST_H_
 #define MAILIST_H_
 
+#include "ipc/common/ipc_types.h"
 #include "ipc/worker/worker_mailist.h"
 #include "ipcgtestworker/ipcgtestworker_mailist.h"
 
-#define IPC_ENUM(id, description) id,
 
 enum IPC_MID
 {

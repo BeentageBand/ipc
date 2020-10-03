@@ -1,0 +1,3 @@
+<class name="MailboxMock" isa="MailboxCbk">
+    <member name="mock" type_t="mock::GMailbox *"/>
+</class>

@@ -79,6 +79,7 @@ unittest_SOURCES = \
 tst/mailist.h                                \
 tst/ipc_gtests/ipc_thread_gtest.cc           \
 tst/ipc_gtests/ipc_mail_gtest.cc             \
+tst/ipc_gtests/ipc_mailbox_gtest.cc          \
 tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
@@ -90,6 +91,15 @@ tst/mock/ipcfactorymock-internal.h           \
 tst/mock/barriermock.cc                      \
 tst/mock/barriermock.h                       \
 tst/mock/barriermock-internal.h              \
+tst/mock/cvmock.cc                          \
+tst/mock/cvmock.h                           \
+tst/mock/cvmock-internal.h                  \
+tst/mock/mailboxmock.cc                      \
+tst/mock/mailboxmock.h                       \
+tst/mock/mailboxmock-internal.h              \
+tst/mock/muxmock.cc                          \
+tst/mock/muxmock.h                           \
+tst/mock/muxmock-internal.h                  \
 tst/mock/threadmock.cc                       \
 tst/mock/threadmock.h                        \
 tst/mock/threadmock-internal.h

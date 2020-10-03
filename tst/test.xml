@@ -17,5 +17,8 @@
     <xi:include href="ipcgtestworker/worker.xml"/>
     <xi:include href="mock/ipcfactorymock.xml"/>
     <xi:include href="mock/barriermock.xml"/>
+    <xi:include href="mock/cvmock.xml"/>
+    <xi:include href="mock/mailboxmock.xml"/>
+    <xi:include href="mock/muxmock.xml"/>
     <xi:include href="mock/threadmock.xml"/>
 </domain>

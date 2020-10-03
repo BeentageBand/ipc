@@ -1,0 +1,3 @@
+<class name="CVMock" isa="Conditional">
+    <member name="mock" type_t="mock::GCV *"/>
+</class>
