@@ -63,7 +63,7 @@ TEST_F(Gtest_Mailbox, push_and_tail)
     Mailbox_push_mail(this->mailbox, &mail);
 
 
-    EXPECT_CALL(this->mock_mux, lock(1000)).WillOnce(Return(true));
+    EXPECT_CALL(this->mock_mux, lock(200)).WillOnce(Return(true));
     EXPECT_CALL(this->mock_mux, unlock());
 
     union Mail rcv_mail = {NULL}; 
@@ -75,7 +75,7 @@ TEST_F(Gtest_Mailbox, push_and_tail)
 
 TEST_F(Gtest_Mailbox, tail_timeout)
 {
-    EXPECT_CALL(this->mock_mux, lock(1000)).WillOnce(Return(false));
+    EXPECT_CALL(this->mock_mux, lock(200)).WillOnce(Return(false));
 
     union Mail rcv_mail = {NULL}; 
     bool rcv = Mailbox_retrieve(this->mailbox, &rcv_mail);
@@ -84,6 +84,18 @@ TEST_F(Gtest_Mailbox, tail_timeout)
 
 TEST_F(Gtest_Mailbox, tail_with_mid)
 {
+    Mail mail = {NULL};
+    int payload = 25;
+    Mail_populate(&mail, WORKER_INT_SHUTDOWN_MID, this->tid, IPC_GTEST_1_WORKER_TID, 
+        &payload, 
+        sizeof(payload));
+    EXPECT_CALL(this->mock_mux, lock(200)).WillOnce(Return(true));
+    EXPECT_CALL(this->mock_cv, signal());
+    EXPECT_CALL(this->mock_mux, unlock());
+    Mailbox_push_mail(this->mailbox, &mail);
+
+    EXPECT_CALL(this->mock_mux, lock(200)).WillOnce(Return(true));
+    EXPECT_CALL(this->mock_mux, unlock());
     union Mail rcv_mail = {NULL};
     bool rcv = Mailbox_retrieve_only(this->mailbox, &rcv_mail, 
         this->tid = IPC_GTEST_1_WORKER_TID);
