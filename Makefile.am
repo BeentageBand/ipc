@@ -80,6 +80,7 @@ tst/mailist.h                                \
 tst/ipc_gtests/ipc_thread_gtest.cc           \
 tst/ipc_gtests/ipc_mail_gtest.cc             \
 tst/ipc_gtests/ipc_mailbox_gtest.cc          \
+tst/ipc_gtests/ipc_publisher_gtest.cc        \
 tst/ipcgtestworker/ipcgtestworker.c          \
 tst/ipcgtestworker/ipcgtestworker.h          \
 tst/ipcgtestworker/ipcgtestworker-internal.h \
