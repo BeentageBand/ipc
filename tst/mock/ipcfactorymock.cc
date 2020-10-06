@@ -1,4 +1,8 @@
 #include "ipcfactorymock-internal.h"
+#include "cvmock.h"
+#include "mailboxmock.h"
+#include "muxmock.h"
+#include "threadmock.h"
 
 static union Clock * ipcfactorymock_alloc_clock(union IPCFactoryMock * const ipcfactorymock);
 static union Conditional* ipcfactorymock_alloc_conditional(union IPCFactoryMock * const ipcfactorymock);
@@ -21,17 +25,23 @@ void ipcfactorymock_override(union IPCFactoryMock_Class * clazz)
 
 union Conditional* ipcfactorymock_alloc_conditional(union IPCFactoryMock * const ipcfactorymock)
 {
-    return NULL;
+    union CVMock * mock = _new(union CVMock);
+    CVMock_populate(mock, IPCFactoryMock_alloc_mutex(ipcfactorymock), ipcfactorymock->cv);
+    return &mock->Conditional;
 }
 
 union MailboxCbk * ipcfactorymock_alloc_mailboxcbk(union IPCFactoryMock * const ipcfactorymock)
 {
-    return NULL;
+    union MailboxMock * mock = _new(union MailboxMock);
+    MailboxMock_populate(mock, ipcfactorymock->mbx);
+    return &mock->MailboxCbk;
 }
 
 union Mutex * ipcfactorymock_alloc_mutex(union IPCFactoryMock * const ipcfactorymock)
 {
-    return NULL;
+    union MuxMock * mock = _new(union MuxMock);
+    MuxMock_populate(mock, ipcfactorymock->mux);
+    return &mock->Mutex;
 }
 
 union Semaphore * ipcfactorymock_alloc_semaphore(union IPCFactoryMock * const ipcfactorymock)
@@ -41,7 +51,9 @@ union Semaphore * ipcfactorymock_alloc_semaphore(union IPCFactoryMock * const ip
 
 union ThreadCbk * ipcfactorymock_alloc_threadcbk(union IPCFactoryMock * const ipcfactorymock)
 {
-    return NULL;
+    union ThreadMock * mock = _new(union ThreadMock);
+    ThreadMock_populate(mock, ipcfactorymock->thread);
+    return &mock->ThreadCbk;
 }
 
 union Timer * ipcfactorymock_alloc_timer(union IPCFactoryMock * const ipcfactorymock)

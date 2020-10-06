@@ -1,2 +1,6 @@
 <class name="IPCFactoryMock" isa="IPCFactory">
+    <member name="thread" type_t="mock::GThread *"/>
+    <member name="mbx" type_t="mock::GMailbox *"/>
+    <member name="mux" type_t="mock::GMux *"/>
+    <member name="cv" type_t="mock::GCV *"/>
 </class>

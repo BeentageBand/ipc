@@ -53,12 +53,12 @@ void mailbox_push_mail(union Mailbox * const mailbox, union Mail * mail)
 
     Dbg_Info("%s:mid %d", __func__, mail->mid);
 
-    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
+    if(Mutex_lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
         CQueue_Mail_T_push_front(mbx, *mail);
         mailbox_dump_ipc(mbx , LOG_INFO_LEVEL);
-        cond->vtbl->signal(cond);
-        mutex->vtbl->unlock(mutex);
+        Conditional_signal(cond);
+        Mutex_unlock(mutex);
     }
 }
 
@@ -69,21 +69,24 @@ bool mailbox_retrieve(union Mailbox * const mailbox, union Mail * mail)
     union Mutex * const mutex = mailbox->mutex;
 
     bool rc = false;
-    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
+    if(Mutex_lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
-        while(!CQueue_Mail_T_size(mbx) &&
-                cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+        while(0 == CQueue_Mail_T_size(mbx) &&
+                Conditional_wait(cond, IPC_MAILBOX_LOCK_MS))
         {}//Wait until mailbox has a mail
 
-        if(CQueue_Mail_T_size(mbx))
+        if(0 != CQueue_Mail_T_size(mbx))
         {
             //Copy from previous mail
+            union Mail rcv = CQueue_Mail_T_back(mbx);
+            Dbg_Verb("Mail %d found\n", rcv.mid);
+            _copy(mail, &rcv);
 
-            cqueue_Mail_T_pop_back(mbx);
+            CQueue_Mail_T_pop_back(mbx);
             rc = true;
         }
         mailbox_dump_ipc(mbx, LOG_DEBUG_LEVEL);
-        mutex->vtbl->unlock(mutex);
+        Mutex_unlock(mutex);
     }
 
     return rc;
@@ -96,18 +99,19 @@ bool mailbox_retrieve_only(union Mailbox * const mailbox, union Mail * mail, IPC
     union Mutex * const mutex = mailbox->mutex;
     bool rc = false;
 
-    if(mutex->vtbl->lock(mutex, IPC_MAILBOX_LOCK_MS))
+    if(Mutex_lock(mutex, IPC_MAILBOX_LOCK_MS))
     {
         while(!CQueue_Mail_T_size(mbx) &&
-                cond->vtbl->wait(cond, IPC_MAILBOX_LOCK_MS))
+                Conditional_wait(cond, IPC_MAILBOX_LOCK_MS))
         {}//Wait until mailbox has a mail
 
         if(CQueue_Mail_T_size(mbx))
         {
-            union Mail * found;
 
-            for(found = CQueue_Mail_T_begin(mbx); found != CQueue_Mail_T_end(mbx); ++found)
+            union Mail * found = CQueue_Mail_T_begin(mbx);
+            for(int i = 0; CQueue_Mail_T_at(mbx, i) != CQueue_Mail_T_end(mbx); ++i)
             {
+                found = CQueue_Mail_T_at(mbx, i);
                 if(mid == found->mid)
                 {
                     break;
@@ -116,12 +120,14 @@ bool mailbox_retrieve_only(union Mailbox * const mailbox, union Mail * mail, IPC
 
             if(found != CQueue_Mail_T_end(mbx))
             {
+                _copy(mail, found);
+                Dbg_Verb("Mail %d found\n", found->mid);
                 CQueue_Mail_T_pop_back(mbx);
                 mailbox_dump_ipc(mbx, LOG_INFO_LEVEL);
                 rc = true;
             }
         }
-        mutex->vtbl->unlock(mutex);
+        Mutex_unlock(mutex);
     }
 
     return rc;
@@ -129,12 +135,11 @@ bool mailbox_retrieve_only(union Mailbox * const mailbox, union Mail * mail, IPC
 
 void mailbox_dump_ipc(union CQueue_Mail_T * const mailbox, enum LogLevel const dbg_lvl)
 {
-    union Mail * it;
     Dbg_Verb("[");
-    for(it = CQueue_Mail_T_begin(mailbox);
-            it != CQueue_Mail_T_end(mailbox);
-            ++it)
+    for(int i = 0; CQueue_Mail_T_at(mailbox, i) != CQueue_Mail_T_end(mailbox);
+            ++i)
     {
+        union Mail * it = CQueue_Mail_T_at(mailbox, i);
         Dbg_Verb("%d, ", it->mid);
     }
     Dbg_Verb("]");

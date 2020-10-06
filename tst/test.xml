@@ -15,6 +15,7 @@
     <xi:include href="../ipc/thread/cbk.xml"/>
     <xi:include href="../ipc/worker/worker.xml"/>
     <xi:include href="ipcgtestworker/worker.xml"/>
+    <xi:include href="mock/helpermock.xml"/>
     <xi:include href="mock/ipcfactorymock.xml"/>
     <xi:include href="mock/barriermock.xml"/>
     <xi:include href="mock/cvmock.xml"/>

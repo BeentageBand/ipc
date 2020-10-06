@@ -1,5 +1,10 @@
 #ifndef IPCFACTORYMOCK_H
 #define IPCFACTORYMOCK_H
+#include "gmock-barrier.h"
+#include "gmock-cv.h"
+#include "gmock-mailbox.h"
+#include "gmock-mux.h"
+#include "gmock-thread.h"
 #include "ipc/factory/ipcfactory.h"
 
 #ifdef IPCFACTORYMOCK_IMPLEMENTATION 
@@ -20,7 +25,8 @@ union IPCFactoryMock_Class
     struct
     {
     struct Class Class;
-    union Conditional* (* _private alloc_conditional)(union IPCFactoryMock * const ipcfactorymock);
+    union Barrier * (* _private alloc_barrier)(union IPCFactoryMock * const ipcfactorymock);
+union Conditional* (* _private alloc_conditional)(union IPCFactoryMock * const ipcfactorymock);
 union MailboxCbk * (* _private alloc_mailboxcbk)(union IPCFactoryMock * const ipcfactorymock);
 union Mutex * (* _private alloc_mutex)(union IPCFactoryMock * const ipcfactorymock);
 union Semaphore * (* _private alloc_semaphore)(union IPCFactoryMock * const ipcfactorymock);
@@ -38,13 +44,19 @@ union IPCFactoryMock
     struct
     {
       union Object Object;
-      
+      mock::GThread * _private thread;
+mock::GMailbox * _private mbx;
+mock::GMux * _private mux;
+mock::GCV * _private cv;
+
     };
 };
 
 extern union IPCFactoryMock_Class * Get_IPCFactoryMock_Class(void);
 
-extern void IPCFactoryMock_populate(union IPCFactoryMock * const ipcfactorymock);
+extern void IPCFactoryMock_populate(union IPCFactoryMock * const ipcfactorymock, mock::GThread * const thread, mock::GMailbox * const mbx, mock::GMux * const mux, mock::GCV * const cv);
+
+extern union Barrier * IPCFactoryMock_alloc_barrier(union IPCFactoryMock * const ipcfactorymock);
 
 extern union Conditional* IPCFactoryMock_alloc_conditional(union IPCFactoryMock * const ipcfactorymock);
 
