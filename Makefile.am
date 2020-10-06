@@ -77,6 +77,7 @@ pkgconfig_DATA = ipc.pc
 check_PROGRAMS = unittest
 unittest_SOURCES = \
 tst/mailist.h                                \
+tst/ipc_gtests/ipc_gtest.cc                  \
 tst/ipc_gtests/ipc_thread_gtest.cc           \
 tst/ipc_gtests/ipc_mail_gtest.cc             \
 tst/ipc_gtests/ipc_mailbox_gtest.cc          \

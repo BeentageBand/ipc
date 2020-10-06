@@ -18,6 +18,11 @@ union IPCFactoryMock_Class * Get_IPCFactoryMock_Class(void)
   ipcfactorymock_override(&clazz);
   return &clazz;
 }
+union Barrier * IPCFactoryMock_alloc_barrier(union IPCFactoryMock * const ipcfactorymock)
+{
+  return ipcfactorymock->vtbl->alloc_barrier(ipcfactorymock);
+}
+
 union Conditional* IPCFactoryMock_alloc_conditional(union IPCFactoryMock * const ipcfactorymock)
 {
   return ipcfactorymock->vtbl->alloc_conditional(ipcfactorymock);
@@ -53,8 +58,8 @@ union Clock * IPCFactoryMock_alloc_clock(union IPCFactoryMock * const ipcfactory
   return ipcfactorymock->vtbl->alloc_clock(ipcfactorymock);
 }
 
+
 #ifdef __cplusplus
 }
 #endif
-
 #endif /*IPCFACTORYMOCK_INT_H*/
